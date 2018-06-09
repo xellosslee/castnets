@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-web-app",
+  "version": "0.0.0",
+  "description": "NodejsWebApp",
+  "main": "server.js",
+  "author": {
+    "name": "xelloss"
+  },
+  "dependencies": {
+    "react": "^16.4.0",
+    "express": "4.16.2",
+    "path": "0.12.7",
+    "react-dom": "16.2.0",
+    "ts-loader": "4.0.1",
+    "typescript": "2.7.2",
+    "webpack": "4.1.1",
+    "webpack-cli": "2.0.11"
+  }
+}
