@@ -35,6 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="dist\app-bundle.js" />
+    <Compile Include="mysqlworks.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="server.js" />
     <Content Include="dist\app-bundle.js.map" />
     <Content Include="index.html">
@@ -45,6 +48,9 @@
     <Content Include="tsconfig.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="uploads\video\sample01.mp4" />
+    <Content Include="uploads\video\sample02.mp4" />
+    <Content Include="uploads\video\sample03.mp4" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.tsx">
@@ -56,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="dist\" />
+    <Folder Include="uploads\" />
+    <Folder Include="uploads\thumbnail\" />
+    <Folder Include="uploads\video\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
