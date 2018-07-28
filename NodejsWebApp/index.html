@@ -4,13 +4,70 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+
+    <title>Tabs 구현</title>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style type="text/css" media="screen, projection">
+    </style>
 </head>
 <body>
-    <div id="root"></div>
+    TestFunctions<br />
+    <div id="testFunctions">
+        <ul>
+            <li><a href="#app">앱</a></li>
+            <li><a href="#upload">업로드</a></li>
+            <li><a href="#video">비디오재생</a></li>
+            <li><a href="#videolist">비디오목록</a></li>
+            <li><a href="#map">지도</a></li>
+        </ul>
+
+        <div id="app">
+            <div id="root">
+            </div>
+        </div>
+
+        <div id="upload">
+            파일업로드
+            <form action="video/upload" method="post" enctype="multipart/form-data">
+                <input type="text" name="userno" />
+                <input type="file" name="file" />
+                <input type="submit" />
+            </form>
+        </div>
+
+        <div id="video">
+            <video id="videoPlayer" controls>
+                <source src="http://localhost:1337/video/stream" type="video/mp4">
+            </video>
+        </div>
+
+        <div id="videolist">
+            비디오 목록 정보 가져오기(GET방식추천)
+            <form action="video/list" method="GET" enctype="multipart/form-data" target="_blank">
+                <input type="text" name="lat" value="37.394655" />
+                <input type="text" name="lon" value="127.1098378" />
+                <input type="text" name="zoom" value="17.17" />
+                <input type="submit" />
+            </form>
+        </div>
+
+        <div id="map">
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#testFunctions').tabs({ fxSlide: true, fxFade: true, fxSpeed: 'fast' });
+        });
+    </script>
     <!-- scripts -->
     <script src="./dist/app-bundle.js"></script>
-    <video id="videoPlayer" controls>
-        <source src="http://localhost:1337/video" type="video/mp4">
-    </video>
 </body>
 </html>
