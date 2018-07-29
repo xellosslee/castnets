@@ -90,6 +90,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+//var ReactNative = require('react-native');
+//var MapView = require('react-native-maps');
 var Hello = /** @class */ (function (_super) {
     __extends(Hello, _super);
     function Hello() {
@@ -18053,7 +18055,7 @@ if (false) {} else {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! ./app.tsx */"./app.tsx");
-module.exports = __webpack_require__(/*! C:\Users\xello\source\repos\Tasety\NodejsWebApp\app.tsx */"./app.tsx");
+module.exports = __webpack_require__(/*! C:\Users\xello\source\repos\Castnets\NodejsWebApp\app.tsx */"./app.tsx");
 
 
 /***/ })

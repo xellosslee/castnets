@@ -10,13 +10,24 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var React = require('react');
 var ReactDOM = require('react-dom');
+//var ReactNative = require('react-native');
+//var MapView = require('react-native-maps');
 var Hello = /** @class */ (function (_super) {
     __extends(Hello, _super);
     function Hello() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Hello.prototype.render = function () {
-        return (React.createElement("h1", null, "Welcome to React!!"));
+        return (React.createElement("h1", null, "Welcome to React!!")
+        //<MapView
+        //    initialRegion={{
+        //        latitude: 37.78825,
+        //        longitude: -122.4324,
+        //        latitudeDelta: 0.0922,
+        //        longitudeDelta: 0.0421,
+        //    }}
+        ///>
+        );
     };
     return Hello;
 }(React.Component));
