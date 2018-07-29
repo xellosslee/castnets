@@ -32,7 +32,7 @@
      * GET 방식으로 전송하는것을 추천
      */
     route.get('/list', function (req, res) {
-        var conn = require('/modules/mysql.js')();
+        var conn = require('../modules/mysql.js')();
         conn.close();
 
         req.lat = req.query.lat == undefined ? 37.394655 : req.query.lat;
