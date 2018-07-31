@@ -3,14 +3,18 @@
 services:
   nginx:
     container_name: nginx-dc
+    image: nginx
     build: ./nginx
-    restart: always
     links:
       - was-1:was-1
       - was-2:was-2
       - was-3:was-3
     ports:
       - 3000:80
+    depends_on:
+      - was-1
+      - was-2
+      - was-3
 
   was-1:
     container_name: node-dc-1

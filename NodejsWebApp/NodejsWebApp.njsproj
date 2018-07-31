@@ -41,9 +41,6 @@
     <Compile Include="modules\mysql.js">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="nginx\conf.d\castnets.conf">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="nginx\Dockerfile">
       <SubType>Code</SubType>
     </Compile>
@@ -68,7 +65,6 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="nginx\nginx.conf" />
-    <Content Include="nginx\sites-available\default" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json">
@@ -91,8 +87,6 @@
     <Folder Include="dist\" />
     <Folder Include="modules\" />
     <Folder Include="nginx\" />
-    <Folder Include="nginx\conf.d\" />
-    <Folder Include="nginx\sites-available\" />
     <Folder Include="routes\" />
     <Folder Include="uploads\" />
     <Folder Include="uploads\profile\" />
