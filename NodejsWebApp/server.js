@@ -2,6 +2,7 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const uuid = require('uuid');
 var app = express();
 
 var userRouter = require('./routes/user.js')(app);
@@ -23,5 +24,6 @@ app.use(session({
 app.set('port', process.env.PORT || 3000);
 
 var server = app.listen(app.get('port'), function () {
-    console.log('listening');
+    console.log('[' + uuid.v4() + ']');
+    console.log('listening : ' + app.get('port'));
 });

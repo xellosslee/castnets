@@ -35,6 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="dist\app-bundle.js" />
+    <Compile Include="Dockerfile">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="modules\mysql.js">
       <SubType>Code</SubType>
     </Compile>
@@ -45,7 +48,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="server.js" />
+    <Content Include=".dockerignore">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="config.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="dist\app-bundle.js.map" />
+    <Content Include="docker-compose.yml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="index.html">
       <SubType>Code</SubType>
     </Content>

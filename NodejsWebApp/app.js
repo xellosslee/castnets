@@ -9,8 +9,16 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var React = require('react');
+//import {
+//    Platform,
+//    View,
+//    StyleSheet,
+//    TouchableOpacity,
+//    ScrollView,
+//    Text,
+//    Switch,
+//} from 'react-native';
 var ReactDOM = require('react-dom');
-//var ReactNative = require('react-native');
 //var MapView = require('react-native-maps');
 var Hello = /** @class */ (function (_super) {
     __extends(Hello, _super);

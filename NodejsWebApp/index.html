@@ -2,6 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8" />
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
@@ -16,6 +17,17 @@
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style type="text/css" media="screen, projection">
+        #testFunctions, #map {
+            height: 100%;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #videoPlayer {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -63,10 +75,19 @@
         </div>
     </div>
     <script type="text/javascript">
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8
+            });
+        }
         $(function () {
             $('#testFunctions').tabs({ fxSlide: true, fxFade: true, fxSpeed: 'fast' });
         });
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDReVdkX_7JrTPyscR1NQQ5wklPPaLgYhw&callback=initMap"
+            async defer></script>
     <!-- scripts -->
     <script src="./dist/app-bundle.js"></script>
 </body>

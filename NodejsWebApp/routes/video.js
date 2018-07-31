@@ -43,7 +43,7 @@
         var item = {};
 
         item.thumnail = 'uploads/thumbnail/thumbnail.png';
-        item.lat = 37.394655;
+        item.lat = 37.394656;
         item.lon = 127.1098378;
 
         list.push(item);
