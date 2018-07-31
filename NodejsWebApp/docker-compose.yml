@@ -2,41 +2,30 @@
 
 services:
   nginx:
-    container_name: nginx-lb
+    container_name: nginx-dc
     build: /etc/nginx
+    restart: allways
     links:
       - was-1:was-1
       - was-2:was-2
       - was-3:was-3
-      - was-4:was-4
     ports:
-      - 3000:80
-    depends_on:
-      - was-1
-      - was-3
-      - was-2
-      - was-4
+      - 80:80
 
   was-1:
-    container_name: node-was-1
+    container_name: node-dc-1
     image: node-was
     ports:
       - 3000
 
   was-2:
-    container_name: node-was-2
+    container_name: node-dc-2
     image: node-was
     ports:
       - 3000
 
   was-3:
-    container_name: node-was-3
-    image: node-was
-    ports:
-      - 3000
-      
-  was-4:
-    container_name: node-was-4
+    container_name: node-dc-3
     image: node-was
     ports:
       - 3000

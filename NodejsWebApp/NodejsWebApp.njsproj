@@ -41,6 +41,9 @@
     <Compile Include="modules\mysql.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="nginx\Dockerfile">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user.js">
       <SubType>Code</SubType>
     </Compile>
@@ -61,6 +64,8 @@
     <Content Include="index.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="nginx\nginx.conf" />
+    <Content Include="nginx\sites-available\default" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json">
@@ -82,6 +87,9 @@
   <ItemGroup>
     <Folder Include="dist\" />
     <Folder Include="modules\" />
+    <Folder Include="nginx\" />
+    <Folder Include="nginx\conf.d\" />
+    <Folder Include="nginx\sites-available\" />
     <Folder Include="routes\" />
     <Folder Include="uploads\" />
     <Folder Include="uploads\profile\" />
