@@ -41,6 +41,9 @@
     <Compile Include="modules\mysql.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="nginx\conf.d\castnets.conf">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="nginx\Dockerfile">
       <SubType>Code</SubType>
     </Compile>
