@@ -51,6 +51,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="server.js" />
+    <Compile Include="shortserver.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Content Include=".dockerignore">
       <SubType>Code</SubType>
     </Content>

@@ -4,13 +4,12 @@ services:
   nginx:
     container_name: nginx-dc
     image: nginx
-    build: ./nginx
     links:
       - was-1:was-1
       - was-2:was-2
       - was-3:was-3
     ports:
-      - 3000:80
+      - 80:80
     depends_on:
       - was-1
       - was-2

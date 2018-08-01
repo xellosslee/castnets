@@ -2,6 +2,9 @@
     const express = require('express');
     const multer = require('multer');
     const fs = require('fs');
+
+    /* 업로드를 위한 multer디스크 설정
+     */
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
             if (file.mimetype.indexOf('video') != -1) {
@@ -15,6 +18,7 @@
             cb(null, file.originalname);
         }
     });
+
     var upload = multer({ storage: storage })
     var route = express.Router();
 
