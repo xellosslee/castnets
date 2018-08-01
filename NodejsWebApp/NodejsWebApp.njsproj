@@ -77,6 +77,9 @@
     <Content Include="uploads\video\sample01.mp4" />
     <Content Include="uploads\video\sample02.mp4" />
     <Content Include="uploads\video\sample03.mp4" />
+    <Content Include="views\index.ejs">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.tsx">
@@ -89,6 +92,7 @@
   <ItemGroup>
     <Folder Include="dist\" />
     <Folder Include="modules\" />
+    <Folder Include="views\" />
     <Folder Include="nginx\" />
     <Folder Include="routes\" />
     <Folder Include="uploads\" />

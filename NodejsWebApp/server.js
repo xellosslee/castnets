@@ -4,6 +4,7 @@ const express = require('express');
 const session = require('express-session');
 const uuid = require('uuid');
 var app = express();
+var uuidtemp = uuid.v4();
 
 var userRouter = require('./routes/user.js')(app);
 var videoRouter = require('./routes/video.js')(app, path);
@@ -11,9 +12,12 @@ var videoRouter = require('./routes/video.js')(app, path);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
 
-var staticPath = path.join(__dirname, '/');
+// 기본 index.html 전달하는 코드...테스트용도로만 쓰고 실무에선 쓸일 없어보임
+//var staticPath = path.join(__dirname, '/');
+//app.use(express.static(staticPath));
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
-app.use(express.static(staticPath));
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
@@ -23,7 +27,11 @@ app.use(session({
 // Allows you to set port in the project properties.
 app.set('port', 3000);
 
+app.get('/', function (req, res) {
+    res.render('index', { "uuid": uuidtemp });
+});
+
 var server = app.listen(app.get('port'), function () {
-    console.log('[' + uuid.v4() + ']');
+    console.log('[' + uuidtemp + ']');
     console.log('listening : ' + app.get('port'));
 });

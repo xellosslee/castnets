@@ -7,8 +7,10 @@
     "name": "xelloss"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
     "docker": "^1.0.0",
     "docker-compose": "^0.8.1",
+    "ejs": "^2.6.1",
     "express": "4.16.2",
     "express-session": "^1.15.6",
     "ioredis": "^3.2.2",
