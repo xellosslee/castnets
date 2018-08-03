@@ -1,17 +1,34 @@
-﻿module.exports = function (app, conn, path) {
+﻿module.exports = function (app, path) {
     const express = require('express');
     const multer = require('multer');
     const fs = require('fs');
+
+    // Create 
+    function mkdirpath(dirPath) {
+        if (!fs.existsSync(dirPath)) {
+            try {
+                fs.mkdirSync(dirPath);
+            }
+            catch (e) {
+                mkdirpath(path.dirname(dirPath));
+                mkdirpath(dirPath);
+            }
+        }
+    }
 
     /* 업로드를 위한 multer디스크 설정
      */
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
             if (file.mimetype.indexOf('video') != -1) {
-                cb(null, 'uploads/video');
+                // 폴더가 없다면 생성
+                mkdirpath('./uploads/video');
+                cb(null, './uploads/video');
             }
             else if (file.mimetype.indexOf('image') != -1) {
-                cb(null, 'uploads/profile');
+                // 폴더가 없다면 생성
+                mkdirpath('./uploads/profile');
+                cb(null, './uploads/profile');
             }
         },
         filename: function (req, file, cb) {
@@ -58,8 +75,8 @@
     /* req : range는 기본 플레이어에서 
      */
     route.get('/stream', function (req, res) {
-        const path = 'uploads/video/sample01.mp4';
-        const stat = fs.statSync(path)
+        const serverpath = 'uploads/video/sample01.mp4';
+        const stat = fs.statSync(serverpath)
         const fileSize = stat.size
         const range = req.headers.range
         if (range) {
@@ -69,7 +86,7 @@
                 ? parseInt(parts[1], 10)
                 : fileSize - 1
             const chunksize = (end - start) + 1
-            const file = fs.createReadStream(path, { start, end })
+            const file = fs.createReadStream(serverpath, { start, end })
             const head = {
                 'Content-Range': `bytes ${start}-${end}/${fileSize}`,
                 'Accept-Ranges': 'bytes',
@@ -84,7 +101,7 @@
                 'Content-Type': 'video/mp4',
             }
             res.writeHead(200, head)
-            fs.createReadStream(path).pipe(res)
+            fs.createReadStream(serverpath).pipe(res)
         }
     });
 
