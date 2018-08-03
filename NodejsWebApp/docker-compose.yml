@@ -20,15 +20,21 @@ services:
     image: node-was
     ports:
       - 3000
+    volumes:
+      - /data/uploads:/src/uploads
 
   was-2:
     container_name: node-dc-2
     image: node-was
     ports:
       - 3000
+    volumes:
+      - /data/uploads:/src/uploads
 
   was-3:
     container_name: node-dc-3
     image: node-was
     ports:
       - 3000
+    volumes:
+      - /data/uploads:/src/uploads

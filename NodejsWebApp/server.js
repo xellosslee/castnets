@@ -15,6 +15,8 @@ app.use('/video', videoRouter);
 // 기본 index.html 전달하는 코드...테스트용도로만 쓰고 실무에선 쓸일 없어보임
 //var staticPath = path.join(__dirname, '/');
 //app.use(express.static(staticPath));
+
+// 서버에서 페이지로 output을 표현하려면 ejs모듈로 view를 써야함
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
