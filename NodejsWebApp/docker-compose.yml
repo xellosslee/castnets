@@ -4,6 +4,7 @@ services:
   nginx:
     container_name: nginx-dc
     image: nginx
+    build: ./nginx
     links:
       - was-1:was-1
       - was-2:was-2
@@ -14,21 +15,28 @@ services:
       - was-1
       - was-2
       - was-3
+    restart: always
 
   was-1:
     container_name: node-dc-1
     image: node-was
     ports:
       - 3000
+    volumes:
+      - ./:/src
 
   was-2:
     container_name: node-dc-2
     image: node-was
     ports:
       - 3000
+    volumes:
+      - ./:/src
 
   was-3:
     container_name: node-dc-3
     image: node-was
     ports:
       - 3000
+    volumes:
+      - ./:/src

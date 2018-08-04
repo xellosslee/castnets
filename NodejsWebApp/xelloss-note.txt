@@ -1,0 +1,34 @@
+﻿1. 배포순서 (NodejsWebApp 폴더에서 실행)
+#docker 모두 삭제
+docker rm -f $(docker ps -a -q)
+docker rmi -f $(docker images -q)
+
+#docker 빌드
+docker rm -f node-was
+docker build --tag node-was .
+(run은 테스트용도로만 쓰고 실제론 docker-compose 써야함)
+docker run --name node-was -d -p 80:3000 node-was
+
+docker rm -f nginx
+docker build --tag nginx ./nginx
+(run은 테스트용도로만 쓰고 실제론 docker-compose 써야함)
+docker run --name nginx-dc -d -p 80:80 nginx
+
+#docker-compose 빌드 및 실행
+docker-compose up -d --build
+docker-compose down
+
+nginx로그파일 위치 /var/log/nginx/error.log
+
+// 도커 1개 실행
+docker run --name node-was -d node-was
+
+docker cp nginx-dc:/ c:/nginx-dc/
+docker cp nginx-dc:/etc/nginx c:/nginx-dc/etc/
+
+docker cp node-dc-1:/src c:/node-was/src1
+docker cp node-dc-2:/src c:/node-was/src2
+docker cp node-dc-3:/src c:/node-was/src3
+
+ * env(환경변수)는 파일에 저장하면 보안상의 위험이 있으므로 각각의 시스템에서 설정하며, 어떤 변수를 사용하는지만 기술해둔다.
+NODE_ENV : 노드수행 환경 (값이 없으면 localhost모드)

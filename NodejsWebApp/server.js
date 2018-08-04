@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const uuid = require('uuid');
+require('./modules/common.js');
 var app = express();
 var uuidtemp = uuid.v4();
 
