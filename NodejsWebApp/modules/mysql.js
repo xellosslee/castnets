@@ -1,26 +1,24 @@
 ﻿module.exports = function () {
     const mysql = require('mysql');
     var conn = mysql.createConnection({
-        host: 'localhost',
-        user: 'xelloss',
-        password: 'test1234',
-        database: 'tasty',
+        host: 'demo.castnets.co.kr',
+        //user: process.env.CASTNETS_DBUSER,
+        //password: process.env.CASTNETS_DBPASS,
+        user:'castnetsmysqler',
+        password:'c@stnet&mysql1@#',
+        database: 'castnets',
+        multipleStatements: true
     });
+    /** 종료시 반드시 close해야함
+     */
     conn.close = function () {
         console.log('db closed');
         conn.end();
-    }
+    };
+    /** 최초 생성시 연결
+     */
     try {
         conn.connect();
-        //conn.query('SELECT * FROM code', function (err, rows, fields) {
-        //    if (err) {
-        //        console.log(err);
-        //    } else {
-        //        console.log('rows', rows);
-        //        console.log('fileds', fields);
-        //    }
-        //});
-        //conn.end();
         console.log('db connected');
         return conn;
     }

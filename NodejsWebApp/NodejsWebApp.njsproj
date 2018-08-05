@@ -63,6 +63,7 @@
     <Content Include="config.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="config\code insert.sql" />
     <Content Include="dist\app-bundle.js.map" />
     <Content Include="docker-compose.yml">
       <SubType>Code</SubType>
@@ -73,6 +74,9 @@
     <Content Include="nginx\nginx.conf" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="resultcode.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tsconfig.json">
       <SubType>Code</SubType>
     </Content>
@@ -83,7 +87,7 @@
     <Content Include="views\index.ejs">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="xelloss-note.txt">
+    <Content Include="config\xelloss-note.txt">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
@@ -98,6 +102,7 @@
   <ItemGroup>
     <Folder Include="dist\" />
     <Folder Include="modules\" />
+    <Folder Include="config\" />
     <Folder Include="views\" />
     <Folder Include="nginx\" />
     <Folder Include="routes\" />

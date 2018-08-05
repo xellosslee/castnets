@@ -1,15 +1,24 @@
 'use strict';
+process.on('uncaughtException', function (err) {
+    //예상치 못한 예외 처리
+    console.log('uncaughtException arrival : ' + err);
+});
+
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const uuid = require('uuid');
 require('./modules/common.js');
+var bodyParser = require('body-parser');
+
 var app = express();
 var uuidtemp = uuid.v4();
 
 var userRouter = require('./routes/user.js')(app);
 var videoRouter = require('./routes/video.js')(app, path);
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
 
@@ -27,8 +36,19 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use(logErrors);
+function logErrors(err, req, res, next) {
+    console.error(err.stack);
+    next(err);
+}
+
 // Allows you to set port in the project properties.
 app.set('port', 3000);
+
+app.post('/', function (req, res) {
+    console.log(req.body);
+    res.send('');
+});
 
 app.get('/', function (req, res) {
     res.render('index', { "uuid": uuidtemp });
