@@ -32,5 +32,5 @@ docker cp node-dc-3:/src c:/node-was/src3
 
 * env(환경변수)는 소스코드에 저장하면 보안상의 위험이 있으므로 각각의 시스템에서 설정하며, 어떤 변수를 사용하는지만 기술해둔다.
 NODE_ENV : 노드수행 환경 (값이 없으면 localhost모드, 운영에선 production 으로 사용)
-CASTNETS_DBUSER : 접속할 mysql DB계정
-CASTNETS_DBPASS : 접속할 DB계정의 비번
+CASTNETS_DBUSER : 접속할 mysql DB계정castnetsmysqler
+CASTNETS_DBPASS : 접속할 DB계정의 비번c@stnet&mysql1@#

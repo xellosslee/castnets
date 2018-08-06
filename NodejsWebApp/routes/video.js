@@ -7,6 +7,7 @@
     const self = this;
     self.rootdir = __dirname;
     require('../modules/common.js');
+    var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     /** 디렉토리 생성
      * @param {any} dirPath 전체경로를 전달
      */
@@ -87,31 +88,27 @@
      * res : 해당 위치 주변의 영상 목록
      * GET 방식으로 전송하는것을 추천
      */
-    route.get('/list', function (req, res) {
-        var params;
-        params.slat = req.query.slat === undefined ? 37.394655 : req.query.slat;
-        params.slng = req.query.slng === undefined ? 127.1098378 : req.query.slng;
-        params.elat = req.query.elat === undefined ? 37.394655 : req.query.elat;
-        params.elng = req.query.elng === undefined ? 127.1098378 : req.query.elng;
-
+    route.get('/list/:slat/:slng/:elat/:elng', function (req, res) {
         var conn = require('../modules/mysql.js')();
         var list = [];
         try {
-            conn.query('CALL videolist(' + params.slat + ',' + params.slng + ',' + params.elat + ',' + params.elng + ')', function (err, rows) {
+            conn.query('CALL videolist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', function (err, rows) {
                 if (err) throw err;
 
                 console.log(rows);
                 rows.forEach(function (row) {
                     list.push(row);
                 });
+                list.resultcode = resultcode.Success;
+                res.json(JSON.stringify(list));
             });
             conn.close();
         }
         catch (e) {
             conn.close();
+            list.resultcode = resultcode.Failed;
+            res.json(JSON.stringify(list));
         }
-        list.resultcode = resultcode.SUCCESS;
-        res.json(JSON.stringify(list));
     });
     /* req : html5에서는 플레이어에서 각종 정보를 보내줌
      * res : 해당 영상 내용을 리턴

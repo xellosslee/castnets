@@ -32,7 +32,7 @@
                         + pass + '\',\'' + salt + '\',' + req.body.loginpath + ', @token);'
                         + 'SELECT @token;';
 
-                    console.log(text);
+                    //console.log(text);
                     conn.query(text, function (err, rows) {
                         if (err) {
                             res.json('{"resultcode":' + resultcode.Failed + ', "token":""}');
@@ -132,13 +132,13 @@
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.json('{"resultcode":' + resultcode.Failed + ', "token":""}');
+                    res.json('{"resultcode":' + resultcode.Failed + '}');
                     conn.close();
                     throw err;
                 }
                 else {
                     if (rows[0].length <= 0) {
-                        res.json('{"resultcode":' + resultcode.InvalidToken + ', "token":""}');
+                        res.json('{"resultcode":' + resultcode.InvalidToken + '}');
                         conn.close();
                         return;
                     }
