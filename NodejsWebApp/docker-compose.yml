@@ -24,7 +24,7 @@ services:
       - 3000
     volumes:
       - ./:/src
-	  - ./node_modules:/src/node_modules
+      - ./node_modules:/src/node_modules
 
   was-2:
     container_name: node-dc-2
@@ -33,7 +33,7 @@ services:
       - 3000
     volumes:
       - ./:/src
-	  - ./node_modules:/src/node_modules
+      - ./node_modules:/src/node_modules
 
   was-3:
     container_name: node-dc-3
@@ -42,4 +42,4 @@ services:
       - 3000
     volumes:
       - ./:/src
-	  - ./node_modules:/src/node_modules
+      - ./node_modules:/src/node_modules
