@@ -1,4 +1,8 @@
 ﻿{
-    "FAILED": "1001",
-    "SUCCESS": "1000"
+  "ExpiredToken": "1005",
+  "InvalidToken": "1004",
+  "NotExistsAccount": "1003",
+  "WorngPassword": "1002",
+  "Failed": "1001",
+  "Success": "1000"
 }
