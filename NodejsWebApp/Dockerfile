@@ -1,6 +1,6 @@
 ﻿FROM node:10
 COPY package.json /src/package.json
-RUN  cd /src; npm install
+RUN  cd /src;
 COPY . /src
 EXPOSE 3000
 WORKDIR /src
