@@ -15,8 +15,8 @@ docker build --tag nginx ./nginx
 docker run --name nginx-dc -d -p 80:80 nginx
 
 #docker-compose 빌드 및 실행
-docker-compose up --build
 docker-compose down
+docker-compose up --build
 
 nginx로그파일 위치 /var/log/nginx/error.log
 

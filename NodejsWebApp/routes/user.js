@@ -35,13 +35,13 @@
                     //console.log(text);
                     conn.query(text, function (err, rows) {
                         if (err) {
-                            res.json('{"resultcode":' + resultcode.Failed + ', "token":""}');
+                            res.json({ resultcode: resultcode.Failed, token: "" });
                             conn.close();
                             throw err;
                         }
                         else {
                             console.log('Issued access token : ' + rows[2][0]['@token']);
-                            res.json('{"resultcode":' + resultcode.Success + ', "token":"' + rows[2][0]['@token'] + '"}');
+                            res.json({ resultcode: resultcode.Success, token: rows[2][0]['@token'] });
                             conn.close();
                         }
                     });
@@ -49,7 +49,7 @@
             });
         }
         catch (e) {
-            res.json('{"resultcode":' + resultcode.Failed + '}');
+            res.json({ resultcode: resultcode.Failed, token: "" });
             conn.close();
             throw err;
         }
@@ -68,13 +68,13 @@
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.json('{"resultcode":' + resultcode.Failed + ', "token":""}');
+                    res.json({ resultcode: resultcode.Failed, token: "" });
                     conn.close();
                     throw err;
                 }
                 else {
                     if (rows[0].length <= 0) {
-                        res.json('{"resultcode":' + resultcode.NotExistsAccount + ', "token":""}');
+                        res.json({ resultcode: resultcode.NotExistsAccount, token: "" });
                         conn.close();
                         return;
                     }
@@ -92,19 +92,19 @@
                         console.log(sql);
                         conn.query(sql, function (err, rows) {
                             if (err) {
-                                res.json('{"resultcode":' + resultcode.Failed + ', "token":""}');
+                                res.json({ resultcode: resultcode.NotExistsAccount, token: "" });
                                 conn.close();
                                 throw err;
                             }
                             else {
                                 if (rows[2][0]['@token'] == null) {
                                     console.log('Password missmatch');
-                                    res.json('{"resultcode":' + resultcode.WorngPassword + ', "token":""}');
+                                    res.json({ resultcode: resultcode.WorngPassword, token: "" });
                                     conn.close();
                                     return;
                                 }
                                 console.log('Issued access token : ' + rows[2][0]['@token']);
-                                res.json('{"resultcode":' + resultcode.Success + ', "token":"' + rows[2][0]['@token'] + '"}');
+                                res.json({ resultcode: resultcode.Success, token: rows[2][0]['@token'] });
                                 conn.close();
                             }
                         });
@@ -113,7 +113,7 @@
             });
         }
         catch (e) {
-            res.json('{"resultcode":' + resultcode.Failed + '}');
+            res.json({ resultcode: resultcode.Failed, token: "" });
             conn.close();
             throw err;
         }
@@ -132,29 +132,29 @@
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.json('{"resultcode":' + resultcode.Failed + '}');
+                    res.json({ resultcode: resultcode.Failed });
                     conn.close();
                     throw err;
                 }
                 else {
                     if (rows[0].length <= 0) {
-                        res.json('{"resultcode":' + resultcode.InvalidToken + '}');
+                        res.json({ resultcode: resultcode.InvalidToken });
                         conn.close();
                         return;
                     }
                     console.log('User alive check : ' + rows[0][0]['userid'] + '_' + rows[0][0]['alive']);
                     if (rows[0][0]['alive'] == 0) {
-                        res.json('{"resultcode":' + resultcode.ExpiredToken + '}');
+                        res.json({ resultcode: resultcode.ExpiredToken });
                     }
                     else {
-                        res.json('{"resultcode":' + resultcode.Success + '}');
+                        res.json({ resultcode: resultcode.Success });
                     }
                     conn.close();
                 }
             });
         }
         catch (e) {
-            res.json('{"resultcode":' + resultcode.Failed + '}');
+            res.json({ resultcode: resultcode.Failed });
             conn.close();
             throw err;
         }

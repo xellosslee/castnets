@@ -84,8 +84,8 @@
         //console.log(req.file);
         res.send('Uploaded : ' + req.file.filename);
     });
-    /* req : 현재 표시되는 지도의 위경도와 높이 lat, lon, zoom
-     * res : 해당 위치 주변의 영상 목록
+    /* req : 현재 표시되는 지도의 시작지점(좌측 위)과 끝지점(우측 아래)의 위경도
+     * res : 해당 범위의 영상 목록 & resultcode
      * GET 방식으로 전송하는것을 추천
      */
     route.get('/list/:slat/:slng/:elat/:elng', function (req, res) {
@@ -96,18 +96,23 @@
                 if (err) throw err;
 
                 console.log(rows);
-                rows.forEach(function (row) {
+                if (rows[0].length > 0) {
+                    rows[0].forEach(function (row) {
                     list.push(row);
-                });
-                list.resultcode = resultcode.Success;
-                res.json(JSON.stringify(list));
+                    });
+                }
+                var result = {};
+                result.resultcode = resultcode.Success;
+                result.list = list;
+                res.json(result);
+                conn.close();
             });
-            conn.close();
         }
         catch (e) {
+            var result = {};
+            result.resultcode = resultcode.Failed;
+            res.json(result);
             conn.close();
-            list.resultcode = resultcode.Failed;
-            res.json(JSON.stringify(list));
         }
     });
     /* req : html5에서는 플레이어에서 각종 정보를 보내줌
