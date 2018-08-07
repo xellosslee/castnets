@@ -18,7 +18,7 @@ services:
       - was-3
     restart: always
     volumnes:
-      - ./ssl:/etc/nginx/ssl
+      - /src/ssl:/etc/nginx/ssl
 
   was-1:
     container_name: node-dc-1
@@ -28,6 +28,7 @@ services:
       - 8443
     volumes:
       - ./:/src
+      - /src/ssl:/src/ssl
       - ./node_modules:/src/node_modules
 
   was-2:
@@ -38,6 +39,7 @@ services:
       - 8443
     volumes:
       - ./:/src
+      - /src/ssl:/src/ssl
       - ./node_modules:/src/node_modules
 
   was-3:
@@ -48,4 +50,5 @@ services:
       - 8443
     volumes:
       - ./:/src
+      - /src/ssl:/src/ssl
       - ./node_modules:/src/node_modules
