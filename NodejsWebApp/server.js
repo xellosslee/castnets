@@ -10,6 +10,8 @@ const session = require('express-session');
 const uuid = require('uuid');
 require('./modules/common.js');
 var bodyParser = require('body-parser');
+const fs = require('fs');
+const https = require('https');
 
 var app = express();
 var uuidtemp = uuid.v4();
@@ -21,6 +23,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
+
+var options = {
+    key: fs.readFileSync(path.resolve(__dirname, 'ssl/private.key')),
+    cert: fs.readFileSync(path.resolve(__dirname, 'ssl/certificate.crt')),
+    ca: fs.readFileSync(path.resolve(__dirname, 'ssl/ca_bundle.crt'))
+};
+var PORT = 8443;
+var sslserver = https.createServer(options, app);
+sslserver.listen(PORT, function () {
+    console.log(`server at port ${PORT}`);
+});
 
 // 기본 index.html 전달하는 코드...테스트용도로만 쓰고 실무에선 쓸일 없어보임
 //var staticPath = path.join(__dirname, '/');
