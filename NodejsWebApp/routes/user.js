@@ -55,7 +55,7 @@
         }
     });
     /** 유저로그인
-     * req : phone, email(둘중 하나만 보내면 됨), pass, loginpath(구글:90101 애플:90102)
+     * req : loginid(이메일 혹은 전화번호), pass, loginpath(구글:90101 애플:90102)
      * res : resultcode 결과값과 token값 json으로 리턴
      */
     route.post('/login', function (req, res, next) {
@@ -64,7 +64,7 @@
         var conn = require('../modules/mysql.js')();
         try {
             var pass, salt;
-            var sql = 'CALL usergetsalt(\'' + (req.body.phone === undefined ? req.body.email : req.body.phone) + '\');';
+            var sql = 'CALL usergetsalt(\'' + req.body.loginid + '\');';
 
             conn.query(sql, function (err, rows) {
                 if (err) {
@@ -85,7 +85,7 @@
                         pass = key.toString('base64');
 
                         var sql = 'SET @token = \'\';'
-                            + 'CALL userlogin(\'' + (req.body.phone === undefined ? req.body.email : req.body.phone) + '\',\''
+                            + 'CALL userlogin(\'' + req.body.loginid + '\',\''
                             + pass + '\',' + req.body.loginpath + ', @token);'
                             + 'SELECT @token;';
 

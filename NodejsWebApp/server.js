@@ -54,6 +54,10 @@ app.get('/', function (req, res) {
     res.render('index', { "uuid": uuidtemp });
 });
 
+app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ', function (req, res) {
+    res.sendFile('Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
+});
+
 var server = app.listen(app.get('port'), function () {
     console.log('[' + uuidtemp + ']');
     console.log('listening : ' + app.get('port'));

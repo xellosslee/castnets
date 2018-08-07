@@ -24,7 +24,8 @@
             margin: 0;
             padding: 0;
         }
-        #videoPlayer {
+        video {
+            height: 100%;
             width: 100%;
         }
     </style>
@@ -54,8 +55,11 @@
         </div>
 
         <div id="video">
-            <video id="videoPlayer" controls>
-                <source src="http://localhost:1337/video/stream" type="video/mp4">
+            <!--<video id="videoPlayer" controls>
+                <source src="/video/stream" type="video/mp4">
+            </video>-->
+            <video id="videoPlayer2" controls>
+                <source src="/video/stream2" type="video/mp4">
             </video>
         </div>
 
