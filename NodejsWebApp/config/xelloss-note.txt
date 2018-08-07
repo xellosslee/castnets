@@ -34,3 +34,24 @@ docker cp node-dc-3:/src c:/node-was/src3
 NODE_ENV : 노드수행 환경 (값이 없으면 localhost모드, 운영에선 production 으로 사용)
 CASTNETS_DBUSER : 접속할 mysql DB계정castnetsmysqler
 CASTNETS_DBPASS : 접속할 DB계정의 비번c@stnet&mysql1@#
+
+
+* 서버별 설치
+[WAS]
+yum install nodejs
+yum install docker
+yum install docker-compose
+service docker start
+
+mkdir /src
+cd /src
+yum install git
+
+cd /src/Castnets/NodejsWebApp
+docker build --tag node-was .
+
+
+[DB]
+yum install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+yum install mysql-community-release
+

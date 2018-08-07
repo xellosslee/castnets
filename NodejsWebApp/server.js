@@ -55,7 +55,8 @@ app.get('/', function (req, res) {
 });
 
 app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ', function (req, res) {
-    res.sendFile('Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
+    //res.sendFile('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
+    res.download('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
 });
 
 var server = app.listen(app.get('port'), function () {

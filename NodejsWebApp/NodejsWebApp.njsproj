@@ -82,8 +82,6 @@
     </Content>
     <Content Include="uploads\profile\images.jpg" />
     <Content Include="uploads\video\sample01.mp4" />
-    <Content Include="uploads\video\sample02.mp4" />
-    <Content Include="uploads\video\sample03.mp4" />
     <Content Include="views\index.ejs">
       <SubType>Code</SubType>
     </Content>
