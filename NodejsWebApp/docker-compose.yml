@@ -17,7 +17,7 @@ services:
       - was-2
       - was-3
     restart: always
-    volumnes:
+    volumes:
       - /src/ssl:/etc/nginx/ssl
 
   was-1:
