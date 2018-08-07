@@ -77,12 +77,36 @@
         }
     });
     /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다.
-     * req : post데이터에 file과 userno를 담아서 전송
-     * res : 업로드 된 결과코드
+     * req : post데이터에 files명칭의 파일배열과 token을 담아서 전송
+     * res : 업로드후 결과코드 및 업로드 된 객체 정보
      */
-    route.post('/upload', upload.single('file'), function (req, res) {
-        //console.log(req.file);
-        res.send('Uploaded : ' + req.file.filename);
+    route.post('/upload', upload.array('files'), function (req, res) {
+        //console.log(req.files);
+        var conn = require('../modules/mysql.js')();
+        try {
+            req.body.token
+            conn.query('CALL fileadd(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', function (err, rows) {
+                if (err) throw err;
+
+                console.log(rows);
+                if (rows[0].length > 0) {
+                    rows[0].forEach(function (row) {
+                        list.push(row);
+                    });
+                }
+                var result = {};
+                result.resultcode = resultcode.Success;
+                result.list = list;
+                res.json(result);
+                conn.close();
+            });
+        }
+        catch (e) {
+            var result = {};
+            result.resultcode = resultcode.Failed;
+            res.json(result);
+            conn.close();
+        }
     });
     /* req : 현재 표시되는 지도의 시작지점(좌측 위)과 끝지점(우측 아래)의 위경도
      * res : 해당 범위의 영상 목록 & resultcode
@@ -131,7 +155,8 @@
             var start = parseInt(partialstart, 10);
             var end = partialend ? parseInt(partialend, 10) : total - 1;
             var chunksize = (end - start) + 1;
-            console.log('RANGE: ' + start + ' - ' + end + ' = ' + chunksize);
+            console.log('reqRange : ' + req.headers.range);
+            console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize);
 
             var file = fs.createReadStream(path, { start: start, end: end });
             res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
@@ -142,5 +167,5 @@
             fs.createReadStream(path).pipe(res);
         }
     });
-return route;
+    return route;
 };

@@ -67,9 +67,15 @@ app.get('/', function (req, res) {
     res.render('index', { "uuid": uuidtemp });
 });
 
+// ssl적용을 하기 위한 코드
 app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ', function (req, res) {
-    //res.sendFile('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
-    res.download('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ');
+    res.download('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ'); // demo.castnets.co.kr
+});
+app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM', function (req, res) {
+    res.download('./fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM'); // www.castnets.co.kr
+});
+app.get('/.well-known/acme-challenge/fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI', function (req, res) {
+    res.download('./fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI'); // castnets.co.kr
 });
 
 var server = app.listen(app.get('port'), function () {
