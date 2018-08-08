@@ -67,9 +67,9 @@ module.exports = function (app, path) {
     });
     var upload = multer({ storage: storage });
     /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다. 파일명은 최대 200자까지만 가능.
-     * array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함
-     * req : post데이터에 files명칭의 파일배열과 token, registlocation을 담아서 전송
-     * res : 업로드후 결과코드 및 업로드 된 객체 정보
+     * ### array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함 * 해당 post는 별도로 구현해야 함
+     * req : post데이터에 file명칭의 파일과 token, registlocation, filetype: video or image or profile, lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), videotype(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
+     * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
      */
     route.post('/upload', upload.single('file'), function (req, res) {
         console.log(req.file);
@@ -87,18 +87,48 @@ module.exports = function (app, path) {
                 }
                 console.log(rows);
 
-                conn.query("CALL fileadd(@userid, '" + req.file.destination.replace('/\\\\/g', '/') + "', '" + req.file.filename + "', '" + req.file.originalname + "', " + req.body.registlocation + ");", function (err, rows) {
-                    if (err) {
+                conn.beginTransaction(function () {
+                    conn.query("SET @fileid = 0;CALL fileadd(@userid,'" + req.file.destination.replace('/\\/g', '/').replace('/\/\//g', '/') + "','" + req.file.filename + "','" + req.file.originalname + "'," + req.body.registlocation + ",@fileid); SELECT @fileid", function (err, rows) {
+                        if (err) {
+                            res.json(result);
+                            conn.close();
+                            throw err;
+                        }
+                        console.log(rows);
+                        if (rows[2][0]['@fileid'] > 0) {
+                            //result.resultcode = resultcode.Success;
+                            if (req.body.filetype === "video") {
+                                conn.query("CALL addvideo(@userid,@fileid," + req.body.lan + "," + req.body.lng + ",'" + req.body.comment + "'," + req.body.videotype + "," + req.body.capturedate + ")", function (err, rows) {
+                                    if (rows.affectedRows > 0) {
+                                        result.resultcode = resultcode.Success;
+                                    }
+                                    else {
+                                        fs.unlink(req.file.destination.replace('/\\/g', '/').replace('/\/\//g', '/') + '/' + req.file.filename, function (err) { // 삭제처리가 성공하든 말든 진행
+                                            if (err)
+                                                throw err;
+                                            console.log('successfully deleted : ' + req.file.destination.replace('/\\/g', '/').replace('/\/\//g', '/') + '/' + req.file.filename);
+                                        });
+                                    }
+                                });
+                            }
+                            else if (req.body.filetype === "profile") {
+                                conn.query("CALL addprofile(@userid,@fileid)", function (err, rows) {
+                                    if (rows.affectedRows > 0) {
+                                        result.resultcode = resultcode.Success;
+                                    }
+                                    else {
+                                        fs.unlink(req.file.destination.replace('/\\/g', '/').replace('/\/\//g', '/') + '/' + req.file.filename, function (err) { // 삭제처리가 성공하든 말든 진행
+                                            if (err)
+                                                throw err;
+                                            console.log('successfully deleted : ' + req.file.destination.replace('/\\/g', '/').replace('/\/\//g', '/') + '/' + req.file.filename);
+                                        });
+                                    }
+                                });
+                            }
+                        }
                         res.json(result);
                         conn.close();
-                        throw err;
-                    }
-                    console.log(rows);
-                    if (rows.affectedRows > 0) {
-                        result.resultcode = resultcode.Success;
-                    }
-                    res.json(result);
-                    conn.close();
+                    });
                 });
             });
         }

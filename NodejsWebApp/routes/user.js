@@ -12,14 +12,29 @@
     //    req.redis = redis;
     //    next();
     //});
+
+    route.get('*', function (req, res, next) {
+        if (req.protocol !== 'https') {
+            if (req.hostname === "localhost") {
+                res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
+            }
+            else {
+                res.redirect('https://' + req.hostname + req.originalUrl);
+            }
+        }
+        else
+            next();
+    });
     /** 회원가입
      * req : phone, email(둘중 하나만 보내면 됨), pass, loginpath(구글:90101 애플:90102)
      * res : resultcode 결과값과 token값 json으로 리턴
      */ 
     route.post('/join', function (req, res, next) {
         console.log(req.body);
-
         var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
+        result.token = "";
         try {
             var pass, salt;
             crypto.randomBytes(64, (err, buf) => {
@@ -36,13 +51,15 @@
                     //console.log(text);
                     conn.query(text, function (err, rows) {
                         if (err) {
-                            res.json({ resultcode: resultcode.Failed, token: "" });
+                            res.json(result);
                             conn.close();
                             throw err;
                         }
                         else {
                             console.log('Issued access token : ' + rows[2][0]['@token']);
-                            res.json({ resultcode: resultcode.Success, token: rows[2][0]['@token'] });
+                            result.resultcode = resultcode.Success;
+                            result.token = rows[2][0]['@token'];
+                            res.json(result);
                             conn.close();
                         }
                     });
@@ -50,7 +67,7 @@
             });
         }
         catch (e) {
-            res.json({ resultcode: resultcode.Failed, token: "" });
+            res.json(result);
             conn.close();
             throw err;
         }
@@ -63,19 +80,23 @@
         console.log(req.body);
 
         var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
+        result.token = "";
         try {
             var pass, salt;
             var sql = 'CALL usergetsalt(\'' + req.body.loginid + '\');';
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.json({ resultcode: resultcode.Failed, token: "" });
+                    res.json(result);
                     conn.close();
                     throw err;
                 }
                 else {
                     if (rows[0].length <= 0) {
-                        res.json({ resultcode: resultcode.NotExistsAccount, token: "" });
+                        result.resultcode = resultcode.NotExistsAccount;
+                        res.json(result);
                         conn.close();
                         return;
                     }
@@ -93,19 +114,23 @@
                         console.log(sql);
                         conn.query(sql, function (err, rows) {
                             if (err) {
-                                res.json({ resultcode: resultcode.NotExistsAccount, token: "" });
+                                result.resultcode = resultcode.NotExistsAccount;
+                                res.json(result);
                                 conn.close();
                                 throw err;
                             }
                             else {
                                 if (rows[2][0]['@token'] == null) {
                                     console.log('Password missmatch');
-                                    res.json({ resultcode: resultcode.WorngPassword, token: "" });
+                                    result.resultcode = resultcode.WorngPassword;
+                                    res.json(result);
                                     conn.close();
                                     return;
                                 }
                                 console.log('Issued access token : ' + rows[2][0]['@token']);
-                                res.json({ resultcode: resultcode.Success, token: rows[2][0]['@token'] });
+                                result.resultcode = resultcode.Success;
+                                result.token = rows[2][0]['@token'];
+                                res.json(result);
                                 conn.close();
                             }
                         });
@@ -114,7 +139,7 @@
             });
         }
         catch (e) {
-            res.json({ resultcode: resultcode.Failed, token: "" });
+            res.json(result);
             conn.close();
             throw err;
         }
@@ -127,35 +152,38 @@
         console.log(req.body);
 
         var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
         try {
             var pass, salt;
             var sql = 'CALL usersessioncheck(\'' + req.body.token + '\');';
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.json({ resultcode: resultcode.Failed });
+                    res.json(result);
                     conn.close();
                     throw err;
                 }
                 else {
                     if (rows[0].length <= 0) {
-                        res.json({ resultcode: resultcode.InvalidToken });
-                        conn.close();
-                        return;
-                    }
-                    console.log('User alive check : ' + rows[0][0]['userid'] + '_' + rows[0][0]['alive']);
-                    if (rows[0][0]['alive'] == 0) {
-                        res.json({ resultcode: resultcode.ExpiredToken });
+                        result.resultcode = resultcode.InvalidToken;
                     }
                     else {
-                        res.json({ resultcode: resultcode.Success });
+                        console.log('User alive check : ' + rows[0][0]['userid'] + '_' + rows[0][0]['alive']);
+                        if (rows[0][0]['alive'] == 0) {
+                            result.resultcode = resultcode.ExpiredToken;
+                        }
+                        else {
+                            result.resultcode = resultcode.Success;
+                        }
                     }
+                    res.json(result);
                     conn.close();
                 }
             });
         }
         catch (e) {
-            res.json({ resultcode: resultcode.Failed });
+            res.json(result);
             conn.close();
             throw err;
         }
@@ -179,13 +207,11 @@
             //console.log(value);
         });
     });
-    /** 프로필 보기
+    /** 유저프로필 보기
      * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달
      */
     route.get('/profile/:name', function (req, res, next) {
         var key = req.params.name;
-
-
     });
     // catch 404 and forward to error handler
     route.use(function (req, res, next) {

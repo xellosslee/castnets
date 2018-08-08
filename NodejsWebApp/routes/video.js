@@ -10,32 +10,31 @@
      */
     route.get('/list/:slat/:slng/:elat/:elng', function (req, res) {
         var conn = require('../modules/mysql.js')();
-        var list = [];
+        var result = {};
+        result.resultcode = resultcode.Failed;
         try {
             conn.query('CALL videolist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', function (err, rows) {
                 if (err) throw err;
 
                 console.log(rows);
+                result.list = [];
                 if (rows[0].length > 0) {
                     rows[0].forEach(function (row) {
                     list.push(row);
                     });
                 }
-                var result = {};
                 result.resultcode = resultcode.Success;
-                result.list = list;
                 res.json(result);
                 conn.close();
             });
         }
         catch (e) {
-            var result = {};
-            result.resultcode = resultcode.Failed;
             res.json(result);
             conn.close();
         }
     });
-    /* req : html5에서는 플레이어에서 각종 정보를 보내줌
+    /**비디오 스트리밍(http로 호출 필수)
+     * req : html5에서는 플레이어에서 각종 정보를 보내줌
      * res : 해당 영상 내용을 리턴
      */
     route.get('/stream', function (req, res) {

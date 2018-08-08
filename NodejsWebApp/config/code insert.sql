@@ -21,6 +21,12 @@ INSERT INTO `code` VALUES (60100, 60000, '등록위치', '미설정');
 INSERT INTO `code` VALUES (60101, 60100, '등록위치', '안드로이드');
 INSERT INTO `code` VALUES (60102, 60100, '등록위치', '애플');
 
+INSERT INTO `code` VALUES (30000, NULL, '영상정보', '영상정보');
+INSERT INTO `code` VALUES (30100, NULL, '영상종류', '미설정');
+INSERT INTO `code` VALUES (30101, NULL, '영상종류', '동물');
+INSERT INTO `code` VALUES (30102, NULL, '영상종류', '음식');
+INSERT INTO `code` VALUES (30103, NULL, '영상종류', '여행');
+
 -- 관리자(이근석) 계정 생성
 INSERT INTO userinfo VALUES (NULL, 'xelloss@gmail.com', 'xelloss', NULL, 10101, 10204, NULL, NULL, CURRENT_TIMESTAMP, NULL);
 
@@ -42,3 +48,5 @@ SHOW VARIABLES LIKE 'c%';
 
 DELETE FROM filemap;
 ALTER TABLE filemap AUTO_INCREMENT=1;
+DELETE FROM video;
+ALTER TABLE video AUTO_INCREMENT=1;
