@@ -5,7 +5,7 @@
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();
     /* req : 현재 표시되는 지도의 시작지점(좌측 위)과 끝지점(우측 아래)의 위경도
-     * res : 해당 범위의 영상 목록 & resultcode
+     * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
      * GET 방식으로 전송하는것을 추천
      */
     route.get('/list/:slat/:slng/:elat/:elng', function (req, res) {
@@ -20,7 +20,7 @@
                 result.list = [];
                 if (rows[0].length > 0) {
                     rows[0].forEach(function (row) {
-                    list.push(row);
+                        list.push(row);
                     });
                 }
                 result.resultcode = resultcode.Success;

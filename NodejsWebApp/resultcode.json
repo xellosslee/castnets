@@ -1,4 +1,7 @@
 ﻿{
+  "CertNumNotMatch": "1008",
+  "AlreadyExistsPhone": "1007",
+  "TooFastSmsSent": "1006",
   "ExpiredToken": "1005",
   "InvalidToken": "1004",
   "NotExistsAccount": "1003",
