@@ -55,3 +55,7 @@ docker build --tag node-was .
 yum install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
 yum install mysql-community-release
 
+#mysql 기본 캐릭터셋 변경 필수 [mysqld] 아래에
+character-set-server = utf8
+collation-server = utf8_general_ci
+skip-character-set-client-handshake

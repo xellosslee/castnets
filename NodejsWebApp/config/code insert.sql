@@ -16,6 +16,11 @@ INSERT INTO `code` VALUES (90100, 90000, '접속경로', '미설정');
 INSERT INTO `code` VALUES (90101, 90100, '접속경로', '안드로이드');
 INSERT INTO `code` VALUES (90102, 90100, '접속경로', '애플');
 
+INSERT INTO `code` VALUES (60000, NULL, '파일정보', '파일정보');
+INSERT INTO `code` VALUES (60100, 60000, '등록위치', '미설정');
+INSERT INTO `code` VALUES (60101, 60100, '등록위치', '안드로이드');
+INSERT INTO `code` VALUES (60102, 60100, '등록위치', '애플');
+
 -- 관리자(이근석) 계정 생성
 INSERT INTO userinfo VALUES (NULL, 'xelloss@gmail.com', 'xelloss', NULL, 10101, 10204, NULL, NULL, CURRENT_TIMESTAMP, NULL);
 
@@ -24,5 +29,16 @@ SET @a = '';
 CALL userlogin('xelloss@gmail.com', 'k4NLEHm2R+abZ28HJICgt/IEsIB5rrkXb7NfCebY9+pUachbFxC0cNfc0TVNA1q/KLkN6BwByAN7FwB5Wwh/nA==', 90101, @a);
 SELECT @a;
 
-CALL usersessioncheck('B6325A39E2802F41EBDE43D776241A5B');
+CALL usersessioncheck('E0315699136C0BCFC6A3DB786E0D77AF');
 
+CALL usergetsalt('01011112227');
+
+SELECT HEX(AES_ENCRYPT(connectid,logindate)) FROM connectlog
+
+SET @userid = UseridFromToken('E0315699136C0BCFC6A3DB786E0D77AF');
+SELECT @userid;
+
+SHOW VARIABLES LIKE 'c%';
+
+DELETE FROM filemap;
+ALTER TABLE filemap AUTO_INCREMENT=1;

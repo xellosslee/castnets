@@ -47,6 +47,10 @@
     <Compile Include="nginx\Dockerfile">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="routes\file.js" />
+    <Compile Include="routes\routeTemp.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="routes\user.js">
       <SubType>Code</SubType>
     </Compile>
@@ -77,7 +81,7 @@
     <Content Include="tsconfig.json">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="uploads\profile\images.jpg" />
+    <Content Include="uploads\image\images.jpg" />
     <Content Include="uploads\video\sample01.mp4" />
     <Content Include="views\index.ejs">
       <SubType>Code</SubType>
@@ -102,7 +106,7 @@
     <Folder Include="nginx\" />
     <Folder Include="routes\" />
     <Folder Include="uploads\" />
-    <Folder Include="uploads\profile\" />
+    <Folder Include="uploads\image\" />
     <Folder Include="uploads\video\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->

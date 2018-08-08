@@ -11,29 +11,21 @@ const uuid = require('uuid');
 require('./modules/common.js');
 var bodyParser = require('body-parser');
 const fs = require('fs');
+const http = require('http');
 const https = require('https');
 
 var app = express();
 var uuidtemp = uuid.v4();
 
+var fileRouter = require('./routes/file.js')(app, path);
 var userRouter = require('./routes/user.js')(app);
-var videoRouter = require('./routes/video.js')(app, path);
+var videoRouter = require('./routes/video.js')(app);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use('/file', fileRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
-
-var options = {
-    key: fs.readFileSync(path.resolve(__dirname, 'ssl/private.key')),
-    cert: fs.readFileSync(path.resolve(__dirname, 'ssl/certificate.crt')),
-    ca: fs.readFileSync(path.resolve(__dirname, 'ssl/ca_bundle.crt'))
-};
-var PORT = 8443;
-var sslserver = https.createServer(options, app);
-sslserver.listen(PORT, function () {
-    console.log(`server at port ${PORT}`);
-});
 
 // 기본 index.html 전달하는 코드...테스트용도로만 쓰고 실무에선 쓸일 없어보임
 //var staticPath = path.join(__dirname, '/');
@@ -55,6 +47,16 @@ function logErrors(err, req, res, next) {
     next(err);
 }
 
+var options = {
+    key: fs.readFileSync(path.resolve(__dirname, './ssl/private.key')),
+    cert: fs.readFileSync(path.resolve(__dirname, './ssl/certificate.crt')),
+    ca: fs.readFileSync(path.resolve(__dirname, './ssl/ca_bundle.crt'))
+};
+var PORT = 8443;
+var https_server = https.createServer(options, app);
+https_server.listen(PORT, function () {
+    console.log(`server at port ${PORT}`);
+});
 // Allows you to set port in the project properties.
 app.set('port', 3000);
 
@@ -77,7 +79,6 @@ app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM
 app.get('/.well-known/acme-challenge/fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI', function (req, res) {
     res.download('./fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI'); // castnets.co.kr
 });
-
 var server = app.listen(app.get('port'), function () {
     console.log('[' + uuidtemp + ']');
     console.log('listening : ' + app.get('port'));

@@ -49,9 +49,10 @@
 
         <div id="upload">
             파일업로드
-            <form action="video/upload" method="post" enctype="multipart/form-data">
-                <input type="text" name="userno" />
-                <input type="file" name="files" multiple="multiple" />
+            <form action="/file/upload" method="post" enctype="multipart/form-data">
+                <input type="text" name="token" value="E0315699136C0BCFC6A3DB786E0D77AF" />
+                <input type="hidden" name="registlocation" value="60103" />
+                <input type="file" name="file" />
                 <input type="submit" />
             </form>
         </div>

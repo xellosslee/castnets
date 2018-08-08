@@ -1,9 +1,10 @@
-﻿module.exports = function (app, conn) {
+﻿module.exports = function (app) {
     const express = require('express');
-    const crypto = require('crypto-browserify');
-    var route = express.Router();
+    require('../modules/common.js');
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
+    const crypto = require('crypto-browserify');
+    var route = express.Router();
     // redis 모듈사용
     //var Redis = require('ioredis');
     //var redis = new Redis(6379, '127.0.0.1');

@@ -7,6 +7,7 @@
         user:'castnetsmysqler',
         password:'c@stnet&mysql1@#',
         database: 'castnets',
+        charset: 'utf8',
         multipleStatements: true
     });
     /** 종료시 반드시 close해야함
