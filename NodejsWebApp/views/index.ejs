@@ -61,7 +61,7 @@
                 <input type="submit" />
             </form>
             프로필업로드
-            <form action="http://demo.castnets.co.kr/file/upload" method="post" enctype="multipart/form-data">
+            <form action="/file/upload" method="post" enctype="multipart/form-data">
                 <input type="text" name="token" value="E0315699136C0BCFC6A3DB786E0D77AF" />
                 <input type="hidden" name="registlocation" value="60103" />
                 <input type="hidden" name="filetype" value="60202" />
@@ -69,7 +69,7 @@
                 <input type="submit" />
             </form>
             프로필배경업로드
-            <form action="http://demo.castnets.co.kr/file/upload" method="post" enctype="multipart/form-data">
+            <form action="/file/upload" method="post" enctype="multipart/form-data">
                 <input type="text" name="token" value="E0315699136C0BCFC6A3DB786E0D77AF" />
                 <input type="hidden" name="registlocation" value="60103" />
                 <input type="hidden" name="filetype" value="60203" />
@@ -80,13 +80,13 @@
 
         <div id="video">
             <video id="videoPlayer" controls>
-                <source src="http://demo.castnets.co.kr/video/stream/9198682" type="video/mp4">
+                <source src="/video/stream/9198682" type="video/mp4">
             </video>
         </div>
 
         <div id="videolist">
             비디오 목록 정보 가져오기(GET방식추천)
-            <form action="video/list" method="GET" enctype="multipart/form-data" target="_blank">
+            <form action="/video/list" method="GET" enctype="multipart/form-data" target="_blank">
                 <input type="text" name="lat" value="37.394655" />
                 <input type="text" name="lon" value="127.1098378" />
                 <input type="text" name="zoom" value="17.17" />
