@@ -158,7 +158,7 @@
                         // 전송기록을 먼저 남김
                         var certnum = Math.floor(Math.random() * (9999 - 1000)) + 1000; // 1000~9999 까지의 임의의 숫자 생성
                         var msg = "캐스트네츠 [" + certnum + "] 인증번호를 입력해주세요.";
-                        var sql = "SET @logid=0;CALL addsmssendlog('" + req.body.phone + "','" + msg + "', @logid);SELECT @logid;";
+                        var sql = "SET @logid=0;CALL smssendlogadd('" + req.body.phone + "','" + msg + "', @logid);SELECT @logid;";
                         conn.query(sql, function (err, rows) {
                             if (err) {
                                 res.json(result);
@@ -169,7 +169,7 @@
                                 if (rows[2][0]['@logid'] > 0) { // 기록이 정상적으로 남았음
                                     // 실제 발송해야함, 일단 발송 성공했다 치고 로그 업데이트
                                     var smsresult = "결과";
-                                    var sql = "CALL updatesmssendlog(@logid, '" + smsresult + "');";
+                                    var sql = "CALL smssendlogupdate(@logid, '" + smsresult + "');";
                                     conn.query(sql, function (err, rows) {
                                         if (err) {
                                             res.json(result);
@@ -204,14 +204,14 @@
      * req : logid(문자발송시 리턴받은 값), certnum 인증숫자
      * res : resultcode 결과값 json으로 리턴
      */
-    route.post('/certsms', function (req, res, next) {
+    route.post('/smscert', function (req, res, next) {
         console.log(req.body);
 
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
         try {
-            var sql = "CALL certsms(" + req.body.logid + "," + req.body.certnum + ");";
+            var sql = "CALL smscert(" + req.body.logid + "," + req.body.certnum + ");";
             conn.query(sql, function (err, rows) {
                 if (err) {
                     res.json(result);
@@ -351,23 +351,6 @@
             conn.close();
             throw err;
         }
-    });
-    /** 프로필 저장
-     */
-    route.post('/addprofile', function (req, res, next) {
-        var key = req.body.name;
-        var value = JSON.stringify(req.body);
-
-        req.redis.set(key, value, function (err, data) {
-            if (err) {
-                console.log(err);
-                res.send("error " + err);
-                return;
-            }
-            req.redis.expire(key, 10);
-            res.json(value);
-            //console.log(value);
-        });
     });
     /** 유저프로필 보기
      * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달

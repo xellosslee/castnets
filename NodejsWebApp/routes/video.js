@@ -34,32 +34,54 @@
         }
     });
     /**비디오 스트리밍(http로 호출 필수)
-     * req : html5에서는 플레이어에서 각종 정보를 보내줌
+     * req : html5에서는 플레이어에서 각종 정보를 보내줌. 앱에서는 특정 videoid 값을 보내야함
      * res : 해당 영상 내용을 리턴
      */
-    route.get('/stream', function (req, res) {
-        var path = 'uploads/video/sample01.mp4';
-        var stat = fs.statSync(path);
-        var total = stat.size;
-        if (req.headers['range']) {
-            var range = req.headers.range;
-            var parts = range.replace(/bytes=/, "").split("-");
-            var partialstart = parts[0];
-            var partialend = parts[1];
+    route.get('/stream/:videoid', function (req, res) {
 
-            var start = parseInt(partialstart, 10);
-            var end = partialend ? parseInt(partialend, 10) : total - 1;
-            var chunksize = (end - start) + 1;
-            console.log('reqRange : ' + req.headers.range);
-            console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize);
+        var conn = require('../modules/mysql.js')();
+        try {
+            var sql = "CALL videostream(" + req.params.videoid + ")";
+            conn.query(sql, function (err, rows) {
+                if (err) {
+                    conn.close();
+                    throw err;
+                }
+                if (rows[0][0]['filepath'] === null || rows[0][0]['filepath'] === '') {
+                    conn.close();
+                    return;
+                }
+                else {
+                    conn.close();
+                    var path = rows[0][0]['filepath'];
+                    var stat = fs.statSync(path);
+                    var total = stat.size;
+                    if (req.headers['range']) {
+                        var range = req.headers.range;
+                        var parts = range.replace(/bytes=/, "").split("-");
+                        var partialstart = parts[0];
+                        var partialend = parts[1];
 
-            var file = fs.createReadStream(path, { start: start, end: end });
-            res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
-            file.pipe(res);
-        } else {
-            console.log('ALL: ' + total);
-            res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
-            fs.createReadStream(path).pipe(res);
+                        var start = parseInt(partialstart, 10);
+                        var end = partialend ? parseInt(partialend, 10) : total - 1;
+                        var chunksize = (end - start) + 1;
+                        console.log('reqRange : ' + req.headers.range);
+                        console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize);
+
+                        var file = fs.createReadStream(path, { start: start, end: end });
+                        res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
+                        file.pipe(res);
+                    } else {
+                        console.log('ALL: ' + total);
+                        res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
+                        fs.createReadStream(path).pipe(res);
+                    }
+                }
+            });
+        }
+        catch (err) {
+            conn.close();
+            throw err;
         }
     });
     return route;
