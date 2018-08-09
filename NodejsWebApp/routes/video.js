@@ -17,13 +17,14 @@
                 if (err) throw err;
 
                 console.log(rows);
-                result.list = [];
+                var list = [];
                 if (rows[0].length > 0) {
                     rows[0].forEach(function (row) {
                         list.push(row);
                     });
                 }
                 result.resultcode = resultcode.Success;
+                result.list = list;
                 res.json(result);
                 conn.close();
             });

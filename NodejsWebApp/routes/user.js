@@ -136,7 +136,7 @@
         var conn = require('../modules/mysql.js')();
         try {
             // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
-            var sql = "CALL checksmssent('" + req.body.phone + "');";
+            var sql = "CALL smssendcheck('" + req.body.phone + "');";
             conn.query(sql, function (err, rows) {
                 if (err) {
                     res.json(result);
@@ -219,7 +219,7 @@
                     throw err;
                 }
                 else {
-                    if (rows[0][0]['cnt'] == 0) {
+                    if (rows.affectedRows == 0) {
                         result.resultcode = resultcode.CertNumNotMatch;
                     }
                     else {
@@ -312,7 +312,7 @@
      * req : token
      * res : resultcode 결과값
      */
-    route.post('/checktoken', function (req, res, next) {
+    route.post('/tokencheck', function (req, res, next) {
         console.log(req.body);
 
         var conn = require('../modules/mysql.js')();
@@ -320,7 +320,7 @@
         result.resultcode = resultcode.Failed;
         try {
             var pass, salt;
-            var sql = "CALL usersessioncheck('" + req.body.token + "');";
+            var sql = "CALL usertokencheck('" + req.body.token + "');";
 
             conn.query(sql, function (err, rows) {
                 if (err) {

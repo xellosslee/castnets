@@ -2,10 +2,8 @@
     const mysql = require('mysql');
     var conn = mysql.createConnection({
         host: 'demo.castnets.co.kr',
-        //user: process.env.CASTNETS_DBUSER,
-        //password: process.env.CASTNETS_DBPASS,
-        user:'castnetsmysqler',
-        password:'c@stnet&mysql1@#',
+        user: process.env.CASTNETS_DBUSER,
+        password: process.env.CASTNETS_DBPASS,
         database: 'castnets',
         charset: 'utf8',
         multipleStatements: true
