@@ -37,25 +37,37 @@ CASTNETS_DBPASS : 접속할 DB계정의 비번c@stnet&mysql1@#
 
 
 * 서버별 설치
+[DB]
+yum -y install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+yum -y install mysql-community-server
+systemctl start mysqld
+systemctl enable mysqld
+mysql
+
+vi /etc/my.cnf
+#mysql 기본 캐릭터셋 변경 필수 [mysqld] 아래에
+character-set-server=utf8
+collation-server=utf8_general_ci
+skip-character-set-client-handshake
+init_connect=SET collation_connection = utf8_general_ci
+init_connect=SET NAMES utf8
+
+service mysqld start
+
 [WAS]
-yum install nodejs
-yum install docker
-yum install docker-compose
+yum -y install nodejs
+yum -y install docker
+yum -y install docker-compose
 service docker start
 
 mkdir /src
 cd /src
-yum install git
+yum -y install git
+git clone https://xelloss-team.visualstudio.com/Castnets/_git/Castnets
 
+usermod -d /src/Castnets/NodejsWebApp root
 cd /src/Castnets/NodejsWebApp
+
 docker build --tag node-was .
-
-
-[DB]
-yum install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
-yum install mysql-community-release
-
-#mysql 기본 캐릭터셋 변경 필수 [mysqld] 아래에
-character-set-server = utf8
-collation-server = utf8_general_ci
-skip-character-set-client-handshake
+npm install
+docker-compose up --build

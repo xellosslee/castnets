@@ -38,7 +38,6 @@
             <li><a href="#app">앱</a></li>
             <li><a href="#upload">업로드</a></li>
             <li><a href="#video">비디오재생</a></li>
-            <li><a href="#videolist">비디오목록</a></li>
             <li><a href="#map">지도</a></li>
         </ul>
 
@@ -82,16 +81,6 @@
             <video id="videoPlayer" controls>
                 <source src="/video/stream/9198682" type="video/mp4">
             </video>
-        </div>
-
-        <div id="videolist">
-            비디오 목록 정보 가져오기(GET방식추천)
-            <form action="/video/list" method="GET" enctype="multipart/form-data" target="_blank">
-                <input type="text" name="lat" value="37.394655" />
-                <input type="text" name="lon" value="127.1098378" />
-                <input type="text" name="zoom" value="17.17" />
-                <input type="submit" />
-            </form>
         </div>
 
         <div id="map">
