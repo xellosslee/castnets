@@ -69,5 +69,6 @@ usermod -d /src/Castnets/NodejsWebApp root
 cd /src/Castnets/NodejsWebApp
 
 docker build --tag node-was .
+npm install -g npm-check-updates
 npm install
 docker-compose up --build
