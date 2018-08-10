@@ -23,7 +23,7 @@ services:
   was-1:
     container_name: node-dc-1
     image: node-was
-	build: ./
+    build: ./
     restart: always
     ports:
       - 3000
@@ -36,7 +36,7 @@ services:
   was-2:
     container_name: node-dc-2
     image: node-was
-	build: ./
+    build: ./
     restart: always
     ports:
       - 3000
@@ -49,7 +49,7 @@ services:
   was-3:
     container_name: node-dc-3
     image: node-was
-	build: ./
+    build: ./
     restart: always
     ports:
       - 3000
