@@ -79,7 +79,7 @@ app.post('/', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    var conn = require('modules/mysql.js')();
+    var conn = require('./modules/mysql.js')();
     var videohtml = '';
     try {
         // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
@@ -91,7 +91,7 @@ app.get('/', function (req, res) {
                 throw err;
             }
             else {
-                if (rows[0].length > 0) {
+                if (rows.length > 0) {
                     videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0][0]['videoid'] + '" type="video/mp4"></video>';
                 }
             }
