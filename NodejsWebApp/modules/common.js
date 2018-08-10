@@ -10,8 +10,8 @@
                 fs.mkdirSync(dirPath);
             }
             catch (e) {
-                mkdirpath(path.dirname(dirPath));
-                mkdirpath(dirPath);
+                common.mkdirpath(path.dirname(dirPath));
+                common.mkdirpath(dirPath);
             }
         }
     };
