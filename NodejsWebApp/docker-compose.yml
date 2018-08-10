@@ -24,7 +24,6 @@ services:
     container_name: node-dc-1
     image: node-was
     build: ./
-    restart: always
     ports:
       - 3000
       - 8443
