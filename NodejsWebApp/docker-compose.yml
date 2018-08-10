@@ -5,6 +5,7 @@ services:
     container_name: nginx-dc
     image: nginx
     build: ./nginx
+    restart: always
     links:
       - was-1:was-1
       - was-2:was-2
@@ -16,17 +17,17 @@ services:
       - was-1
       - was-2
       - was-3
-    restart: always
     volumes:
       - /src/ssl:/etc/nginx/ssl
 
   was-1:
     container_name: node-dc-1
     image: node-was
+	build: ./
+    restart: always
     ports:
       - 3000
       - 8443
-    restart: always
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -35,10 +36,11 @@ services:
   was-2:
     container_name: node-dc-2
     image: node-was
+	build: ./
+    restart: always
     ports:
       - 3000
       - 8443
-    restart: always
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -47,10 +49,11 @@ services:
   was-3:
     container_name: node-dc-3
     image: node-was
+	build: ./
+    restart: always
     ports:
       - 3000
       - 8443
-    restart: always
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
