@@ -9,7 +9,6 @@ services:
     links:
       - was-1:was-1
       - was-2:was-2
-      - was-3:was-3
     ports:
       - 80:80
       - 443:443
@@ -28,7 +27,7 @@ services:
       - 3000
       - 8443
     env_file:
-      - "env_${NODE_ENV}.env"
+      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -43,22 +42,7 @@ services:
       - 3000
       - 8443
     env_file:
-      - "env_${NODE_ENV}.env"
-    volumes:
-      - ./:/src
-      - /src/ssl:/src/ssl
-      - /data:/data
-      - ./node_modules:/src/node_modules
-
-  was-3:
-    container_name: node-dc-3
-    image: node-was
-    build: ./
-    ports:
-      - 3000
-      - 8443
-    env_file:
-      - "env_${NODE_ENV}.env"
+      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
