@@ -1,7 +1,8 @@
 'use strict';
 process.on('uncaughtException', function (err) {
     //예상치 못한 예외 처리
-    console.log('uncaughtException arrival : ' + err);
+    console.log(err.stack);
+    console.log('uncaughtException : ' + err);
 });
 
 const path = require('path');
@@ -78,7 +79,29 @@ app.post('/', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    res.render('index', { "uuid": uuidtemp });
+    var conn = require('modules/mysql.js')();
+    var videohtml = '';
+    try {
+        // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
+        var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1";
+        conn.query(sql, function (err, rows) {
+            if (err) {
+                res.json(result);
+                conn.close();
+                throw err;
+            }
+            else {
+                if (rows[0].length > 0) {
+                    videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0][0]['videoid'] + '" type="video/mp4"></video>';
+                }
+            }
+        });
+    }
+    catch (err) {
+        console.log(err);
+        throw err;
+    }
+    res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
 });
 
 // ssl적용을 하기 위한 코드
