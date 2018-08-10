@@ -48,7 +48,8 @@
                     conn.close();
                     throw err;
                 }
-                if (rows[0][0]['filepath'] === null || rows[0][0]['filepath'] === '') {
+                if (rows[0].length <= 0) {
+                    console.log('Cannot found video' + req.params.videoid);
                     conn.close();
                     return;
                 }
