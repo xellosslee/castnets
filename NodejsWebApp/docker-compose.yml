@@ -15,7 +15,6 @@ services:
     depends_on:
       - was-1
       - was-2
-      - was-3
     volumes:
       - /src/ssl:/etc/nginx/ssl
 
