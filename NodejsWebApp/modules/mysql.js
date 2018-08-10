@@ -1,7 +1,7 @@
 ﻿module.exports = function () {
     const mysql = require('mysql');
     var conn = mysql.createConnection({
-        host: 'demo.castnets.co.kr',
+        host: process.env.CASTNETS_DBHOST,
         user: process.env.CASTNETS_DBUSER,
         password: process.env.CASTNETS_DBPASS,
         database: 'castnets',
