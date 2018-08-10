@@ -52,7 +52,7 @@
                     pass = key.toString('base64');
 
                     var sql = "SET @token = '';"
-                        + "CALL userjoin('" + (req.body.logid === undefined ? '' : req.body.logid) + "','"
+                        + "CALL userjoin('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
                         + (req.body.email === undefined ? '' : req.body.email) + "','"
                         + pass + "','" + salt + "'," + req.body.loginpath + ", @token);"
                         + "SELECT @token;";

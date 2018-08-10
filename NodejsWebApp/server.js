@@ -92,7 +92,7 @@ app.get('/.well-known/acme-challenge/fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI
     res.download('./fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI'); // castnets.co.kr
 });
 var server = app.listen(app.get('port'), function () {
-    console.log(process.env);
+    //console.log(process.env);
     console.log('[' + uuidtemp + ']');
     console.log('listening : ' + app.get('port'));
 });
