@@ -290,7 +290,7 @@
                                     return;
                                 }
                                 result.resultcode = resultcode.Success;
-                                res.session.userid = rows[2][0]['@userid'];
+                                req.session.userid = rows[2][0]['@userid'];
                                 res.json(result);
                                 conn.close();
                             }
@@ -336,7 +336,7 @@
                         }
                         else {
                             result.resultcode = resultcode.Success;
-                            res.session.userid = rows[0][0]['userid'];
+                            req.session.userid = rows[0][0]['userid'];
                         }
                     }
                     res.json(result);
