@@ -3,10 +3,16 @@
  */
 module.exports = function (app, path) {
     const express = require('express');
+    const session = require('express-session');
     const common = require('../modules/common.js')();
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();
+    route.use(session({
+        secret: 'keyboard cat nari',
+        resave: false,
+        saveUninitialized: true
+    }));
 
     const multer = require('multer');
     const self = this;

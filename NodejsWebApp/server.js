@@ -28,16 +28,12 @@ app.use('/file', fileRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
 
-// 기본 index.html 전달하는 코드...테스트용도로만 쓰고 실무에선 쓸일 없어보임
-//var staticPath = path.join(__dirname, '/');
-//app.use(express.static(staticPath));
-
 // 서버에서 페이지로 output을 표현하려면 ejs모듈로 view를 써야함
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(session({
-    secret: 'keyboard cat',
+    secret: 'keyboard cat nari',
     resave: false,
     saveUninitialized: true
 }));
@@ -82,17 +78,16 @@ app.get('/', function (req, res) {
     var conn = require('./modules/mysql.js')();
     var videohtml = '';
     try {
-        // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
+        // 최근 비디오 1개 가져옴
         var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1";
         conn.query(sql, function (err, rows) {
             if (err) {
-                res.json(result);
                 conn.close();
                 throw err;
             }
             else {
                 if (rows.length > 0) {
-                    videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0][0]['videoid'] + '" type="video/mp4"></video>';
+                    videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0].videoid + '" type="video/mp4"></video>';
                 }
             }
         });

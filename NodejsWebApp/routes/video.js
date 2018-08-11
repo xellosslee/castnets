@@ -1,9 +1,16 @@
 ﻿module.exports = function (app) {
     const express = require('express');
+    const session = require('express-session');
     require('../modules/common.js');
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();
+
+    route.use(session({
+        secret: 'keyboard cat nari',
+        resave: false,
+        saveUninitialized: true
+    }));
     /* req : 현재 표시되는 지도의 시작지점(좌측 위)과 끝지점(우측 아래)의 위경도
      * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
      * GET 방식으로 전송하는것을 추천

@@ -1,11 +1,18 @@
 ﻿module.exports = function (app) {
     const express = require('express');
+    const session = require('express-session');
     require('../modules/common.js');
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     const crypto = require('crypto-browserify');
     var nodemailer = require('nodemailer');
     var route = express.Router();
+
+    route.use(session({
+        secret: 'keyboard cat nari',
+        resave: false,
+        saveUninitialized: true
+    }));
     // redis 모듈사용
     //var Redis = require('ioredis');
     //var redis = new Redis(6379, '127.0.0.1');
