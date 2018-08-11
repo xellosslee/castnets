@@ -38,7 +38,7 @@ services:
     links:
       - db:db
     env_file:
-      - "env.env"
+      - env.env
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -54,7 +54,7 @@ services:
     links:
       - db:db
     env_file:
-      - "env.env"
+      - env.env
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
