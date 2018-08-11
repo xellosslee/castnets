@@ -1,6 +1,14 @@
 ﻿version: '2'
 
 services:
+  mysql:
+    container_name: mysql-dc
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    volumes:
+      - /src/mysql:/var/lib/mysql
+
   nginx:
     container_name: nginx-dc
     image: nginx
@@ -27,6 +35,8 @@ services:
     ports:
       - 3000
       - 8443
+    depends_on:
+      - mysql
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -36,10 +46,11 @@ services:
   was-2:
     container_name: node-dc-2
     image: node-was
-    build: ./
     ports:
       - 3000
       - 8443
+    depends_on:
+      - mysql
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -49,10 +60,11 @@ services:
   was-3:
     container_name: node-dc-3
     image: node-was
-    build: ./
     ports:
       - 3000
       - 8443
+    depends_on:
+      - mysql
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl

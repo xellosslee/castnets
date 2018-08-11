@@ -55,6 +55,8 @@ init_connect=SET collation_connection = utf8_general_ci
 init_connect=SET NAMES utf8
 
 service mysqld start
+service firewalld stop
+systemctl disable firewalld
 
 [WAS]
 yum -y install nodejs
