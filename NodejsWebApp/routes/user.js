@@ -43,7 +43,6 @@
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
-        result.token = "";
         try {
             var pass, salt;
             crypto.randomBytes(64, (err, buf) => {
@@ -51,11 +50,11 @@
                 crypto.pbkdf2(req.body.pass, salt, 100000, 64, 'sha512', (err, key) => {
                     pass = key.toString('base64');
 
-                    var sql = "SET @token = '';"
+                    var sql = "SET @userid = 0;"
                         + "CALL userjoin('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
                         + (req.body.email === undefined ? '' : req.body.email) + "','"
-                        + pass + "','" + salt + "'," + req.body.loginpath + ", @token);"
-                        + "SELECT @token;";
+                        + pass + "','" + salt + "'," + req.body.loginpath + ", @userid);"
+                        + "SELECT @userid;";
 
                     //console.log(sql);
                     conn.query(sql, function (err, rows) {
@@ -65,14 +64,14 @@
                             throw err;
                         }
                         else {
-                            console.log('Issued access token : ' + rows[2][0]['@token']);
                             result.resultcode = resultcode.Success;
-                            result.token = rows[2][0]['@token'];
+                            req.session.userid = rows[2][0]['@userid'];
                             res.json(result);
                             conn.close();
-                            // 이메일로 가입한 경우 체크
+
+                            // 이메일로 가입한 경우 인증메일 발송
                             if ((req.body.logid === undefined ? '' : req.body.logid) == '') {
-                                // 인증메일발송
+                                // 인증메일 발송
                                 var mailOptions = {
                                     from: '캐스트네츠 <admin@castnets.co.kr>',
                                     to: 'xellossmail@gmail.com',
@@ -238,7 +237,7 @@
     });
     /** 유저로그인
      * req : loginid(이메일 혹은 전화번호), pass, loginpath(구글:90101 애플:90102)
-     * res : resultcode 결과값과 token값 json으로 리턴
+     * res : resultcode 결과값 json으로 리턴
      */
     route.post('/login', function (req, res, next) {
         console.log(req.body);
@@ -246,7 +245,6 @@
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
-        result.token = "";
         try {
             var pass, salt;
             var sql = "CALL usergetsalt('" + req.body.loginid + "');";
@@ -270,10 +268,10 @@
                     crypto.pbkdf2(req.body.pass, salt, 100000, 64, 'sha512', (err, key) => {
                         pass = key.toString('base64');
 
-                        var sql = "SET @token = '';"
+                        var sql = "SET @userid = 0;"
                             + "CALL userlogin('" + req.body.loginid + "','"
-                            + pass + "'," + req.body.loginpath + ", @token);"
-                            + "SELECT @token;";
+                            + pass + "'," + req.body.loginpath + ", @userid);"
+                            + "SELECT @userid;";
 
                         console.log(sql);
                         conn.query(sql, function (err, rows) {
@@ -284,16 +282,15 @@
                                 throw err;
                             }
                             else {
-                                if (rows[2][0]['@token'] == null) {
+                                if (rows[2][0]['@userid'] == null || rows[2][0]['@userid'] == 0) {
                                     console.log('Password missmatch');
                                     result.resultcode = resultcode.WorngPassword;
                                     res.json(result);
                                     conn.close();
                                     return;
                                 }
-                                console.log('Issued access token : ' + rows[2][0]['@token']);
                                 result.resultcode = resultcode.Success;
-                                result.token = rows[2][0]['@token'];
+                                res.session.userid = rows[2][0]['@userid'];
                                 res.json(result);
                                 conn.close();
                             }
@@ -339,6 +336,7 @@
                         }
                         else {
                             result.resultcode = resultcode.Success;
+                            res.session.userid = rows[0][0]['userid'];
                         }
                     }
                     res.json(result);

@@ -68,6 +68,8 @@ mkdir /src
 cd /src
 yum -y install git
 git clone https://xelloss-team.visualstudio.com/Castnets/_git/Castnets
+#git id,pw 저장
+git config credential.helper 'cache --timeout=864000'
 
 cd /src/Castnets/NodejsWebApp
 docker build --tag node-was .
