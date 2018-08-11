@@ -17,14 +17,12 @@ services:
     links:
       - was-1:was-1
       - was-2:was-2
-      - was-3:was-3
     ports:
       - 80:80
       - 443:443
     depends_on:
       - was-1
       - was-2
-      - was-3
     volumes:
       - /src/ssl:/etc/nginx/ssl
 
@@ -35,8 +33,8 @@ services:
     ports:
       - 3000
       - 8443
-    depends_on:
-      - mysql
+    env_file:
+      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -49,22 +47,8 @@ services:
     ports:
       - 3000
       - 8443
-    depends_on:
-      - mysql
-    volumes:
-      - ./:/src
-      - /src/ssl:/src/ssl
-      - /data:/data
-      - ./node_modules:/src/node_modules
-
-  was-3:
-    container_name: node-dc-3
-    image: node-was
-    ports:
-      - 3000
-      - 8443
-    depends_on:
-      - mysql
+    env_file:
+      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
