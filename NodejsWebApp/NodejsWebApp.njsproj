@@ -72,6 +72,8 @@
     <Content Include="docker-compose.yml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="env_local.env" />
+    <Content Include="env_test.env" />
     <Content Include="nginx\nginx.conf" />
     <Content Include="package.json" />
     <Content Include="README.md" />
