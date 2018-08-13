@@ -20,6 +20,7 @@
     //    req.redis = redis;
     //    next();
     //});
+    // email send infomation
     var smtpTransport = nodemailer.createTransport({
         host: 'smart.whoismail.net',
         port: 587,
@@ -41,6 +42,8 @@
         else
             next();
     });
+    // sms send infomation
+    const request = require('request');
     /** 회원가입
      * req : logid(sms인증 받았던 logid), email(둘중 하나만 보내면 됨), pass, loginpath(구글:90101 애플:90102)
      * res : resultcode 결과값과 token값 json으로 리턴
@@ -84,7 +87,7 @@
                                     from: '캐스트네츠 <admin@castnets.co.kr>',
                                     to: 'xellossmail@gmail.com',
                                     subject: '가입인증 메일',
-                                    html: common.emailTempleate01
+                                    html: common.emailTempleate01.replace()
                                 };
                                 smtpTransport.sendMail(mailOptions, function (error, response) {
                                     if (error) {
@@ -173,21 +176,49 @@
                                 throw err;
                             }
                             else {
-                                if (rows[2][0]['@logid'] > 0) { // 기록이 정상적으로 남았음
-                                    // 실제 발송해야함, 일단 발송 성공했다 치고 로그 업데이트
-                                    var smsresult = "결과";
-                                    var sql = "CALL smssendlogupdate(@logid, '" + smsresult + "');";
-                                    conn.query(sql, function (err, rows) {
-                                        if (err) {
-                                            res.json(result);
-                                            conn.close();
-                                            throw err;
+                                var certKey = rows[2][0]['@logid'];
+                                if (certKey > 0) { // 기록이 정상적으로 남았음
+                                    // 요청 세부 내용
+                                    var options = {
+                                        url: 'https://apis.aligo.in',
+                                        method: 'POST',
+                                        headers: {
+                                            'User-Agent':       'Super Agent/0.0.1',
+                                            'Content-Type':     'application/x-www-form-urlencoded;charset=UTF-8'
+                                        },
+                                        form: {
+                                            "key": "lz2v2t9s1qa1259p8az1u2tiy49z773x",
+                                            "user_id": "ilgoonlab",
+                                            "sender":"01046350508",
+                                            "receiver": req.body.phone,
+                                            "msg": msg,
+                                            "testmode_yn": "Y"
                                         }
-                                        else {
-                                            result.resultcode = resultcode.Success;
-                                            result.certkey = rows[2][0]['@logid'];
-                                            res.json(result);
-                                            conn.close();
+                                    };
+                                    // 요청 시작 받은값은 body
+                                    request(options, function (error, response, body) {
+                                        if (!error && response.statusCode == 200) {
+                                            var json = JSON.parse(body);
+                                            console.log(json);
+                                            var sql = "CALL smssendlogupdate(@logid, '" + JSON.stringify(json) + "');";
+                                            conn.query(sql, function (err, rows) {
+                                                if (err) {
+                                                    res.json(result);
+                                                    conn.close();
+                                                    throw err;
+                                                }
+                                                else {
+                                                    if(json.result_code == 1) {
+                                                        result.resultcode = resultcode.Success;
+                                                        result.certkey = certKey;
+                                                    }
+                                                    else{
+                                                        result.resultcode = resultcode.SmsSendFailed;
+                                                    }
+                                                    res.json(result);
+                                                    conn.close();
+                                                }
+                                            });
                                         }
                                     });
                                 }

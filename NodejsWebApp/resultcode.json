@@ -1,4 +1,5 @@
 ﻿{
+  "SmsSendFailed": "1010",
   "UnkownType": "1009",
   "CertNumNotMatch": "1008",
   "AlreadyExistsPhone": "1007",
