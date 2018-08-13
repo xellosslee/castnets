@@ -3,7 +3,7 @@
  */
 module.exports = function (app) {
     const express = require('express');
-    require('../modules/common.js');
+    const commonObj = require('../modules/common.js')();
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();

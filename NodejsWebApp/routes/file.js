@@ -4,7 +4,7 @@
 module.exports = function (app, path) {
     const express = require('express');
     const session = require('express-session');
-    const common = require('../modules/common.js')();
+    const commonObj = require('../modules/common.js')();
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();
@@ -32,7 +32,7 @@ module.exports = function (app, path) {
                 else {
                     this.strpath = path.join(__dirname, './../uploads/video/' + new Date().toISOString().substr(0, 10));
                 }
-                common.mkdirpath(this.strpath);
+                commonObj.mkdirpath(this.strpath);
                 cb(null, this.strpath);
             }
             else if (file.mimetype.indexOf('image') !== -1) {
@@ -46,7 +46,7 @@ module.exports = function (app, path) {
                 else {
                     this.strpath = path.join(__dirname, './../uploads/image/' + new Date().toISOString().substr(0, 10));
                 }
-                common.mkdirpath(this.strpath);
+                commonObj.mkdirpath(this.strpath);
                 cb(null, this.strpath);
             }
         },

@@ -1,6 +1,5 @@
 'use strict';
 process.on('uncaughtException', function (err) {
-    //¿¹»óÄ¡ ¸øÇÑ ¿¹¿Ü Ã³¸®
     console.log(err.stack);
     console.log('uncaughtException : ' + err);
 });
@@ -9,7 +8,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const uuid = require('uuid');
-require('./modules/common.js');
+const commonObj = require('./modules/common.js')();
 var bodyParser = require('body-parser');
 const fs = require('fs');
 const http = require('http');
@@ -27,8 +26,8 @@ app.use(bodyParser.json());
 app.use('/file', fileRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
+app.use('/resources',express.static(__dirname + '/resources'));
 
-// ¼­¹ö¿¡¼­ ÆäÀÌÁö·Î outputÀ» Ç¥ÇöÇÏ·Á¸é ejs¸ğµâ·Î view¸¦ ½á¾ßÇÔ
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -78,7 +77,6 @@ app.get('/', function (req, res) {
     var conn = require('./modules/mysql.js')();
     var videohtml = '';
     try {
-        // ÃÖ±Ù ºñµğ¿À 1°³ °¡Á®¿È
         var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1";
         conn.query(sql, function (err, rows) {
             if (err) {
@@ -98,8 +96,10 @@ app.get('/', function (req, res) {
     }
     res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
 });
-
-// sslÀû¿ëÀ» ÇÏ±â À§ÇÑ ÄÚµå
+app.get('/etemp01', function (req, res) {
+    res.send(commonObj.emailTempleate01);
+});
+// sslì¸ì¦ì„ ìœ„í•œ í˜ì´ì§€ ë‹¤ìš´ë¡œë“œ ì„¤ì •
 app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ', function (req, res) {
     res.download('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ'); // demo.castnets.co.kr
 });

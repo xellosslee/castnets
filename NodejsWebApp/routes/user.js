@@ -1,7 +1,7 @@
 ﻿module.exports = function (app) {
     const express = require('express');
     const session = require('express-session');
-    require('../modules/common.js');
+    const commonObj = require('../modules/common.js')();
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     const crypto = require('crypto-browserify');
@@ -84,16 +84,16 @@
                                     from: '캐스트네츠 <admin@castnets.co.kr>',
                                     to: 'xellossmail@gmail.com',
                                     subject: '가입인증 메일',
-                                    html: '<h1>HTML 보내기 테스트</h1><p><img src="http://www.nodemailer.com/img/logo.png"/></p>'
+                                    html: common.emailTempleate01
                                 };
-                                //smtpTransport.sendMail(mailOptions, function (error, response) {
-                                //    if (error) {
-                                //        console.log(error);
-                                //    } else {
-                                //        console.log("Cert mail sent : " + response.message);
-                                //    }
-                                //    smtpTransport.close();
-                                //});
+                                smtpTransport.sendMail(mailOptions, function (error, response) {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        console.log("Cert mail sent : " + response.message);
+                                    }
+                                    smtpTransport.close();
+                                });
                             }
                         }
                     });
