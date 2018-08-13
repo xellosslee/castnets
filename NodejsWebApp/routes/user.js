@@ -50,6 +50,7 @@
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
+        result.token = '';
         try {
             var pass, salt;
             crypto.randomBytes(64, (err, buf) => {
@@ -57,11 +58,11 @@
                 crypto.pbkdf2(req.body.pass, salt, 100000, 64, 'sha512', (err, key) => {
                     pass = key.toString('base64');
 
-                    var sql = "SET @userid = 0;"
-                        + "CALL userjoin('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
+                    var sql = "SET @token = 0;"
+                        + "CALL userjoin_token('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
                         + (req.body.email === undefined ? '' : req.body.email) + "','"
-                        + pass + "','" + salt + "'," + req.body.loginpath + ", @userid);"
-                        + "SELECT @userid;";
+                        + pass + "','" + salt + "'," + req.body.loginpath + ", @token);"
+                        + "SELECT @token;";
 
                     //console.log(sql);
                     conn.query(sql, function (err, rows) {
@@ -72,7 +73,7 @@
                         }
                         else {
                             result.resultcode = resultcode.Success;
-                            req.session.userid = rows[2][0]['@userid'];
+                            result.token = rows[2][0]['@token'];
                             res.json(result);
                             conn.close();
 
@@ -252,6 +253,7 @@
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
+        result.token = '';
         try {
             var pass, salt;
             var sql = "CALL usergetsalt('" + req.body.loginid + "');";
@@ -275,10 +277,10 @@
                     crypto.pbkdf2(req.body.pass, salt, 100000, 64, 'sha512', (err, key) => {
                         pass = key.toString('base64');
 
-                        var sql = "SET @userid = 0;"
-                            + "CALL userlogin('" + req.body.loginid + "','"
-                            + pass + "'," + req.body.loginpath + ", @userid);"
-                            + "SELECT @userid;";
+                        var sql = "SET @token = '';"
+                            + "CALL userlogin_token('" + req.body.loginid + "','"
+                            + pass + "'," + req.body.loginpath + ", @token);"
+                            + "SELECT @token;";
 
                         console.log(sql);
                         conn.query(sql, function (err, rows) {
@@ -289,7 +291,7 @@
                                 throw err;
                             }
                             else {
-                                if (rows[2][0]['@userid'] == null || rows[2][0]['@userid'] == 0) {
+                                if (rows[2][0]['@token'] == null || rows[2][0]['@token'] == 0) {
                                     console.log('Password missmatch');
                                     result.resultcode = resultcode.WorngPassword;
                                     res.json(result);
@@ -297,7 +299,7 @@
                                     return;
                                 }
                                 result.resultcode = resultcode.Success;
-                                req.session.userid = rows[2][0]['@userid'];
+                                result.token = rows[2][0]['@token'];
                                 res.json(result);
                                 conn.close();
                             }
@@ -343,7 +345,6 @@
                         }
                         else {
                             result.resultcode = resultcode.Success;
-                            req.session.userid = rows[0][0]['userid'];
                         }
                     }
                     res.json(result);
