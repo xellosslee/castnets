@@ -27,8 +27,9 @@
                     <p>아래 [이메일 인증] 버튼을 누르시면 가입절차가 완료됩니다.</p>\
                 </span>\
             </div>\
-            <button style="width: 180pt; height: 48pt; background-color: #EE4359; color: white; font-size: 14pt; border: none; border-radius:5px;"\
-                onclick="location.href=\'http://demo.castnets.co.kr/user/emailcert/|emailkey|\'">이메일 인증</button>\
+            <a href="http://demo.castnets.co.kr/user/emailcert/|emailkey|">\
+                <button style="width: 180pt; height: 48pt; background-color: #EE4359; color: white; font-size: 14pt; border: none; border-radius:5px;">이메일 인증</button>\
+            </a>\
         </div>\
     ';
     common.htmlTempleate02 = '\

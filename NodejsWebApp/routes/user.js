@@ -465,6 +465,7 @@
                         console.log(err);
                         res.json(result);
                         conn.close();
+                        smtpTransport.close();
                         throw err;
                     } else {
                         console.log("Cert mail sent : " + response.message);
@@ -472,7 +473,6 @@
                         result.resultcode = resultcode.Success;
                         res.json(result);
                         conn.close();
-                        throw err;
                     }
                     smtpTransport.close();
                 });
