@@ -437,69 +437,49 @@
      * req : emailkey
      * res : resultcode 결과값
      */
-    route.post('/emailresend/:emailkey', function (req, res, next) {
+    route.post('/emailresend', function (req, res, next) {
         var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
         try {
-            var token = req.body.token;
             var sql = "SET @emailkey = '';"
-                + "CALL emailsend('" + token + "', @emailkey);"
+                + "CALL emailsend('" + req.body.token + "', @emailkey);"
                 + "SELECT @emailkey;";
 
-            //console.log(sql);
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    conn.rollback(function () {
-                        console.log('rollback join2');
+                    res.json(result);
+                    conn.close();
+                    throw err;
+                }
+                // 이메일 인증키 가져오기
+                // 인증메일 발송
+                var mailOptions = {
+                    from: '캐스트네츠 <admin@castnets.co.kr>',
+                    to: req.body.email,
+                    subject: '가입인증 메일',
+                    html: common.htmlTempleate01.replace('|emailkey|', rows[2][0]['@emailkey'])
+                };
+                smtpTransport.sendMail(mailOptions, function (err, response) {
+                    if (err) {
+                        console.log(err);
                         res.json(result);
                         conn.close();
                         throw err;
-                    });
-                }
+                    } else {
+                        console.log("Cert mail sent : " + response.message);
 
-                // 이메일로 가입한 경우 인증메일 발송
-                if ((req.body.logid === undefined ? '' : req.body.logid) == '') {
-                    // 이메일 인증키 가져오기
-                    // 인증메일 발송
-                    var mailOptions = {
-                        from: '캐스트네츠 <admin@castnets.co.kr>',
-                        to: req.body.email,
-                        subject: '가입인증 메일',
-                        html: common.htmlTempleate01.replace('|emailkey|', rows[2][0]['@emailkey'])
-                    };
-                    smtpTransport.sendMail(mailOptions, function (err, response) {
-                        if (err) {
-                            console.log(err);
-                            conn.rollback(function () {
-                                console.log('rollback join3');
-                                res.json(result);
-                                conn.close();
-                                throw err;
-                            });
-                        } else {
-                            console.log("Cert mail sent : " + response.message);
-
-                            conn.commit(function () {
-                                result.resultcode = resultcode.Success;
-                                result.token = token;
-                                res.json(result);
-                                conn.close();
-                            });
-                        }
-                        smtpTransport.close();
-                    });
-                }
-                else { // 휴대폰으로 가입한 경우 바로 성공
-                    conn.commit(function () {
                         result.resultcode = resultcode.Success;
-                        result.token = token;
                         res.json(result);
                         conn.close();
-                    });
-                }
+                        throw err;
+                    }
+                    smtpTransport.close();
+                });
             });
         }
         catch (e) {
-            res.send(common.htmlTempleate03);
+            res.json(result);
             conn.close();
             throw err;
         }
