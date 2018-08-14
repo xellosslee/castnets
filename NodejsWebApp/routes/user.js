@@ -488,7 +488,7 @@
      * req : emailkey
      * res : resultcode 결과값
      */
-    route.post('/emailcert/:emailkey', function (req, res, next) {
+    route.get('/emailcert/:emailkey', function (req, res, next) {
         var conn = require('../modules/mysql.js')();
         try {
             conn.beginTransaction(function () {
