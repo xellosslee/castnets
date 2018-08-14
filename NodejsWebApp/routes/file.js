@@ -74,7 +74,7 @@ module.exports = function (app, path) {
     var upload = multer({ storage: storage });
     /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다. 파일명은 최대 200자까지만 가능.
      * ### array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함 * 해당 post는 별도로 구현해야 함
-     * req : post데이터에 file명칭의 파일과 token, registlocation, filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
+     * req : post데이터에 file명칭의 파일과 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
      * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
      */
     route.post('/upload', upload.single('file'), function (req, res) {

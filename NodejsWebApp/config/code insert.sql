@@ -1,5 +1,5 @@
+DELETE FROM `code`;
 INSERT INTO `code` VALUES (10000, NULL, '유저정보', '유저정보');
-
 INSERT INTO `code` VALUES (10100, 10000, '성별', '미설정');
 INSERT INTO `code` VALUES (10101, 10100, '남성', '남성');
 INSERT INTO `code` VALUES (10102, 10100, '여성', '여성');
@@ -20,6 +20,7 @@ INSERT INTO `code` VALUES (60000, NULL, '파일정보', '파일정보');
 INSERT INTO `code` VALUES (60100, 60000, '등록위치', '미설정');
 INSERT INTO `code` VALUES (60101, 60100, '등록위치', '안드로이드');
 INSERT INTO `code` VALUES (60102, 60100, '등록위치', '애플');
+INSERT INTO `code` VALUES (60103, 60100, '등록위치', '웹');
 
 INSERT INTO `code` VALUES (60200, 60000, '파일종류', '미설정');
 INSERT INTO `code` VALUES (60201, 60200, '파일종류', '영상');
@@ -30,7 +31,18 @@ INSERT INTO `code` VALUES (90000, NULL, '접속정보', '접속정보');
 INSERT INTO `code` VALUES (90100, 90000, '접속경로', '미설정');
 INSERT INTO `code` VALUES (90101, 90100, '접속경로', '안드로이드');
 INSERT INTO `code` VALUES (90102, 90100, '접속경로', '애플');
+INSERT INTO `code` VALUES (90103, 90100, '접속경로', '웹');
 
+INSERT INTO `castnets`.`terms` 
+	(`title`, 	`contents`, 	`registdate`, 	`order`	)
+	VALUES('캐스트네츠 이용약관','이 약관은 일군연구소가 제공하는 캐스트네츠 및 캐스트네츠 관련 제반 서비스의 이용과 관련하여 회사와 회원과의 권리,의무 및 책임사항. 기타 필요한 사항을 규정함을 목적으로 합니다.',NOW(),101);
+INSERT INTO `castnets`.`terms` 
+	(`title`, 	`contents`, 	`registdate`, 	`order`	)
+	VALUES('개인정보 수집 및 이용','정보통신망법 규정에 따라 일군연구소에 회원가입 신청 하시는 분께 수집하는 개인정보의 항목, 개인정보의 수집 및 이용목적, 개인정보의 보유 및 이용기간을 안내 드리오니 자세히 읽은 후 동의하여 주시기 바랍니다. "캐스트네츠"에 등록한 동영상의 저작권은 캐스트네츠에 있습니다.',NOW(),102);
+INSERT INTO `castnets`.`terms` 
+	(`title`, 	`contents`, 	`registdate`, 	`order`	)
+	VALUES('위치정보 이용약관','위치정보 이용약관에 동의하시면, 위치를 활용한 광고 정보수신등을 포함하는 일군연구소 위치기반 서비스를 이용할 수 있습니다.',NOW(),103);
+    
 -- 관리자(이근석) 계정 생성
 INSERT INTO userinfo VALUES (NULL, 'xelloss@gmail.com', 'xelloss', NULL, 10101, 10204, NULL, NULL, CURRENT_TIMESTAMP, NULL);
 

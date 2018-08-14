@@ -61,45 +61,83 @@
                 crypto.pbkdf2(req.body.pass, salt, 100000, 64, 'sha512', (err, key) => {
                     pass = key.toString('base64');
 
-                    var sql = "SET @token = 0;"
-                        + "CALL userjoin_token('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
-                        + (req.body.email === undefined ? '' : req.body.email) + "','"
-                        + pass + "','" + salt + "'," + req.body.loginpath + ", @token);"
-                        + "SELECT @token;";
-
-                    //console.log(sql);
-                    conn.query(sql, function (err, rows) {
-                        if (err) {
-                            res.json(result);
-                            conn.close();
-                            throw err;
-                        }
-                        else {
-                            result.resultcode = resultcode.Success;
-                            result.token = rows[2][0]['@token'];
-                            res.json(result);
-                            conn.close();
-
-                            // 이메일로 가입한 경우 인증메일 발송
-                            if ((req.body.logid === undefined ? '' : req.body.logid) == '') {
-                                // 인증메일 발송
-                                var mailOptions = {
-                                    from: '캐스트네츠 <admin@castnets.co.kr>',
-                                    to: 'xellossmail@gmail.com',
-                                    subject: '가입인증 메일',
-                                    html: common.emailTempleate01.replace()
-                                };
-                                smtpTransport.sendMail(mailOptions, function (error, response) {
-                                    if (error) {
-                                        console.log(error);
-                                    } else {
-                                        console.log("Cert mail sent : " + response.message);
-                                    }
-                                    smtpTransport.close();
+                    conn.beginTransaction(function () {
+                        var sql = "SET @token = 0;"
+                            + "CALL userjoin_token('" + (req.body.logid === undefined ? 0 : req.body.logid) + "','"
+                            + (req.body.email === undefined ? '' : req.body.email) + "','"
+                            + pass + "','" + salt + "'," + req.body.loginpath + ", @token);"
+                            + "SELECT @token;";
+    
+                        //console.log(sql);
+                        conn.query(sql, function (err, rows) {
+                            if (err) { 
+                                conn.rollback(function () {
+                                    console.log('rollback join1');
+                                    res.json(result);
+                                    conn.close();
+                                    throw err;
                                 });
                             }
-                        }
-                    });
+    
+                            var token = rows[2][0]['@token'];
+                            sql = "SET @emailkey = '';"
+                                + "CALL emailsend('" + token + "','" + req.body.email + "', @emailkey);"
+                                + "SELECT @emailkey;";
+    
+                            //console.log(sql);
+                            conn.query(sql, function (err, rows) {
+                                if (err) {
+                                    conn.rollback(function () {
+                                        console.log('rollback join2');
+                                        res.json(result);
+                                        conn.close();
+                                        throw err;
+                                    });
+                                }
+    
+                                // 이메일로 가입한 경우 인증메일 발송
+                                if ((req.body.logid === undefined ? '' : req.body.logid) == '') {
+                                    // 이메일 인증키 가져오기
+                                    // 인증메일 발송
+                                    var mailOptions = {
+                                        from: '캐스트네츠 <admin@castnets.co.kr>',
+                                        to: req.body.email,
+                                        subject: '가입인증 메일',
+                                        html: common.htmlTempleate01.replace('|emailkey|', rows[2][0]['@emailkey'])
+                                    };
+                                    smtpTransport.sendMail(mailOptions, function (err, response) {
+                                        if (err) {
+                                            console.log(err);
+                                            conn.rollback(function () {
+                                                console.log('rollback join3');
+                                                res.json(result);
+                                                conn.close();
+                                                throw err;
+                                            });
+                                        } else {
+                                            console.log("Cert mail sent : " + response.message);
+    
+                                            conn.commit(function () {
+                                                result.resultcode = resultcode.Success;
+                                                result.token = token;
+                                                res.json(result);
+                                                conn.close();
+                                            });
+                                        }
+                                        smtpTransport.close();
+                                    });
+                                }
+                                else { // 휴대폰으로 가입한 경우 바로 성공
+                                    conn.commit(function () {
+                                        result.resultcode = resultcode.Success;
+                                        result.token = token;
+                                        res.json(result);
+                                        conn.close();
+                                    });
+                                }
+                            });
+                        });
+                    }); // conn.beginTransaction
                 });
             });
         }
@@ -391,6 +429,49 @@
         }
         catch (e) {
             res.json(result);
+            conn.close();
+            throw err;
+        }
+    });
+    /** 유저 이메일 인증처리
+     * req : emailkey
+     * res : resultcode 결과값
+     */
+    route.post('/emailcert/:emailkey', function (req, res, next) {
+        var conn = require('../modules/mysql.js')();
+        try {
+            conn.beginTransaction(function () {
+                var sql = "CALL emailcert('" + req.params.emailkey + "');";
+
+                conn.query(sql, function (err, rows) {
+                    if (err) {
+                        conn.rollback(function () {
+                            console.log('rollback emailcert1');
+                            res.send(commonObj.htmlTempleate03);
+                            conn.close();
+                            throw err;
+                        });
+                    }
+                    else {
+                        if (rows.affectedRows >= 2){
+                            conn.commit(function () {
+                                res.send(commonObj.htmlTempleate02);
+                                conn.close();
+                            });
+                        }
+                        else {
+                            conn.rollback(function () {
+                                console.log('rollback emailcert2');
+                                res.send(commonObj.htmlTempleate03);
+                                conn.close();
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        catch (e) {
+            res.send(commonObj.htmlTempleate03);
             conn.close();
             throw err;
         }

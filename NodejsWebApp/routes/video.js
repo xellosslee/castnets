@@ -79,13 +79,17 @@
      * req : videoid, token(존재하지 않으면 미전달), logtype 영상입장 70101, 영상완료(끝까지 재생) 70102, 영상퇴장 70103
      * res : 결과 없음. 성공여부에 상관없이 진행
      */
-    route.post('/view', function() {
+    route.post('/view', function(req, res) {
         var conn = require('../modules/mysql.js')();
         var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")";
+        var result = {};
+        result.resultcode = resultcode.Failed;
         conn.query(sql, function (err, rows) {
             if (err) { conn.close(); throw err; }
+            result.resultcode = resultcode.Success;
+            res.json(result);
+            conn.close();
         });
-        conn.close();
     });
     /**비디오 스트리밍 (http권장)
      * req : html5에서는 플레이어에서 각종 정보를 보내줌. 앱에서는 특정 videoid 값을 보내야함

@@ -16,13 +16,13 @@
             }
         }
     };
-    common.emailTempleate01 = '\
+    common.htmlTempleate01 = '\
         <style>\
         .text {font-family: "Nanum Gothic", sans-serif; font-size: 14pt; color: #454545; line-height: 20px;}\
         .btn {width: 180pt; height: 48pt; background-color: #EE4359; color: white; font-size: 14pt; border: none; border-radius:5px;}\
         </style>\
         <div style="width:680pt; border-top:2pt solid #EE4359" align="center">\
-            <img src="http://localhost:3000/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
+            <img src="http://demo.castnets.co.kr/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
             <div style="padding: 30pt 0 30pt 0; border-top:solid 1px #eee; border-bottom:solid 1px #eee; width:537pt; margin-bottom:30pt;" >\
                 <span class="text" style="margin: 40pt 0;" >\
                     <p><span style="font-weight: bold;">CASTNETS 가입</sapn>을 환영합니다.</p>\
@@ -31,7 +31,33 @@
                     <p>아래 [이메일 인증] 버튼을 누르시면 가입절차가 완료됩니다.</p>\
                 </span>\
             </div>\
-            <button class="btn" onclick="location.href=\'#\'">이메일 인증</button>\
+            <button class="btn" onclick="location.href=\'http://demo.castnets.co.kr/user/emailcert/|emailkey|\'">이메일 인증</button>\
+        </div>\
+    ';
+    common.htmlTempleate02 = '\
+        <style>\
+        .text {font-family: "Nanum Gothic", sans-serif; font-size: 14pt; color: #454545; line-height: 20px;}\
+        </style>\
+        <div style="width:680pt; border-top:2pt solid #EE4359" align="center">\
+            <img src="http://demo.castnets.co.kr/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
+            <div style="padding: 30pt 0 30pt 0; border-top:solid 1px #eee; border-bottom:solid 1px #eee; width:537pt; margin-bottom:30pt;" >\
+                <span class="text" style="margin: 40pt 0;" >\
+                    <p>이메일 인증이 완료되었습니다.</p>\
+                </span>\
+            </div>\
+        </div>\
+    ';
+    common.htmlTempleate03 = '\
+        <style>\
+        .text {font-family: "Nanum Gothic", sans-serif; font-size: 14pt; color: #454545; line-height: 20px;}\
+        </style>\
+        <div style="width:680pt; border-top:2pt solid #EE4359" align="center">\
+            <img src="http://demo.castnets.co.kr/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
+            <div style="padding: 30pt 0 30pt 0; border-top:solid 1px #eee; border-bottom:solid 1px #eee; width:537pt; margin-bottom:30pt;" >\
+                <span class="text" style="margin: 40pt 0;" >\
+                    <p>이메일 인증이 실패하였습니다.</p>\
+                </span>\
+            </div>\
         </div>\
     ';
     return common;
