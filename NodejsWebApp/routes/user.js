@@ -504,7 +504,8 @@
                         });
                     }
                     else {
-                        if (rows.affectedRows >= 2){
+                        console.log(rows);
+                        if (rows[0].affectedRows >= 2){
                             conn.commit(function () {
                                 res.send(common.htmlTempleate02);
                                 conn.close();
