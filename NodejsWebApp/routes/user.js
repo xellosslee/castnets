@@ -505,7 +505,7 @@
                     }
                     else {
                         console.log(rows);
-                        if (rows[0].affectedRows >= 2){
+                        if (rows.affectedRows >= 2){
                             conn.commit(function () {
                                 res.send(common.htmlTempleate02);
                                 conn.close();
@@ -523,9 +523,11 @@
             });
         }
         catch (e) {
-            res.send(common.htmlTempleate03);
-            conn.close();
-            throw err;
+            conn.rollback(function () {
+                console.log('rollback emailcert3');
+                res.send(common.htmlTempleate03);
+                conn.close();
+            });
         }
     });
     /** 유저프로필 보기
