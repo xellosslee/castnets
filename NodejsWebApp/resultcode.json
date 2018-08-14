@@ -1,4 +1,6 @@
 ﻿{
+  "SmsCertNotValied": "1012",
+  "CertTimeOut": "1011",
   "SmsSendFailed": "1010",
   "UnkownType": "1009",
   "CertNumNotMatch": "1008",

@@ -257,10 +257,16 @@
                     throw err;
                 }
                 else {
-                    if (rows.affectedRows == 0) {
+                    if(rows[0][0].valiedlogid == 0) {
+                        result.resultcode = resultcode.SmsCertNotValied;
+                    }
+                    else if(rows[0][0].matchcertnum == 0) {
                         result.resultcode = resultcode.CertNumNotMatch;
                     }
-                    else {
+                    else if(rows[0][0].timelimit == 0) {
+                        result.resultcode = resultcode.CertTimeOut;
+                    }
+                    else /*if(rows[1].affectedRows > 0)*/{
                         result.resultcode = resultcode.Success;
                     }
                     res.json(result);
