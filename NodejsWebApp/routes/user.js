@@ -142,6 +142,9 @@
             });
         }
         catch (e) {
+            conn.rollback(function () {
+                console.log('rollback join4');
+            });
             res.json(result);
             conn.close();
             throw err;
@@ -427,7 +430,7 @@
                 }
             });
         }
-        catch (e) {
+        catch (err) {
             res.json(result);
             conn.close();
             throw err;
@@ -478,7 +481,7 @@
                 });
             });
         }
-        catch (e) {
+        catch (err) {
             res.json(result);
             conn.close();
             throw err;
@@ -505,7 +508,7 @@
                     }
                     else {
                         console.log(rows);
-                        if (rows.affectedRows >= 2){
+                        if (rows.affectedRows >= 1){
                             conn.commit(function () {
                                 res.send(common.htmlTempleate02);
                                 conn.close();
@@ -522,11 +525,12 @@
                 });
             });
         }
-        catch (e) {
+        catch (err) {
             conn.rollback(function () {
                 console.log('rollback emailcert3');
                 res.send(common.htmlTempleate03);
                 conn.close();
+                throw err;
             });
         }
     });
