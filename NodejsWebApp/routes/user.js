@@ -1,7 +1,7 @@
 ﻿module.exports = function (app) {
     const express = require('express');
     const session = require('express-session');
-    const commonObj = require('../modules/common.js')();
+    const common = require('../modules/common.js')();
     const fs = require('fs');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     const crypto = require('crypto-browserify');
@@ -447,7 +447,7 @@
                     if (err) {
                         conn.rollback(function () {
                             console.log('rollback emailcert1');
-                            res.send(commonObj.htmlTempleate03);
+                            res.send(common.htmlTempleate03);
                             conn.close();
                             throw err;
                         });
@@ -455,14 +455,14 @@
                     else {
                         if (rows.affectedRows >= 2){
                             conn.commit(function () {
-                                res.send(commonObj.htmlTempleate02);
+                                res.send(common.htmlTempleate02);
                                 conn.close();
                             });
                         }
                         else {
                             conn.rollback(function () {
                                 console.log('rollback emailcert2');
-                                res.send(commonObj.htmlTempleate03);
+                                res.send(common.htmlTempleate03);
                                 conn.close();
                             });
                         }
@@ -471,7 +471,7 @@
             });
         }
         catch (e) {
-            res.send(commonObj.htmlTempleate03);
+            res.send(common.htmlTempleate03);
             conn.close();
             throw err;
         }
