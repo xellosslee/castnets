@@ -571,7 +571,27 @@
      * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달
      */
     route.get('/profile/:name', function (req, res, next) {
-        var key = req.params.name;
+        var conn = require('../modules/mysql.js')();
+        try {
+            var sql = "CALL userprofile('" + req.params.name + "');";
+
+            conn.query(sql, function (err, rows) {
+                if (err) {
+                    res.sendFile('resources/image/castnetslogo.png');
+                    conn.close();
+                    throw err;
+                }
+                else {
+                    res.sendFile(rows[0][0].filepath);
+                    conn.close();
+                }
+            });
+        }
+        catch (err) {
+            res.sendFile('resources/image/castnetslogo.png');
+            conn.close();
+            throw err;
+        }
     });
     // catch 404 and forward to error handler
     route.use(function (req, res, next) {

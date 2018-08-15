@@ -75,6 +75,37 @@
             conn.close();
         }
     });
+    /**특정 영상 주변의 영상을 가져온다
+     * req : 현재 영상의 번호, 자신의 위치
+     * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
+     * GET 방식으로 전송하는것을 추천
+     */
+    route.get('/targetlist/:videoid/:lat/:lng', function (req, res) {
+        var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
+        try {
+            conn.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ')', function (err, rows) {
+                if (err) { conn.close(); throw err; }
+
+                console.log(rows);
+                var list = [];
+                if (rows[0].length > 0) {
+                    rows[0].forEach(function (row) {
+                        list.push(row);
+                    });
+                }
+                result.resultcode = resultcode.Success;
+                result.list = list;
+                res.json(result);
+                conn.close();
+            });
+        }
+        catch (e) {
+            res.json(result);
+            conn.close();
+        }
+    });
     /**비디오 영상플레이 기록
      * req : videoid, token(존재하지 않으면 미전달), logtype 영상입장 70101, 영상완료(끝까지 재생) 70102, 영상퇴장 70103
      * res : 결과 없음. 성공여부에 상관없이 진행
@@ -130,11 +161,6 @@
                         res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
                         fs.createReadStream(path).pipe(res);
                     }
-
-                    // sql = "CALL videoview(" + req.session.curvideo + ",'" + req.session.userid === undefined ? null : req.session.userid + "', 70101)";
-                    // conn.query(sql, function (err, rows) {
-                    //     if (err) { conn.close(); throw err; }
-                    // });
                     conn.close();
                 }
             });
@@ -144,5 +170,6 @@
             throw err;
         }
     });
+
     return route;
 };

@@ -13,6 +13,7 @@ var bodyParser = require('body-parser');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const ReactDOMServer = require('react-dom/server');
 
 var app = express();
 var uuidtemp = uuid.v4();
@@ -75,7 +76,7 @@ app.post('/', function (req, res) {
 
 app.get('/', function (req, res) {
     var conn = require('./modules/mysql.js')();
-    var videohtml = '';
+    var videoid = '';
     try {
         var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1";
         conn.query(sql, function (err, rows) {
@@ -85,9 +86,9 @@ app.get('/', function (req, res) {
             }
             else {
                 if (rows.length > 0) {
-                    videohtml = '&lt;video id="videoPlayer" controls&gt;&lt;source src="/video/stream/' + rows[0].videoid + '" type="video/mp4"&gt;&lt;/video&gt;';
+                    videoid = rows[0].videoid;
                 }
-                res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
+                res.render('index', { "uuid": uuidtemp, "videoid": videoid });
             }
         });
     }

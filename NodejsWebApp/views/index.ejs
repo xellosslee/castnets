@@ -78,7 +78,9 @@
         </div>
 
         <div id="video">
-			<%=videohtml%>
+            <video id="videoPlayer" controls>
+                <source src="/video/stream/<%=videoid%>" type="video/mp4">
+            </video>
         </div>
 
         <div id="map">
