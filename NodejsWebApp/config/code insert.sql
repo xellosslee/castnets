@@ -48,7 +48,7 @@ INSERT INTO `castnets`.`terms`
 INSERT INTO `castnets`.`terms` 
 	(`title`, 	`contents`, 	`registdate`, 	`order`	)
 	VALUES('위치정보 이용약관','위치정보 이용약관에 동의하시면, 위치를 활용한 광고 정보수신등을 포함하는 일군연구소 위치기반 서비스를 이용할 수 있습니다.',NOW(),103);
-    
+
 -- 관리자(이근석) 계정 생성
 INSERT INTO userinfo VALUES (NULL, 'xelloss@gmail.com', 'xelloss', NULL, 10101, 10204, NULL, NULL, CURRENT_TIMESTAMP, NULL);
 
@@ -73,6 +73,9 @@ SELECT @userid;
 
 SHOW VARIABLES LIKE 'c%';
 
+CALL usernamecheck('7FB478E1579B5400D876CA678C48CCF4', '346522541');
+CALL usernamechange('7FB478E1579B5400D876CA678C48CCF4', 'test5555');
+CALL usernamecheck('36156EA9DA199D71ADE75DA7776943F5', '34652254');
 
 DELETE FROM filemap;
 ALTER TABLE filemap AUTO_INCREMENT=1;
