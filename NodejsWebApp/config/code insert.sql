@@ -57,16 +57,22 @@ SET @a = '';
 CALL userlogin('xelloss@gmail.com', 'k4NLEHm2R+abZ28HJICgt/IEsIB5rrkXb7NfCebY9+pUachbFxC0cNfc0TVNA1q/KLkN6BwByAN7FwB5Wwh/nA==', 90101, @a);
 SELECT @a;
 
+-- 로그인된 토큰들 찾기
+SELECT *, HEX(AES_ENCRYPT(connectid, logindate)) FROM connectlog WHERE logoutdate IS NULL;
+
+START TRANSACTION;
+CALL emailcert('8FD605178FE13813FC3A5A375982D173');
+ROLLBACK;
+
 CALL usersessioncheck('E0315699136C0BCFC6A3DB786E0D77AF');
 
 CALL usergetsalt('01011112227');
-
-SELECT *, HEX(AES_ENCRYPT(connectid, logindate)) FROM connectlog WHERE logoutdate IS NULL;
 
 SET @userid = UseridFromToken('E0315699136C0BCFC6A3DB786E0D77AF');
 SELECT @userid;
 
 SHOW VARIABLES LIKE 'c%';
+
 
 DELETE FROM filemap;
 ALTER TABLE filemap AUTO_INCREMENT=1;
