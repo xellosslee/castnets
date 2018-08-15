@@ -583,7 +583,7 @@
                     throw err;
                 }
                 else {
-                    if(rows.length > 0) {
+                    if(rows[0].length > 0) {
                         res.sendFile(rows[0][0].filepath);
                         conn.close();
                     }
