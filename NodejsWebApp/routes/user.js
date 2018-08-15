@@ -3,6 +3,7 @@
     const session = require('express-session');
     const common = require('../modules/common.js')();
     const fs = require('fs');
+    const path = require('path');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     const crypto = require('crypto-browserify');
     var nodemailer = require('nodemailer');
@@ -572,7 +573,7 @@
      */
     route.get('/profile/:name', function (req, res, next) {
         var conn = require('../modules/mysql.js')();
-        var default_profile = 'resources/image/castnetslogo.png';
+        var default_profile = path.join(__dirname, '../resources/image/castnetslogo.png');
         try {
             var sql = "CALL userprofile('" + req.params.name + "');";
 

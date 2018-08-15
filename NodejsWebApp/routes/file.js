@@ -1,11 +1,12 @@
 ﻿/** Route using simple templeate
  * @param {express} app server sent express object
  */
-module.exports = function (app, path) {
+module.exports = function (app) {
     const express = require('express');
     const session = require('express-session');
     const common = require('../modules/common.js')();
     const fs = require('fs');
+    const path = require('path');
     var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim());
     var route = express.Router();
     route.use(session({

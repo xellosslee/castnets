@@ -17,7 +17,7 @@ const https = require('https');
 var app = express();
 var uuidtemp = uuid.v4();
 
-var fileRouter = require('./routes/file.js')(app, path);
+var fileRouter = require('./routes/file.js')(app);
 var userRouter = require('./routes/user.js')(app);
 var videoRouter = require('./routes/video.js')(app);
 
