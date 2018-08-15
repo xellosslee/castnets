@@ -572,23 +572,30 @@
      */
     route.get('/profile/:name', function (req, res, next) {
         var conn = require('../modules/mysql.js')();
+        var default_profile = 'resources/image/castnetslogo.png';
         try {
             var sql = "CALL userprofile('" + req.params.name + "');";
 
             conn.query(sql, function (err, rows) {
                 if (err) {
-                    res.sendFile('resources/image/castnetslogo.png');
+                    res.sendFile(default_profile);
                     conn.close();
                     throw err;
                 }
                 else {
-                    res.sendFile(rows[0][0].filepath);
-                    conn.close();
+                    if(rows.length > 0) {
+                        res.sendFile(rows[0][0].filepath);
+                        conn.close();
+                    }
+                    else {
+                        res.sendFile(default_profile);
+                        conn.close();
+                    }
                 }
             });
         }
         catch (err) {
-            res.sendFile('resources/image/castnetslogo.png');
+            res.sendFile(default_profile);
             conn.close();
             throw err;
         }
