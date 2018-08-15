@@ -96,36 +96,36 @@
      * res : 해당 영상 내용을 리턴
      */
     route.get('/stream/:videoid', function (req, res) {
-        if (req.session.curvideo === undefined || req.session.curvideopath === undefined) {
-            var conn = require('../modules/mysql.js')();
-            try {
-                var sql = "CALL videostream(" + req.params.videoid + ")";
-                conn.query(sql, function (err, rows) {
-                    if (err) { conn.close(); throw err; }
-                    if (rows[0].length <= 0) {
-                        console.log('Cannot found video' + req.params.videoid);
-                        conn.close();
-                        return;
-                    }
-                    else {
-                        req.session.curvideo = req.params.videoid;
-                        req.session.curvideopath = rows[0][0]['filepath'];
+        // if (req.session.curvideo === undefined || req.session.curvideopath === undefined) {
+        //     var conn = require('../modules/mysql.js')();
+        //     try {
+        //         var sql = "CALL videostream(" + req.params.videoid + ")";
+        //         conn.query(sql, function (err, rows) {
+        //             if (err) { conn.close(); throw err; }
+        //             if (rows[0].length <= 0) {
+        //                 console.log('Cannot found video' + req.params.videoid);
+        //                 conn.close();
+        //                 return;
+        //             }
+        //             else {
+        //                 req.session.curvideo = req.params.videoid;
+        //                 req.session.curvideopath = rows[0][0]['filepath'];
 
-                        sql = "CALL videoview(" + req.session.curvideo + ",'" + req.session.userid === undefined ? null : req.session.userid + "', 70101)";
-                        conn.query(sql, function (err, rows) {
-                            if (err) { conn.close(); throw err; }
-                        });
-                        conn.close();
-                    }
-                });
-            }
-            catch (err) {
-                conn.close();
-                throw err;
-            }
-        }
+        //                 sql = "CALL videoview(" + req.session.curvideo + ",'" + req.session.userid === undefined ? null : req.session.userid + "', 70101)";
+        //                 conn.query(sql, function (err, rows) {
+        //                     if (err) { conn.close(); throw err; }
+        //                 });
+        //                 conn.close();
+        //             }
+        //         });
+        //     }
+        //     catch (err) {
+        //         conn.close();
+        //         throw err;
+        //     }
+        // }
 
-        if (req.session.curvideo !== undefined && req.session.curvideopath !== undefined) {
+        // if (req.session.curvideo !== undefined && req.session.curvideopath !== undefined) {
             var path = req.session.curvideopath;
             var stat = fs.statSync(path);
             var total = stat.size;
@@ -149,7 +149,7 @@
                 res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
                 fs.createReadStream(path).pipe(res);
             }
-        }
+        // }
     });
     return route;
 };
