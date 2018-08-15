@@ -96,60 +96,53 @@
      * res : 해당 영상 내용을 리턴
      */
     route.get('/stream/:videoid', function (req, res) {
-        // if (req.session.curvideo === undefined || req.session.curvideopath === undefined) {
-        //     var conn = require('../modules/mysql.js')();
-        //     try {
-        //         var sql = "CALL videostream(" + req.params.videoid + ")";
-        //         conn.query(sql, function (err, rows) {
-        //             if (err) { conn.close(); throw err; }
-        //             if (rows[0].length <= 0) {
-        //                 console.log('Cannot found video' + req.params.videoid);
-        //                 conn.close();
-        //                 return;
-        //             }
-        //             else {
-        //                 req.session.curvideo = req.params.videoid;
-        //                 req.session.curvideopath = rows[0][0]['filepath'];
+        var conn = require('../modules/mysql.js')();
+        try {
+            var sql = "CALL videostream(" + req.params.videoid + ")";
+            conn.query(sql, function (err, rows) {
+                if (err) { conn.close(); throw err; }
+                if (rows[0].length <= 0) {
+                    console.log('Cannot found video' + req.params.videoid);
+                    conn.close();
+                    return;
+                }
+                else {
+                    var path = rows[0][0]['filepath'];
+                    var stat = fs.statSync(path);
+                    var total = stat.size;
+                    if (req.headers['range']) {
+                        var range = req.headers.range;
+                        var parts = range.replace(/bytes=/, "").split("-");
+                        var partialstart = parts[0];
+                        var partialend = parts[1];
 
-        //                 sql = "CALL videoview(" + req.session.curvideo + ",'" + req.session.userid === undefined ? null : req.session.userid + "', 70101)";
-        //                 conn.query(sql, function (err, rows) {
-        //                     if (err) { conn.close(); throw err; }
-        //                 });
-        //                 conn.close();
-        //             }
-        //         });
-        //     }
-        //     catch (err) {
-        //         conn.close();
-        //         throw err;
-        //     }
-        // }
+                        var start = parseInt(partialstart, 10);
+                        var end = partialend ? parseInt(partialend, 10) : total - 1;
+                        var chunksize = (end - start) + 1;
+                        console.log('reqRange : ' + req.headers.range);
+                        console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize);
 
-        // if (req.session.curvideo !== undefined && req.session.curvideopath !== undefined) {
-            var path = req.session.curvideopath;
-            var stat = fs.statSync(path);
-            var total = stat.size;
-            if (req.headers['range']) {
-                var range = req.headers.range;
-                var parts = range.replace(/bytes=/, "").split("-");
-                var partialstart = parts[0];
-                var partialend = parts[1];
+                        var file = fs.createReadStream(path, { start: start, end: end });
+                        res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
+                        file.pipe(res);
+                    } else {
+                        console.log('ALL: ' + total);
+                        res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
+                        fs.createReadStream(path).pipe(res);
+                    }
 
-                var start = parseInt(partialstart, 10);
-                var end = partialend ? parseInt(partialend, 10) : total - 1;
-                var chunksize = (end - start) + 1;
-                console.log('reqRange : ' + req.headers.range);
-                console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize);
-
-                var file = fs.createReadStream(path, { start: start, end: end });
-                res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
-                file.pipe(res);
-            } else {
-                console.log('ALL: ' + total);
-                res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
-                fs.createReadStream(path).pipe(res);
-            }
-        // }
+                    // sql = "CALL videoview(" + req.session.curvideo + ",'" + req.session.userid === undefined ? null : req.session.userid + "', 70101)";
+                    // conn.query(sql, function (err, rows) {
+                    //     if (err) { conn.close(); throw err; }
+                    // });
+                    conn.close();
+                }
+            });
+        }
+        catch (err) {
+            conn.close();
+            throw err;
+        }
     });
     return route;
 };
