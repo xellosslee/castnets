@@ -87,6 +87,7 @@ app.get('/', function (req, res) {
                 if (rows.length > 0) {
                     videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0].videoid + '" type="video/mp4"></video>';
                 }
+                res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
             }
         });
     }
@@ -94,7 +95,6 @@ app.get('/', function (req, res) {
         console.log(err);
         throw err;
     }
-    res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
 });
 app.get('/etemp01', function (req, res) {
     res.send(commonObj.emailTempleate01);
