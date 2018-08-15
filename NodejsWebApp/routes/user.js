@@ -392,6 +392,39 @@
             throw err;
         }
     });
+    /** 유저 로그아웃
+     * req : token
+     * res : resultcode 결과값
+     */
+    route.post('/logout', function (req, res, next) {
+        console.log(req.body);
+
+        var conn = require('../modules/mysql.js')();
+        var result = {};
+        result.resultcode = resultcode.Failed;
+        try {
+            var pass, salt;
+            var sql = "CALL userlogout('" + req.body.token + "');";
+
+            conn.query(sql, function (err, rows) {
+                if (err) {
+                    res.json(result);
+                    conn.close();
+                    throw err;
+                }
+                else {
+                    result.resultcode = resultcode.Success;
+                    res.json(result);
+                    conn.close();
+                }
+            });
+        }
+        catch (err) {
+            res.json(result);
+            conn.close();
+            throw err;
+        }
+    });
     /** 유저 토큰 정상 체크
      * req : token
      * res : resultcode 결과값

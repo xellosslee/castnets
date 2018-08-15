@@ -1,0 +1,701 @@
+{
+  "front-version": "2.19.0",
+  "version": 3,
+  "nodes": [
+    {
+      "type": "Project",
+      "id": "02361220-93bd-4ff4-97ab-8ac4d28739a3",
+      "lastModified": "2018-08-14T13:42:59.418+09:00",
+      "name": "Castnets"
+    },
+    {
+      "type": "Service",
+      "id": "8cab5075-892f-4e86-8eb0-b530c2021a2f",
+      "lastModified": "2018-08-06T21:05:56.932+09:00",
+      "name": "2.demo",
+      "parentId": "02361220-93bd-4ff4-97ab-8ac4d28739a3"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"token\":\"36156EA9DA199D71ADE75DA7776943F5\",\n\"email\":\"xellossmail@gmail.com\"}\t"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/emailresend"
+      },
+      "id": "c5b452f2-6264-4597-a287-3189538b9dd1",
+      "lastModified": "2018-08-14T13:42:59.418+09:00",
+      "name": "/user/emailresend",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "assertions": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"email\":\"xellossmail@gmail.com\",\"pass\":\"1\",\"loginpath\":\"90102\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/join"
+      },
+      "id": "145d7bd4-24ea-42bd-80e1-2856dfe43a98",
+      "lastModified": "2018-08-14T10:53:28.377+09:00",
+      "name": "/user/join",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"loginid\":\"mail@test.com\",\"pass\":\"1\",\"loginpath\":\"90102\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/login"
+      },
+      "id": "177a9e22-d589-445a-878b-2055ab185629",
+      "lastModified": "2018-08-09T01:37:22.098+09:00",
+      "name": "/user/login",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"phone\":\"01021107747\",\"key\":\"OcOsAmRlpuAc2+orBjP69Q==\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/sendcertsms"
+      },
+      "id": "603ed1f6-531f-42a2-84e4-b8508937e45f",
+      "lastModified": "2018-08-13T22:53:56.716+09:00",
+      "name": "/user/sendcertsms",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"logid\":\"3\",\"certnum\":\"9726\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/smscert"
+      },
+      "id": "1b0ba18e-04f7-4309-982b-58495f170e8c",
+      "lastModified": "2018-08-14T09:06:18.555+09:00",
+      "name": "/user/smscert",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"token\":\"2FF9DEC4609994DF2C2168EFF6C361A7\"}\t"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/user/tokencheck"
+      },
+      "id": "c2bd60a0-2043-42ab-b3e2-7e3fc75ac1d3",
+      "lastModified": "2018-08-13T18:26:10.711+09:00",
+      "name": "/user/tokencheck",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "assertions": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "uriEditor": true,
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"email\":\"x@a.c\",\"id\":\"bbb\",\"name\":\"hahaha\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/video/list/33/120/10/0"
+      },
+      "id": "a6d94ad8-da83-4e42-80de-4a027db7cc11",
+      "lastModified": "2018-08-14T09:07:41.835+09:00",
+      "name": "/video/list",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "uriEditor": true,
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"email\":\"x@a.c\",\"id\":\"bbb\",\"name\":\"hahaha\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/video/maplist/-90/-180/90/180"
+      },
+      "id": "ca4fb09c-20f0-4635-8fb4-48cd6fa6fa9e",
+      "lastModified": "2018-08-14T09:08:15.209+09:00",
+      "name": "/video/maplist",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"videoid\":\"1\",\"token\":\"2FF9DEC4609994DF2C2168EFF6C361A7\",\"logtype\":\"70101\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "demo.castnets.co.kr",
+        "path": "/video/view"
+      },
+      "id": "9fc39fb0-598e-44ac-bc84-c569a6236002",
+      "lastModified": "2018-08-14T09:15:40.839+09:00",
+      "name": "/video/view",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "assertions": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "8cab5075-892f-4e86-8eb0-b530c2021a2f"
+    },
+    {
+      "type": "Service",
+      "id": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f",
+      "lastModified": "2018-08-06T21:06:01.181+09:00",
+      "name": "3.local",
+      "parentId": "02361220-93bd-4ff4-97ab-8ac4d28739a3"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"email\":\"mail@test.com\",\"pass\":\"1\",\"loginpath\":\"90102\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/user/join"
+      },
+      "id": "3cc357d7-bd0b-49cb-aa40-bba17f1b7dd3",
+      "lastModified": "2018-08-09T16:10:44.645+09:00",
+      "name": "/user/join",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"loginid\":\"mail@test.com\",\"pass\":\"1\",\"loginpath\":\"90102\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/user/login"
+      },
+      "id": "e2d640fc-d154-4291-9d7a-f124076831d6",
+      "lastModified": "2018-08-09T01:37:42.426+09:00",
+      "name": "/user/login",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"phone\":\"01021107747\",\"key\":\"dkdBu3Cj65PoeIgp9baXvQ==\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/user/sendcertsms"
+      },
+      "id": "7e9b156e-59f1-4b5d-923a-6e04ada69137",
+      "lastModified": "2018-08-13T22:28:14.853+09:00",
+      "name": "/user/sendcertsms",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"logid\":\"\",\"certnum\":\"1234\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/user/smscert"
+      },
+      "id": "766efc15-95c4-4476-883c-6b430d6f8959",
+      "lastModified": "2018-08-09T17:31:08.668+09:00",
+      "name": "/user/smscert",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"token\":\"E59C4758755F173FCBF19A0BD6C00737\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/user/tokencheck"
+      },
+      "id": "b193f7c3-3399-4b36-94d7-6d449a0c6ae9",
+      "lastModified": "2018-08-11T18:05:42.770+09:00",
+      "name": "/user/tokencheck",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    },
+    {
+      "uriEditor": true,
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true,
+        "textBody": "{\"email\":\"x@a.c\",\"id\":\"bbb\",\"name\":\"hahaha\"}"
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "secure": true,
+          "name": "https",
+          "version": "V11"
+        },
+        "host": "localhost:8443",
+        "path": "/video/list/-90/-180/90/180"
+      },
+      "id": "07d74981-c9a3-408e-8d43-941798548b64",
+      "lastModified": "2018-08-09T16:10:01.630+09:00",
+      "name": "/video/list",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "google-oauth2|110289204832540482682"
+      },
+      "parentId": "3241f536-f172-4d8c-8e2a-0aa9a5e7a19f"
+    }
+  ]
+}

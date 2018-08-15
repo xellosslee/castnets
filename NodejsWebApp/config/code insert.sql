@@ -55,7 +55,7 @@ CALL usersessioncheck('E0315699136C0BCFC6A3DB786E0D77AF');
 
 CALL usergetsalt('01011112227');
 
-SELECT HEX(AES_ENCRYPT(connectid,logindate)) FROM connectlog
+SELECT *, HEX(AES_ENCRYPT(connectid, logindate)) FROM connectlog WHERE logoutdate IS NULL;
 
 SET @userid = UseridFromToken('E0315699136C0BCFC6A3DB786E0D77AF');
 SELECT @userid;
