@@ -85,7 +85,7 @@ app.get('/', function (req, res) {
             }
             else {
                 if (rows.length > 0) {
-                    videohtml = '<video id="videoPlayer" controls><source src="/video/stream/' + rows[0].videoid + '" type="video/mp4"></video>';
+                    videohtml = '&lt;video id="videoPlayer" controls&gt;&lt;source src="/video/stream/' + rows[0].videoid + '" type="video/mp4"&gt;&lt;/video&gt;';
                 }
                 res.render('index', { "uuid": uuidtemp, "videohtml": videohtml });
             }
