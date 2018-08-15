@@ -27,6 +27,12 @@ INSERT INTO `code` VALUES (60201, 60200, '파일종류', '영상');
 INSERT INTO `code` VALUES (60202, 60200, '파일종류', '프로필');
 INSERT INTO `code` VALUES (60203, 60200, '파일종류', '프로필배경');
 
+INSERT INTO `code` VALUES (70000, NULL, '영상기록', '영상기록');
+INSERT INTO `code` VALUES (70100, 70000, '영상기록종류', '미설정');
+INSERT INTO `code` VALUES (70101, 70100, '영상기록종류', '시작');
+INSERT INTO `code` VALUES (70102, 70100, '영상기록종류', '종료');
+INSERT INTO `code` VALUES (70103, 70100, '영상기록종류', '퇴장');
+
 INSERT INTO `code` VALUES (90000, NULL, '접속정보', '접속정보');
 INSERT INTO `code` VALUES (90100, 90000, '접속경로', '미설정');
 INSERT INTO `code` VALUES (90101, 90100, '접속경로', '안드로이드');
