@@ -69,7 +69,7 @@ app.get('*', function (req, res, next) {
 app.set('port', 3000);
 
 app.get('/', function (req, res) {
-    res.render('demo');
+    res.render('index');
 });
 
 app.get('/test', function (req, res) {
