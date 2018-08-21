@@ -38,6 +38,9 @@ CASTNETS_DBPASS : 접속할 DB계정의 비번c@stnet&mysql1@#
 # React 빌드하기
 node_modules/.bin/webpack app.tsx --config webpack-config.js
 
+#docker 콘솔로 들어가기
+docker exec -it node-dc-1 bash
+
 # 서버별 설치
 [DB]
 yum -y install http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm

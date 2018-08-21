@@ -106,8 +106,8 @@ app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ
 app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM', function (req, res) {
     res.download('./fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM'); // www.castnets.co.kr
 });
-app.get('/.well-known/acme-challenge/fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI', function (req, res) {
-    res.download('./fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI'); // castnets.co.kr
+app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res) {
+    res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ'); // castnets.co.kr
 });
 var server = app.listen(app.get('port'), function () {
     //console.log(process.env);
