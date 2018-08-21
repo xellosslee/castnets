@@ -59,7 +59,7 @@ app.get('*', function (req, res, next) {
             res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
         }
         else {
-            res.redirect('https://' + req.hostname + req.originalUrl);
+            res.redirect('https://demo.castnets.co.kr');
         }
     }
     else
@@ -68,12 +68,11 @@ app.get('*', function (req, res, next) {
 // Allows you to set port in the project properties.
 app.set('port', 3000);
 
-app.post('/', function (req, res) {
-    console.log(req.body);
-    res.send('');
+app.get('/', function (req, res) {
+    res.render('demo');
 });
 
-app.get('/', function (req, res) {
+app.get('/test', function (req, res) {
     var conn = require('./modules/mysql.js')();
     var videoid = '';
     try {
@@ -87,7 +86,7 @@ app.get('/', function (req, res) {
                 if (rows.length > 0) {
                     videoid = rows[0].videoid;
                 }
-                res.render('index', { "uuid": uuidtemp, "videoid": videoid });
+                res.render('demo', { "uuid": uuidtemp, "videoid": videoid });
             }
         });
     }
