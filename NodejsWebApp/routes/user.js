@@ -601,6 +601,39 @@
             throw err;
         }
     });
+    /** 유저프로필배경 보기
+     * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달
+     */
+    route.get('/profileback/:name', function (req, res, next) {
+        var conn = require('../modules/mysql.js')();
+        var default_profile = path.join(__dirname, '../resources/image/castnetslogo.png');
+        try {
+            var sql = "CALL userprofileback('" + req.params.name + "');";
+
+            conn.query(sql, function (err, rows) {
+                if (err) {
+                    res.sendFile(default_profile);
+                    conn.close();
+                    throw err;
+                }
+                else {
+                    if(rows[0].length > 0) {
+                        res.sendFile(rows[0][0].filepath);
+                        conn.close();
+                    }
+                    else {
+                        res.sendFile(default_profile);
+                        conn.close();
+                    }
+                }
+            });
+        }
+        catch (err) {
+            res.sendFile(default_profile);
+            conn.close();
+            throw err;
+        }
+    });
     // catch 404 and forward to error handler
     route.use(function (req, res, next) {
         var err = new Error('Not Found');
