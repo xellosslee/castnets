@@ -14,7 +14,7 @@
         .img01 {
             height: 0;
             padding-top: 69.531%; /* 445px÷640px×100=69.531...% */
-            background: url(../img/pic03_sp.jpg) no-repeat center;
+            background: url(/resources/web/cast_m.jpg) no-repeat center;
             background-size: contain;
         }
         .img01 img {
@@ -24,6 +24,35 @@
     </style>
 </head>
 <body>
-    <p class="img01"><img src="img/pic03_pc.jpg" alt=""></p>
+    <p><img src="/resources/web/cast_web.jpg" alt="" class="switch"></p>
+</section>
 </body>
+    <script src="https://code.jquery.com/jquery-1.12.4.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    $(function () {
+        var $setElem = $('.switch'),
+            pcName = '_web',
+            spName = '_m',
+            replaceWidth = 641;
+        $setElem.each(function () {
+            var $this = $(this);
+
+            function imgSize() {
+                if (window.innerWidth > replaceWidth) {
+                    $this.attr('src', $this.attr('src').replace(spName, pcName)).css({
+                        visibility: 'visible'
+                    });
+                } else {
+                    $this.attr('src', $this.attr('src').replace(pcName, spName)).css({
+                        visibility: 'visible'
+                    });
+                }
+            }
+            $(window).resize(function () {
+                imgSize();
+            });
+            imgSize();
+        });
+    });
+    </script>
 </html>
