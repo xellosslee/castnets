@@ -53,18 +53,18 @@ var https_server = https.createServer(options, app);
 https_server.listen(PORT, function () {
     console.log(`server at port ${PORT}`);
 });
-app.get('*', function (req, res, next) {
-    if (req.protocol !== 'https') {
-        if (req.host === "localhost") {
-            res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
-        }
-        else {
-            res.redirect('https://demo.castnets.co.kr');
-        }
-    }
-    else
-        next();
-});
+// app.get('*', function (req, res, next) {
+//     if (req.protocol !== 'https') {
+//         if (req.host === "localhost") {
+//             res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
+//         }
+//         else {
+//             res.redirect('https://demo.castnets.co.kr');
+//         }
+//     }
+//     else
+//         next();
+// });
 // Allows you to set port in the project properties.
 app.set('port', 3000);
 
