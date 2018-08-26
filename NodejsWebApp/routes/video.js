@@ -33,10 +33,11 @@
                         list.push(row);
                     });
                 }
-                result.resultcode = resultcode.Success;
-                result.list = list;
-                res.json(result);
-                conn.close();
+                common.sendResult(res, conn, resultcode.Success, {"list":list});
+                // result.resultcode = resultcode.Success;
+                // result.list = list;
+                // res.json(result);
+                // conn.close();
             });
         }
         catch (e) {
