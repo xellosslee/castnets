@@ -140,7 +140,7 @@
   });
   /** 인증문자 발송
    * req : 휴대전화번호 phone, key(현재시간을 암호화하여 전송 : 무분별하게 호출되는것을 막기 위함)
-   * res : resultcode 결과값과 certkey를 json으로 리턴 (인증완료 할때 해당 certkey를 함께 보내야함)
+   * res : resultcode 결과값과 logid를 json으로 리턴 (인증완료 할때 해당 logid를 함께 보내야함)
    * 암복호화 예제
   const cipher = crypto.createCipher('aes-256-cbc', 'keyboard cat');
   let result = cipher.update(Date.now().toString(), 'utf8', 'base64'); // 'HbMtmFdroLU0arLpMflQ'
@@ -200,8 +200,8 @@
                 conn.close();
                 throw err;
               } else {
-                var certKey = rows[2][0]['@logid'];
-                if (certKey > 0) { // 기록이 정상적으로 남았음
+                var logid = rows[2][0]['@logid'];
+                if (logid > 0) { // 기록이 정상적으로 남았음
                   // 요청 세부 내용
                   var options = {
                     url: 'https://apis.aligo.in',
@@ -233,7 +233,7 @@
                         } else {
                           if (json.result_code == 1) {
                             result.resultcode = resultcode.Success;
-                            result.certkey = certKey;
+                            result.logid = logid;
                           } else {
                             result.resultcode = resultcode.SmsSendFailed;
                           }
