@@ -580,6 +580,58 @@
       throw err;
     }
   });
+  /** 유저이름 변경 가능 여부 확인
+   * req : token, name
+   * res : resultcode 결과값
+   */
+  route.post('/usernamecheck', (req, res, next)=>{
+    console.log(req.body);
+    var conn = require('../modules/mysql.js')();
+    try {
+      var sql = "CALL usernamecheck(" + req.body.token + "," + req.body.name + ");";
+      conn.query(sql, (err, rows)=>{
+        if (err) {
+          common.sendResult(res,conn,resultcode.Failed);
+          throw err;
+        } else {
+          if (rows[0][0].canchange == 1) {
+            common.sendResult(res,conn,resultcode.Success);
+          } else {
+            common.sendResult(res,conn,resultcode.AlreadyExistsName);
+          }
+        }
+      });
+    } catch (err) {
+      common.sendResult(res,conn,resultcode.Failed);
+      throw err;
+    }
+  });
+  /** 유저이름 변경
+   * req : token, name
+   * res : resultcode 결과값
+   */
+  route.post('/usernamechange', (req, res, next)=>{
+    console.log(req.body);
+    var conn = require('../modules/mysql.js')();
+    try {
+      var sql = "CALL usernamechange(" + req.body.token + "," + req.body.name + ");";
+      conn.query(sql, (err, rows)=>{
+        if (err) {
+          common.sendResult(res,conn,resultcode.Failed);
+          throw err;
+        } else {
+          if (rows[0].affectedRows == 1) {
+            common.sendResult(res,conn,resultcode.Success);
+          } else {
+            common.sendResult(res,conn,resultcode.Failed);
+          }
+        }
+      });
+    } catch (err) {
+      common.sendResult(res,conn,resultcode.Failed);
+      throw err;
+    }
+  });
   // catch 404 and forward to error handler
   route.use((req, res, next)=>{
     var err = new Error('Not Found');
