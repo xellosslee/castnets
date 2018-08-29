@@ -588,7 +588,7 @@
     console.log(req.body);
     var conn = require('../modules/mysql.js')();
     try {
-      var sql = "CALL usernamecheck(" + req.body.token + "," + req.body.name + ");";
+      var sql = "CALL usernamecheck('" + req.body.token + "','" + req.body.name + "');";
       conn.query(sql, (err, rows)=>{
         if (err) {
           common.sendResult(res,conn,resultcode.Failed);
@@ -614,7 +614,7 @@
     console.log(req.body);
     var conn = require('../modules/mysql.js')();
     try {
-      var sql = "CALL usernamechange(" + req.body.token + "," + req.body.name + ");";
+      var sql = "CALL usernamechange('" + req.body.token + "','" + req.body.name + "');";
       conn.query(sql, (err, rows)=>{
         if (err) {
           common.sendResult(res,conn,resultcode.Failed);
