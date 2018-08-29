@@ -496,7 +496,7 @@
             });
           } else {
             console.log(rows);
-            if (rows.affectedRows >= 1) {
+            if (rows['affectedRows'] >= 1) {
               conn.commit(()=>{
                 res.send(common.htmlTempleate02);
                 conn.close();
@@ -620,7 +620,7 @@
           common.sendResult(res,conn,resultcode.Failed);
           throw err;
         } else {
-          if (rows[0].affectedRows == 1) {
+          if (rows['affectedRows'] == 1) {
             common.sendResult(res,conn,resultcode.Success);
           } else {
             common.sendResult(res,conn,resultcode.Failed);

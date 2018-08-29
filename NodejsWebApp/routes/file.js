@@ -111,7 +111,7 @@ module.exports = (app)=>{
                     throw err;
                   }
                   console.log(rows);
-                  if (rows.affectedRows > 0) {
+                  if (rows['affectedRows'] > 0) {
                     conn.commit(()=>{
                       result.resultcode = resultcode.Success;
                       res.json(result);
@@ -138,7 +138,7 @@ module.exports = (app)=>{
                     throw err;
                   }
                   console.log(rows);
-                  if (rows[1].affectedRows > 0) {
+                  if (rows[1]['affectedRows'] > 0) {
                     conn.commit(()=>{
                       result.resultcode = resultcode.Success;
                       if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
@@ -172,7 +172,7 @@ module.exports = (app)=>{
                     throw err;
                   }
                   console.log(rows);
-                  if (rows[1].affectedRows > 0) {
+                  if (rows[1]['affectedRows'] > 0) {
                     conn.commit(()=>{
                       result.resultcode = resultcode.Success;
                       if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
