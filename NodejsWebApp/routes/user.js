@@ -31,16 +31,16 @@
       pass: 'iglab2018!'
     }
   });
-  route.get('*', (req, res, next)=>{
-    if (req.protocol !== 'https') {
-      if (req.hostname === "localhost") {
-        res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
-      } else {
-        res.redirect('https://' + req.hostname + req.originalUrl);
-      }
-    } else
-      next();
-  });
+  // route.get('*', (req, res, next)=>{
+  //   if (req.protocol !== 'https') {
+  //     if (req.hostname === "localhost") {
+  //       res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
+  //     } else {
+  //       res.redirect('https://' + req.hostname + req.originalUrl);
+  //     }
+  //   } else
+  //     next();
+  // });
   // sms send infomation
   const request = require('request');
   /** 회원가입
