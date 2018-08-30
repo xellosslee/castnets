@@ -302,7 +302,6 @@
   route.post('/login', (req, res, next)=>{
     console.log(req.body);
 
-<<<<<<< HEAD
         var conn = require('../modules/mysql.js')();
         var result = {};
         result.resultcode = resultcode.Failed;
@@ -310,15 +309,6 @@
         try {
             var pass, salt;
             var sql = "CALL usersaltget('" + req.body.loginid + "');";
-=======
-    var conn = require('../modules/mysql.js')();
-    var result = {};
-    result.resultcode = resultcode.Failed;
-    result.token = '';
-    try {
-      var pass, salt;
-      var sql = "CALL usergetsalt('" + req.body.loginid + "');";
->>>>>>> d6172b3c0a2108e156712411d8e3b2fe13d1e425
 
       conn.query(sql, (err, rows)=>{
         if (err) {
