@@ -335,7 +335,7 @@
         result.token = '';
         try {
             var pass, salt;
-            var sql = "CALL usergetsalt('" + req.body.loginid + "');";
+            var sql = "CALL usersaltget('" + req.body.loginid + "');";
 
             conn.query(sql, function (err, rows) {
                 if (err) {
