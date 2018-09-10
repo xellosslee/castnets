@@ -16,11 +16,11 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
    * GET 방식으로 전송하는것을 추천
    */
-  route.get('/list/:lat/:lng/:cnt/:pos', (req, res)=>{
+  route.get('/list/:lat/:lng/:cnt/:distance', (req, res)=>{
     var conn = require('../modules/mysql.js')();
     try {
       var sql = "CALL videolist(" + (req.params.lat === undefined ? 37.394926 : req.params.lat) + "," +
-        (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.pos + ")";
+        (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.distance + ")";
       conn.query(sql, (err, rows)=>{
         if (err) {
           conn.close();
@@ -74,10 +74,10 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
    * GET 방식으로 전송하는것을 추천
    */
-  route.get('/targetlist/:videoid/:lat/:lng', (req, res)=>{
+  route.get('/targetlist/:videoid/:lat/:lng/:cnt/:distance', (req, res)=>{
     var conn = require('../modules/mysql.js')();
     try {
-      conn.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ')', (err, rows)=>{
+      conn.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ',' + req.params.cnt + ',' + req.params.distance + ')', (err, rows)=>{
         if (err) {
           common.sendResult(res, conn, resultcode.Failed);
           throw err;
