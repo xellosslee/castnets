@@ -12,7 +12,7 @@
     saveUninitialized: true
   }));
   /**자신 주변의 영상을 가져온다
-   * req : 현재 자신의 GPS 위치, 개수, 위치
+   * req : 현재 자신의 GPS 위치, 개수, 거리값(이전의 리스트에서 가장 높은 거리값)
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lan, lng, capturedate, createdate, filepath 값을 가짐}
    * GET 방식으로 전송하는것을 추천
    */
