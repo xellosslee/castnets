@@ -1,4 +1,5 @@
 ﻿{
+  "AlreadyExistsName": "1013",
   "SmsCertNotValied": "1012",
   "CertTimeOut": "1011",
   "SmsSendFailed": "1010",

@@ -53,27 +53,26 @@ var https_server = https.createServer(options, app);
 https_server.listen(PORT, function () {
     console.log(`server at port ${PORT}`);
 });
-app.get('*', function (req, res, next) {
-    if (req.protocol !== 'https') {
-        if (req.host === "localhost") {
-            res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
-        }
-        else {
-            res.redirect('https://' + req.hostname + req.originalUrl);
-        }
-    }
-    else
-        next();
-});
+// app.get('*', function (req, res, next) {
+//     if (req.protocol !== 'https') {
+//         if (req.host === "localhost") {
+//             res.redirect('https://' + req.hostname + ':8443' + req.originalUrl);
+//         }
+//         else {
+//             res.redirect('https://demo.castnets.co.kr');
+//         }
+//     }
+//     else
+//         next();
+// });
 // Allows you to set port in the project properties.
 app.set('port', 3000);
 
-app.post('/', function (req, res) {
-    console.log(req.body);
-    res.send('');
+app.get('/', function (req, res) {
+    res.render('index');
 });
 
-app.get('/', function (req, res) {
+app.get('/test', function (req, res) {
     var conn = require('./modules/mysql.js')();
     var videoid = '';
     try {
@@ -87,7 +86,7 @@ app.get('/', function (req, res) {
                 if (rows.length > 0) {
                     videoid = rows[0].videoid;
                 }
-                res.render('index', { "uuid": uuidtemp, "videoid": videoid });
+                res.render('demo', { "uuid": uuidtemp, "videoid": videoid });
             }
         });
     }
@@ -106,8 +105,8 @@ app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ
 app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM', function (req, res) {
     res.download('./fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM'); // www.castnets.co.kr
 });
-app.get('/.well-known/acme-challenge/fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI', function (req, res) {
-    res.download('./fC7JsL84ZKDseGx_uPzbci22jKWy4JzQyoJg6Pin5rI'); // castnets.co.kr
+app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res) {
+    res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ'); // castnets.co.kr
 });
 var server = app.listen(app.get('port'), function () {
     //console.log(process.env);
