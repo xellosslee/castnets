@@ -37,8 +37,6 @@ services:
       - 8443
     links:
       - db:db
-    env_file:
-      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
@@ -53,8 +51,6 @@ services:
       - 8443
     links:
       - db:db
-    env_file:
-      - "env.env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
