@@ -1,6 +1,6 @@
 {
   "name": "castnets",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "castnets",
   "main": "server.js",
   "author": {
