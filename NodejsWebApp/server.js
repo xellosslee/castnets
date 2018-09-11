@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 process.on('uncaughtException', function (err) {
     console.log(err.stack);
     console.log('uncaughtException : ' + err);

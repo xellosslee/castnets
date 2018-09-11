@@ -1,10 +1,10 @@
 ﻿module.exports = function () {
     const mysql = require('mysql');
     var conn = mysql.createConnection({
-        host: process.env.CASTNETS_DBHOST,
-        user: process.env.CASTNETS_DBUSER,
-        password: process.env.CASTNETS_DBPASS,
-        database: 'castnets',
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
         charset: 'utf8',
         multipleStatements: true
     });
