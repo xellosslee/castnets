@@ -2,49 +2,49 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
-    <meta http-equiv="Content-Style-Type" content="text/css">
-    <meta http-equiv="Content-Script-Type" content="text/javascript">
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <meta http-equiv="Content-Script-Type" content="text/javascript">
 
-    <title>Castnets</title>
-    <style>
-    .switch { width: 100% }
-    </style>
+  <title>Castnets</title>
+  <style>
+  .switch { width: 100% }
+  </style>
 </head>
 <body style="background-color: black">
-    <p><img src="/resources/web/cast_web.jpg" alt="" class="switch"></p>
+  <p><img src="/resources/web/cast_web.jpg" alt="" class="switch"></p>
 </section>
 </body>
-    <script src="https://code.jquery.com/jquery-1.12.4.js" type="text/javascript"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
-    </script>
-    <script type="text/javascript">
-    $(function () {
-        var $setElem = $('.switch'),
-            pcName = '_web',
-            spName = '_m',
-            replaceWidth = 641;
-        $setElem.each(function () {
-            var $this = $(this);
+  <script src="https://code.jquery.com/jquery-1.12.4.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+  </script>
+  <script type="text/javascript">
+  $(function () {
+    var $setElem = $('.switch'),
+      pcName = '_web',
+      spName = '_m',
+      replaceWidth = 641;
+    $setElem.each(function () {
+      var $this = $(this);
 
-            function imgSize() {
-                if (window.innerWidth > replaceWidth) {
-                    $this.attr('src', $this.attr('src').replace(spName, pcName)).css({
-                        visibility: 'visible'
-                    });
-                } else {
-                    $this.attr('src', $this.attr('src').replace(pcName, spName)).css({
-                        visibility: 'visible'
-                    });
-                }
-            }
-            $(window).resize(function () {
-                imgSize();
-            });
-            imgSize();
-        });
+      function imgSize() {
+        if (window.innerWidth > replaceWidth) {
+          $this.attr('src', $this.attr('src').replace(spName, pcName)).css({
+            visibility: 'visible'
+          });
+        } else {
+          $this.attr('src', $this.attr('src').replace(pcName, spName)).css({
+            visibility: 'visible'
+          });
+        }
+      }
+      $(window).resize(function () {
+        imgSize();
+      });
+      imgSize();
     });
-    </script>
+  });
+  </script>
 </html>

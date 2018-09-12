@@ -1,34 +1,34 @@
 ﻿module.exports = ()=>{
-  var common = {};
-  const fs = require('fs');
-  const path = require('path');
-  const extend = require('util-extend');
+  var common = {}
+  const fs = require('fs')
+  const path = require('path')
+  const extend = require('util-extend')
   /** 디렉토리 생성
    * @param {any} dirPath 전체경로를 전달하여 해당 디렉토리까지 모두 생성
    */
   common.mkdirpath = (dirPath)=>{
     if (!fs.existsSync(dirPath)) {
       try {
-        fs.mkdirSync(dirPath);
+        fs.mkdirSync(dirPath)
       }
       catch (e) {
-        common.mkdirpath(path.dirname(dirPath));
-        common.mkdirpath(dirPath);
+        common.mkdirpath(path.dirname(dirPath))
+        common.mkdirpath(dirPath)
       }
     }
   };
   /** resultCode를 Json형태로 전달하고 db Close동작을 한다
    */
   common.sendResult = (res, conn, code, ...extraArgs)=>{
-    let result = {};
-    result.resultCode = code;
+    let result = {}
+    result.resultCode = code
     // extend(result, extraArgs);
     extraArgs.forEach((item)=>{
-      extend(result, item);
+      extend(result, item)
     })
-    res.json(result);
+    res.json(result)
     if(conn !== undefined) {
-      conn.close();
+      conn.close()
     }
   }
   /** 이메일 템플릿
@@ -48,7 +48,7 @@
         <button style="width: 180pt; height: 48pt; background-color: #EE4359; color: white; font-size: 14pt; border: none; border-radius:5px;">이메일 인증</button>\
       </a>\
     </div>\
-  ';
+  '
   common.htmlTempleate02 = '\
     <div style="width:680pt; border-top:2pt solid #EE4359" align="center">\
       <img src="https://demo.castnets.co.kr/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
@@ -58,7 +58,7 @@
         </span>\
       </div>\
     </div>\
-  ';
+  '
   common.htmlTempleate03 = '\
     <div style="width:680pt; border-top:2pt solid #EE4359" align="center">\
       <img src="https://demo.castnets.co.kr/resources/image/castnetslogo.png" width="102pt" height="73pt" style="margin:32pt 0 25pt 0;" />\
@@ -68,6 +68,6 @@
         </span>\
       </div>\
     </div>\
-  ';
-  return common;
+  '
+  return common
 };

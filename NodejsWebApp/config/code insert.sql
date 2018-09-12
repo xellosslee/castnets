@@ -39,6 +39,11 @@ INSERT INTO `code` VALUES (90101, 90100, '접속경로', '안드로이드');
 INSERT INTO `code` VALUES (90102, 90100, '접속경로', '애플');
 INSERT INTO `code` VALUES (90103, 90100, '접속경로', '웹');
 
+INSERT INTO `code` VALUES (100000, NULL, '서버정보', '서버정보');
+INSERT INTO `code` VALUES (100100, 100000, '서버종류', '미설정');
+INSERT INTO `code` VALUES (100101, 100100, '서버종류', 'WAS서버');
+INSERT INTO `code` VALUES (100102, 100100, '서버종류', 'Resource서버');
+
 INSERT INTO `castnets`.`terms` 
 	(`title`, 	`contents`, 	`registdate`, 	`order`	)
 	VALUES('캐스트네츠 이용약관','이 약관은 일군연구소가 제공하는 캐스트네츠 및 캐스트네츠 관련 제반 서비스의 이용과 관련하여 회사와 회원과의 권리,의무 및 책임사항. 기타 필요한 사항을 규정함을 목적으로 합니다.',NOW(),101);
@@ -66,7 +71,7 @@ ROLLBACK;
 
 CALL usersessioncheck('E0315699136C0BCFC6A3DB786E0D77AF');
 
-CALL usergetsalt('01011112227');
+CALL usersaltget('01011112227');
 
 SET @userid = UseridFromToken('E0315699136C0BCFC6A3DB786E0D77AF');
 SELECT @userid;
