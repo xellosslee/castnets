@@ -671,6 +671,33 @@
       throw err
     }
   })
+  /**특정 유저의 영상을 가져온다
+   * req : 유저 닉네임, 자신의 토큰(자신의 프로필인지 비교하기 위함)
+   * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
+   */
+  route.post('/uservideolist/:name', (req, res)=>{
+    var conn = require('../modules/mysql.js')()
+    try {
+      conn.query('CALL uservideolist(' + req.params.name + ',' + req.body.token + ')', (err, rows)=>{
+        if (err) {
+          common.sendResult(res, conn, resultcode.Failed)
+          throw err
+        }
+
+        console.log(rows)
+        var list = []
+        if (rows[0].length > 0) {
+          rows[0].forEach((row)=>{
+            list.push(row)
+          })
+        }
+        common.sendResult(res, conn, resultcode.Success, {"list": list})
+      })
+    } catch (err) {
+      common.sendResult(res, conn, resultcode.Failed)
+      throw err
+    }
+  })
   // catch 404 and forward to error handler
   route.use((req, res, next) => {
     var err = new Error("Not Found")
