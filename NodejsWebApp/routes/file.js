@@ -24,9 +24,9 @@ module.exports = (app)=>{
     destination: (req, file, cb)=>{
       if (file.mimetype.indexOf('video') !== -1) {
         // 폴더가 없다면 생성 (일별로 폴더 신규 생성)
-        if (process.env.NODE_ENV === 'product') {
+        if (process.env.NODE_ENV === 'production') {
           this.strpath = path.join('/data/uploads/video/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'test') {
+        } else if (process.env.NODE_ENV === 'demo') {
           this.strpath = path.join('/data/uploads/video/' + new Date().toISOString().substr(0, 10));
         } else {
           this.strpath = path.join(__dirname, './../uploads/video/' + new Date().toISOString().substr(0, 10));
@@ -35,9 +35,9 @@ module.exports = (app)=>{
         cb(null, this.strpath);
       } else if (file.mimetype.indexOf('image') !== -1) {
         // 폴더가 없다면 생성 (일별로 폴더 신규 생성)
-        if (process.env.NODE_ENV === 'product') {
+        if (process.env.NODE_ENV === 'production') {
           this.strpath = path.join('/data/uploads/image/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'test') {
+        } else if (process.env.NODE_ENV === 'demo') {
           this.strpath = path.join('/data/uploads/image/' + new Date().toISOString().substr(0, 10));
         } else {
           this.strpath = path.join(__dirname, './../uploads/image/' + new Date().toISOString().substr(0, 10));
