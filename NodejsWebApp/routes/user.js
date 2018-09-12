@@ -4,9 +4,7 @@
   const common = require("../modules/common.js")()
   const fs = require("fs")
   const path = require("path")
-  var resultcode = JSON.parse(
-    fs.readFileSync("resultcode.json", "utf8").trim()
-  )
+  var resultcode = JSON.parse(fs.readFileSync("resultcode.json", "utf8").trim())
   const crypto = require("crypto-browserify")
   var nodemailer = require("nodemailer")
   var route = express.Router()
@@ -61,19 +59,12 @@
           pass = key.toString("base64")
 
           conn.beginTransaction(() => {
-            var sql =
-              "SET @token = 0;" +
+            var sql = "SET @token = 0;" +
               "CALL userjoin_token('" +
               (req.body.logid === undefined ? 0 : req.body.logid) +
               "','" +
               (req.body.email === undefined ? "" : req.body.email) +
-              "','" +
-              pass +
-              "','" +
-              salt +
-              "'," +
-              req.body.loginpath +
-              ", @token);" +
+              "','" + pass + "','" + salt + "'," + req.body.loginpath + ", @token);" +
               "SELECT @token"
 
             //console.log(sql)
@@ -219,12 +210,7 @@
             // 전송기록을 먼저 남김
             var certnum = Math.floor(Math.random() * (9999 - 1000)) + 1000 // 1000~9999 까지의 임의의 숫자 생성
             var msg = "캐스트네츠 [" + certnum + "] 인증번호를 입력해주세요."
-            var sql =
-              "SET @logid=0;CALL smssendlogadd('" +
-              req.body.phone +
-              "','" +
-              msg +
-              "', @logid);SELECT @logid"
+            var sql = "SET @logid=0;CALL smssendlogadd('" + req.body.phone + "','" + msg + "', @logid);SELECT @logid"
             conn.query(sql, (err, rows) => {
               if (err) {
                 res.json(result)
@@ -368,10 +354,7 @@
             (err, key) => {
               pass = key.toString("base64")
 
-              var sql =
-                "SET @token = '';" +
-                "CALL userlogin_token('" + req.body.loginid + "','" + pass + "'," + req.body.loginpath + ", @token);" +
-                "SELECT @token"
+              var sql = "SET @token = '';CALL userlogin_token('" + req.body.loginid + "','" + pass + "'," + req.body.loginpath + ", @token);SELECT @token"
 
               console.log(sql)
               conn.query(sql, (err, rows) => {
@@ -490,10 +473,7 @@
   route.post("/emailresend", (req, res, next) => {
     var conn = require("../modules/mysql.js")()
     try {
-      var sql =
-        "SET @emailkey = '';" +
-        "CALL emailsend('" + req.body.token + "', @emailkey);" +
-        "SELECT @emailkey"
+      var sql = "SET @emailkey = '';CALL emailsend('" + req.body.token + "', @emailkey);SELECT @emailkey"
 
       conn.query(sql, (err, rows) => {
         if (err) {

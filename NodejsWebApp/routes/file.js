@@ -92,7 +92,7 @@ module.exports = (app)=>{
 
         conn.beginTransaction(()=>{
           var sql = "SET @fileid = 0;" +
-            "CALL fileadd(@userid, 'http://" + req.hostname + "/', '" + path.normalize(req.file.destination).replace(/\\/g, '/') +
+            "CALL fileadd(@userid, '" + process.env.PRIVATE_IP + "', '" + path.normalize(req.file.destination).replace(/\\/g, '/') +
             "', '" + req.file.filename + "', '" + req.file.originalname + "', " + req.body.registlocation + "," + req.body.filetype + ",@fileid);" +
             " SELECT @fileid"
           conn.query(sql, (err, rows)=>{
