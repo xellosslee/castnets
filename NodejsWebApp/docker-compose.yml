@@ -42,6 +42,7 @@ services:
       - /src/ssl:/src/ssl
       - /data:/data
       - ./node_modules:/src/node_modules
+      - ./.env:/src/.env
 
   was-2:
     container_name: node-dc-2
@@ -56,3 +57,4 @@ services:
       - /src/ssl:/src/ssl
       - /data:/data
       - ./node_modules:/src/node_modules
+      - ./.env:/src/.env
