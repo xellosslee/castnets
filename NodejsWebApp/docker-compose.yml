@@ -5,7 +5,7 @@ services:
     container_name: mysql-dc
     image: mysql:5.7
     ports:
-      - 1820
+      - 3306:1820
     environment:
       MYSQL_ROOT_PASSWORD: "Zf}7WAQn_p(G4yvd"
     volumes:
