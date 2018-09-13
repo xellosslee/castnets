@@ -111,6 +111,6 @@ app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ
 });
 var server = app.listen(app.get('port'), function () {
     //console.log(process.env);
-    console.log('[' + uuidtemp + ']');
+    console.log('uuid [' + uuidtemp + ']');
     console.log('listening : ' + app.get('port'));
 });
