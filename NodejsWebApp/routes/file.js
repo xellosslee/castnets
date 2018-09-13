@@ -60,7 +60,7 @@ module.exports = (app)=>{
           }
         })
         num++
-        cb(null, file.originalname.split('.')[0] + '_' + num + '.' + file.originalname.split('.')[1])
+        cb(null, file.originalname.split('.')[0] + '_' + num + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
       } else {
         cb(null, file.originalname)
       }
