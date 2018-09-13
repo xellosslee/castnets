@@ -37,12 +37,13 @@ services:
       - 8443
     links:
       - db:db
+    env_file:
+      - ".env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
       - /data:/data
       - ./node_modules:/src/node_modules
-      - ./.env:/src/.env
 
   was-2:
     container_name: node-dc-2
@@ -52,9 +53,10 @@ services:
       - 8443
     links:
       - db:db
+    env_file:
+      - ".env"
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
       - /data:/data
       - ./node_modules:/src/node_modules
-      - ./.env:/src/.env
