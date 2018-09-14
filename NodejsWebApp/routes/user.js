@@ -63,7 +63,7 @@
             var sql = `SET @token = 0;
               CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
               '${(req.body.email === undefined ? "" : req.body.email)}"',
-              '${pass}','${salt}',${req.body.loginpath},${process.env.PRIVATE_IP},@token);SELECT @token`
+              '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
               
             //console.log(sql)
             req.conn.query(sql, (err, rows) => {
@@ -312,7 +312,7 @@
               return next(err)
             }
             pass = key.toString("base64")
-            var sql = `SET @token = '';CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},${process.env.PRIVATE_IP},@token);SELECT @token`
+            var sql = `SET @token = '';CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
 
             console.log(sql)
             req.conn.query(sql, (err, rows) => {
