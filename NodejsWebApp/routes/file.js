@@ -74,54 +74,54 @@ module.exports = (app)=>{
    * req : post데이터에 file명칭의 파일과 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
    * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
    */
-  route.post('/upload', upload.single('file'), (req, res)=>{
+  route.post('/upload', upload.single('file'), (req, res, next)=>{
     console.log(req.file)
-    var conn = require('../modules/mysql.js')()
+    req.conn = require('../modules/mysql.js')()
     var result = {}
     result.resultcode = resultcode.Failed
 
     try {
       // 토큰으로 userid를 뽑아둔다
-      conn.query("SET @userid = UseridFromToken('" + req.body.token + "')", (err, rows)=>{
+      req.conn.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
         if (err) {
           res.json(result)
-          conn.close()
+          req.conn.close()
           throw err
         }
         console.log(rows)
 
-        conn.beginTransaction(()=>{
-          var sql = "SET @fileid = 0;" +
-            "CALL fileadd(@userid, '" + process.env.PRIVATE_IP + "', '" + path.normalize(req.file.destination).replace(/\\/g, '/') +
-            "', '" + req.file.filename + "', '" + req.file.originalname + "', " + req.body.registlocation + "," + req.body.filetype + ",@fileid);" +
-            " SELECT @fileid"
-          conn.query(sql, (err, rows)=>{
+        req.conn.beginTransaction(()=>{
+          var sql = `SET @fileid = 0;
+            CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.file.destination).replace(/\\/g, '/')}',
+            '${req.file.filename}','${req.file.originalname}',${req.body.registlocation},${req.body.filetype},@fileid);
+            SELECT @fileid`
+          req.conn.query(sql, (err, rows)=>{
             if (err) {
               res.json(result)
-              conn.close()
+              req.conn.close()
               throw err
             }
             console.log(rows)
             if (rows[2][0]['@fileid'] > 0) {
               if (req.body.filetype === "60201") {
-                conn.query("CALL videoadd(@userid,@fileid," + req.body.lan + "," + req.body.lng + ",'" + req.body.comment + "','" + req.body.capturedate + "')", (err, rows)=>{
+                req.conn.query(`CALL videoadd(@userid,@fileid,${req.body.lan},${req.body.lng},'${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
                   if (err) {
                     res.json(result)
-                    conn.close()
+                    req.conn.close()
                     throw err
                   }
                   console.log(rows)
                   if (rows['affectedRows'] > 0) {
-                    conn.commit(()=>{
+                    req.conn.commit(()=>{
                       result.resultcode = resultcode.Success
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                   } else {
-                    conn.rollback(()=>{
+                    req.conn.rollback(()=>{
                       console.log('rollback videoadd')
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                     fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
                       if (err)
@@ -131,15 +131,15 @@ module.exports = (app)=>{
                   }
                 })
               } else if (req.body.filetype === "60202") {
-                conn.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
+                req.conn.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
                   if (err) {
                     res.json(result)
-                    conn.close()
+                    req.conn.close()
                     throw err
                   }
                   console.log(rows)
                   if (rows[1]['affectedRows'] > 0) {
-                    conn.commit(()=>{
+                    req.conn.commit(()=>{
                       result.resultcode = resultcode.Success
                       if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
                         fs.unlink(rows[2][0]['@removefile'], (err)=>{ // 삭제처리가 성공하든 말든 진행
@@ -149,13 +149,13 @@ module.exports = (app)=>{
                         })
                       }
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                   } else {
-                    conn.rollback(()=>{
+                    req.conn.rollback(()=>{
                       console.log('rollback profileadd')
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                     fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
                       if (err)
@@ -165,15 +165,15 @@ module.exports = (app)=>{
                   }
                 })
               } else if (req.body.filetype === "60203") {
-                conn.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
+                req.conn.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
                   if (err) {
                     res.json(result)
-                    conn.close()
+                    req.conn.close()
                     throw err
                   }
                   console.log(rows)
                   if (rows[1]['affectedRows'] > 0) {
-                    conn.commit(()=>{
+                    req.conn.commit(()=>{
                       result.resultcode = resultcode.Success
                       if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
                         fs.unlink(rows[2][0]['@removefile'], (err)=>{ // 삭제처리가 성공하든 말든 진행
@@ -183,13 +183,13 @@ module.exports = (app)=>{
                         })
                       }
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                   } else {
-                    conn.rollback(()=>{
+                    req.conn.rollback(()=>{
                       console.log('rollback profilebackadd')
                       res.json(result)
-                      conn.close()
+                      req.conn.close()
                     })
                     fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
                       if (err)
@@ -201,7 +201,7 @@ module.exports = (app)=>{
               } else {
                 result.resultcode = resultcode.UnkownType
                 res.json(result)
-                conn.close()
+                req.conn.close()
               }
             }
           })
@@ -209,7 +209,7 @@ module.exports = (app)=>{
       })
     } catch (err) {
       res.json(result)
-      conn.close()
+      req.conn.close()
       throw err
     }
   })

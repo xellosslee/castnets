@@ -1,6 +1,6 @@
 ﻿module.exports = function () {
   const mysql = require('mysql')
-  var conn = mysql.createConnection({
+  dbconn = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -11,16 +11,16 @@
   })
   /** 종료시 반드시 close해야함
    */
-  conn.close = function () {
-    console.log('db closed')
-    conn.end()
+  dbconn.close = function () {
+    console.log('db closing')
+    dbconn.end()
   }
   /** 최초 생성시 연결
    */
   try {
-    conn.connect()
+    dbconn.connect()
     console.log('db connected')
-    return conn
+    return dbconn
   }
   catch (ex) {
     console.log(ex)

@@ -1,4 +1,4 @@
-﻿/** Route using simple templeate
+/** Route using simple templeate
  * @param {express} app server sent express object
  */
 module.exports = (app) => {

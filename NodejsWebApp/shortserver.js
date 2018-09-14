@@ -13,7 +13,7 @@ var server = app.listen(app.get('port'), function () {
 });
 
 
-app.get('/', function (req, res) {
+app.get('/', function (req, res, next) {
     var key = req.params.name;
 
     req.redis.get(key, function (err, data) {
