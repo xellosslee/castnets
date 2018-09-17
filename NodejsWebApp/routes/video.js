@@ -99,6 +99,7 @@
     var sql = "CALL videostream(" + req.params.videoid + ")"
     req.conn.query(sql, (err, rows)=>{
       try {
+        console.log(`video stream[${req.params.videoid}]`)
         if (err) {
           return next(err)
         }
@@ -133,7 +134,7 @@
             })
             file.pipe(res)
           } else {
-            console.log('ALL: ' + total)
+            console.log(`Total bytes: ${total}`)
             res.writeHead(200, {
               'Content-Length': total,
               'Content-Type': 'video/mp4'
