@@ -16,7 +16,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distance 값을 가짐}
    */
   route.get('/list/:lat/:lng/:cnt/:distance', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     var sql = "CALL videolist(" + (req.params.lat === undefined ? 37.394926 : req.params.lat) + "," +
       (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.distance + ")"
     connpool.query(sql, (err, rows)=>{
@@ -38,7 +38,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
   route.get('/maplist/:slat/:slng/:elat/:elng', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     connpool.query('CALL videomaplist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', (err, rows)=>{
       if (err) {
         return next(err)
@@ -58,7 +58,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distancefromme, distance 값을 가짐}
    */
   route.get('/targetlist/:videoid/:lat/:lng/:cnt/:distance', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     connpool.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ',' + req.params.cnt + ',' + req.params.distance + ')', (err, rows)=>{
       if (err) {
         return next(err)
@@ -79,7 +79,7 @@
    * res : 결과 없음. 성공여부에 상관없이 진행
    */
   route.post('/view', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")"
     var result = {}
     result.resultcode = resultcode.Failed
@@ -95,7 +95,7 @@
    * res : 해당 영상 내용을 리턴
    */
   route.get('/stream/:videoid', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     var sql = "CALL videostream(" + req.params.videoid + ")"
     connpool.query(sql, (err, rows)=>{
       try {

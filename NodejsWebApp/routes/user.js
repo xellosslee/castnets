@@ -539,7 +539,7 @@
    * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
   route.post('/uservideolist/:name', (req, res, next)=>{
-    const connpool = require('../modules/mysql.js')()
+    const connpool = common.mysqlpool
     connpool.query(`CALL uservideolist('${req.params.name}','${req.body.token}')`, (err, rows)=>{
       if (err) {
         return next(err)
