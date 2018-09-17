@@ -19,7 +19,7 @@
     req.conn = require('../modules/mysql.js')()
     var sql = "CALL videolist(" + (req.params.lat === undefined ? 37.394926 : req.params.lat) + "," +
       (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.distance + ")"
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -39,7 +39,7 @@
    */
   route.get('/maplist/:slat/:slng/:elat/:elng', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
-    req.conn.query('CALL videomaplist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', (err, rows)=>{
+    connpool.query('CALL videomaplist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -59,7 +59,7 @@
    */
   route.get('/targetlist/:videoid/:lat/:lng/:cnt/:distance', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
-    req.conn.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ',' + req.params.cnt + ',' + req.params.distance + ')', (err, rows)=>{
+    connpool.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ',' + req.params.cnt + ',' + req.params.distance + ')', (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -83,7 +83,7 @@
     var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")"
     var result = {}
     result.resultcode = resultcode.Failed
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -95,9 +95,9 @@
    * res : 해당 영상 내용을 리턴
    */
   route.get('/stream/:videoid', (req, res, next)=>{
-    var conn = require('../modules/mysql.js')()
+    req.conn = require('../modules/mysql.js')()
     var sql = "CALL videostream(" + req.params.videoid + ")"
-    conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       try {
         console.log(`video stream[${req.params.videoid}]`)
         if (err) {
@@ -141,12 +141,10 @@
             })
             fs.createReadStream(path).pipe(res)
           }
-          conn.close()
         }
       }
       catch(err) { // 스트리밍 과정에서 오류가 나는 경우가 있음
         if (err) {
-          conn.close()
           return next(err)
         }
       }

@@ -51,7 +51,7 @@
    */
   route.post("/join", (req, res, next) => {
     console.log(req.body)
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     try {
       var pass, salt
       crypto.randomBytes(64, (err, buf) => {
@@ -59,84 +59,85 @@
         crypto.pbkdf2(req.body.pass, salt, 100000, 64, "sha512", (err, key) => {
           pass = key.toString("base64")
 
-          req.conn.beginTransaction(() => {
-            var sql = `SET @token = 0;
-              CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
-              '${(req.body.email === undefined ? "" : req.body.email)}"',
-              '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
-              
-            //console.log(sql)
-            req.conn.query(sql, (err, rows) => {
-              if (err) {
-                req.conn.rollback(() => {
-                  console.log("rollback join1")
-                  common.sendResult(res, req.conn, resultcode.failed)
-                  throw err
-                })
-              }
-
-              var token = rows[2][0]["@token"]
-              sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
-
+          connpool.getConnection((err, connection) => {
+            connection.beginTransaction(() => {
+              var sql = `SET @token = 0;
+                CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
+                '${(req.body.email === undefined ? "" : req.body.email)}"',
+                '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
+                
               //console.log(sql)
-              req.conn.query(sql, (err, rows) => {
+              connection.query(sql, (err, rows) => {
                 if (err) {
-                  req.conn.rollback(() => {
-                    console.log("rollback join2")
-                    common.sendResult(res, req.conn, resultcode.failed)
+                  connection.rollback(() => {
+                    console.log("rollback join1")
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
                     throw err
                   })
                 }
 
-                // 이메일로 가입한 경우 인증메일 발송
-                if (
-                  (req.body.logid === undefined ? "" : req.body.logid) == ""
-                ) {
-                  // 이메일 인증키 가져오기
-                  // 인증메일 발송
-                  var mailOptions = {
-                    from: "캐스트네츠 <admin@castnets.co.kr>",
-                    to: req.body.email,
-                    subject: "가입인증 메일",
-                    html: common.htmlTempleate01.replace("|emailkey|", rows[2][0]["@emailkey"])
-                  }
-                  smtpTransport.sendMail(mailOptions, (err, response) => {
-                    if (err) {
-                      console.log(err)
-                      req.conn.rollback(() => {
-                        console.log("rollback join3")
-                        common.sendResult(res, req.conn, resultcode.failed)
-                        throw err
-                      })
-                    } else {
-                      console.log("Cert mail sent : " + response.message)
+                var token = rows[2][0]["@token"]
+                sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
 
-                      req.conn.commit(() => {
-                        common.sendResult(res, req.conn, resultcode.Success, {
-                          token: token
-                        })
-                      })
-                    }
-                    smtpTransport.close()
-                  })
-                } else {
-                  // 휴대폰으로 가입한 경우 바로 성공
-                  req.conn.commit(() => {
-                    common.sendResult(res, req.conn, resultcode.Success, {
-                      token: token
+                //console.log(sql)
+                connection.query(sql, (err, rows) => {
+                  if (err) {
+                    connection.rollback(() => {
+                      console.log("rollback join2")
+                      common.sendResult(res, resultcode.failed)
+                      connection.release()
+                      throw err
                     })
-                  })
-                }
+                  }
+                  connection.release()
+
+                  // 이메일로 가입한 경우 인증메일 발송
+                  if (
+                    (req.body.logid === undefined ? "" : req.body.logid) == ""
+                  ) {
+                    // 이메일 인증키 가져오기
+                    // 인증메일 발송
+                    var mailOptions = {
+                      from: "캐스트네츠 <admin@castnets.co.kr>",
+                      to: req.body.email,
+                      subject: "가입인증 메일",
+                      html: common.htmlTempleate01.replace("|emailkey|", rows[2][0]["@emailkey"])
+                    }
+                    smtpTransport.sendMail(mailOptions, (err, response) => {
+                      if (err) {
+                        console.log(err)
+                        connection.rollback(() => {
+                          console.log("rollback join3")
+                          common.sendResult(res, resultcode.failed)
+                          throw err
+                        })
+                      } else {
+                        console.log("Cert mail sent : " + response.message)
+
+                        connection.commit(() => {
+                          common.sendResult(res, resultcode.Success, { token: token })
+                        })
+                      }
+                      smtpTransport.close()
+                    })
+                  } else {
+                    // 휴대폰으로 가입한 경우 바로 성공
+                    connection.commit(() => {
+                      common.sendResult(res, resultcode.Success, { token: token })
+                    })
+                  }
+                })
               })
-            })
-          }) // req.conn.beginTransaction
+            }) // connection.beginTransaction
+          }) // connpool.getConnection((err, connection) => {
         })
       })
     } catch (e) {
-      req.conn.rollback(() => {
+      connection.rollback(() => {
         console.log("rollback join4")
       })
-      common.sendResult(res, req.conn, resultcode.failed)
+      common.sendResult(res, resultcode.failed)
       throw err
     }
   })
@@ -172,90 +173,92 @@
       // 복호화에 실패하면 에러 리턴
       return next(err)
     }
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
     var sql = "CALL smssendcheck('" + req.body.phone + "')"
-    req.conn.query(sql, (err, rows) => {
-      if (err) {
-        res.json(result)
-        req.conn.close()
-        throw err
-      } else {
-        if (rows[0][0]["cnt"] > 0) {
-          // 1분이내에 전송한 기록이 있는경우 실패 리턴
-          result.resultcode = resultcode.TooFastSmsSent
+    connpool.getConnection((err, connection) => {
+      connection.query(sql, (err, rows) => {
+        if (err) {
           res.json(result)
-          req.conn.close()
-        } else if (rows[0][0]["cnt"] === -1) {
-          // 동일한 폰번호로 가입되어 있다면 실패
-          result.resultcode = resultcode.AlreadyExistsPhone
-          res.json(result)
-          req.conn.close()
+          connection.release()
+          throw err
         } else {
-          // 1분이내에 전송한 기록이 없어야만 전송함
-          // 전송기록을 먼저 남김
-          var certnum = Math.floor(Math.random() * (9999 - 1000)) + 1000 // 1000~9999 까지의 임의의 숫자 생성
-          var msg = `캐스트네츠 [${certnum}] 인증번호를 입력해주세요.`
-          var sql = `SET @logid=0;CALL smssendlogadd('${req.body.phone}','${msg}', @logid);SELECT @logid`
-          req.conn.query(sql, (err, rows) => {
-            if (err) {
-              res.json(result)
-              req.conn.close()
-              throw err
-            } else {
-              var logid = rows[2][0]["@logid"]
-              if (logid > 0) {
-                // 기록이 정상적으로 남았음
-                // 요청 세부 내용
-                var options = {
-                  url: "https://apis.aligo.in",
-                  method: "POST",
-                  headers: {
-                    "User-Agent": "Super Agent/0.0.1",
-                    "Content-Type": "application/x-www-form-urlencodedcharset=UTF-8"
-                  },
-                  form: {
-                    key: "lz2v2t9s1qa1259p8az1u2tiy49z773x",
-                    user_id: "ilgoonlab",
-                    sender: "01046350508",
-                    receiver: req.body.phone,
-                    msg: msg,
-                    testmode_yn: "Y"
-                  }
-                }
-                // 요청 시작 받은값은 body
-                request(options, (error, response, body) => {
-                  if (!error && response.statusCode == 200) {
-                    var json = JSON.parse(body)
-                    console.log(json)
-                    var sql = `CALL smssendlogupdate(@logid, '${JSON.stringify(json)}')`
-                    req.conn.query(sql, (err, rows) => {
-                      if (err) {
-                        res.json(result)
-                        req.conn.close()
-                        throw err
-                      } else {
-                        if (json.result_code == 1) {
-                          result.resultcode = resultcode.Success
-                          result.logid = logid
-                        } else {
-                          result.resultcode = resultcode.SmsSendFailed
-                        }
-                        res.json(result)
-                        req.conn.close()
-                      }
-                    })
-                  }
-                })
-              } else {
-                // 기록 남기기 실패 - 시스템에러
+          if (rows[0][0]["cnt"] > 0) {
+            // 1분이내에 전송한 기록이 있는경우 실패 리턴
+            result.resultcode = resultcode.TooFastSmsSent
+            res.json(result)
+            connection.release()
+          } else if (rows[0][0]["cnt"] === -1) {
+            // 동일한 폰번호로 가입되어 있다면 실패
+            result.resultcode = resultcode.AlreadyExistsPhone
+            res.json(result)
+            connection.release()
+          } else {
+            // 1분이내에 전송한 기록이 없어야만 전송함
+            // 전송기록을 먼저 남김
+            var certnum = Math.floor(Math.random() * (9999 - 1000)) + 1000 // 1000~9999 까지의 임의의 숫자 생성
+            var msg = `캐스트네츠 [${certnum}] 인증번호를 입력해주세요.`
+            var sql = `SET @logid=0;CALL smssendlogadd('${req.body.phone}','${msg}', @logid);SELECT @logid`
+            connection.query(sql, (err, rows) => {
+              if (err) {
                 res.json(result)
-                req.conn.close()
+                connection.release()
+                throw err
+              } else {
+                var logid = rows[2][0]["@logid"]
+                if (logid > 0) {
+                  // 기록이 정상적으로 남았음
+                  // 요청 세부 내용
+                  var options = {
+                    url: "https://apis.aligo.in",
+                    method: "POST",
+                    headers: {
+                      "User-Agent": "Super Agent/0.0.1",
+                      "Content-Type": "application/x-www-form-urlencodedcharset=UTF-8"
+                    },
+                    form: {
+                      key: "lz2v2t9s1qa1259p8az1u2tiy49z773x",
+                      user_id: "ilgoonlab",
+                      sender: "01046350508",
+                      receiver: req.body.phone,
+                      msg: msg,
+                      testmode_yn: "Y"
+                    }
+                  }
+                  // 요청 시작 받은값은 body
+                  request(options, (error, response, body) => {
+                    if (!error && response.statusCode == 200) {
+                      var json = JSON.parse(body)
+                      console.log(json)
+                      var sql = `CALL smssendlogupdate(@logid, '${JSON.stringify(json)}')`
+                      connection.query(sql, (err, rows) => {
+                        if (err) {
+                          res.json(result)
+                          connection.release()
+                          throw err
+                        } else {
+                          connection.release()
+                          if (json.result_code == 1) {
+                            result.resultcode = resultcode.Success
+                            result.logid = logid
+                          } else {
+                            result.resultcode = resultcode.SmsSendFailed
+                          }
+                          res.json(result)
+                        }
+                      })
+                    }
+                  })
+                } else {
+                  // 기록 남기기 실패 - 시스템에러
+                  res.json(result)
+                  connection.release()
+                }
               }
-            }
-          })
+            })
+          }
         }
-      }
+      })
     })
   })
   /** sms인증
@@ -265,22 +268,22 @@
   route.post("/smscert", (req, res, next) => {
     console.log(req.body)
 
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var result = {}
     result.resultcode = resultcode.Failed
     var sql = `CALL smscert("${req.body.logid}","${req.body.certnum}")`
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       }
       if (rows[0][0].valiedlogid == 0) {
-        common.sendResult(res, req.conn, resultcode.SmsCertNotValied)
+        common.sendResult(res, resultcode.SmsCertNotValied)
       } else if (rows[0][0].matchcertnum == 0) {
-        common.sendResult(res, req.conn, resultcode.CertNumNotMatch)
+        common.sendResult(res, resultcode.CertNumNotMatch)
       } else if (rows[0][0].timelimit == 0) {
-        common.sendResult(res, req.conn, resultcode.CertTimeOut)
+        common.sendResult(res, resultcode.CertTimeOut)
       } /*if(rows[1].affectedRows > 0)*/ else {
-        common.sendResult(res, req.conn, resultcode.Success)
+        common.sendResult(res, resultcode.Success)
       }
     })
   })
@@ -291,44 +294,51 @@
   route.post("/login", (req, res, next) => {
     console.log(req.body)
 
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var pass, salt
     var sql = `CALL usersaltget('${req.body.loginid}')`
 
-    req.conn.query(sql, (err, rows) => {
-      if (err) {
-        return next(err)
-      } else {
-        if (rows[0].length <= 0) {
-          common.sendResult(res, req.conn, resultcode.NotExistsAccount)
-          return
-        }
-        console.log(`get salt : ${rows[0][0]["salt"]}`)
-        salt = rows[0][0]["salt"]
+    connpool.getConnection((err, connection) => {
+      connection.query(sql, (err, rows) => {
+        if (err) {
+          connection.release()
+          return next(err)
+        } else {
+          if (rows[0].length <= 0) {
+            common.sendResult(res, resultcode.NotExistsAccount)
+            connection.release()
+            return
+          }
+          console.log(`get salt : ${rows[0][0]["salt"]}`)
+          salt = rows[0][0]["salt"]
 
-        crypto.pbkdf2(req.body.pass,salt,100000,64,"sha512",
-          (err, key) => {
-            if (err) {
-              return next(err)
-            }
-            pass = key.toString("base64")
-            var sql = `SET @token = '';CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
-
-            console.log(sql)
-            req.conn.query(sql, (err, rows) => {
+          crypto.pbkdf2(req.body.pass,salt,100000,64,"sha512",
+            (err, key) => {
               if (err) {
+                connection.release()
                 return next(err)
               }
-              if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
-                console.log("Password missmatch")
-                common.sendResult(res, req.conn, resultcode.WorngPassword)
-                return
-              }
-              common.sendResult(res, req.conn, resultcode.Success, {"token": rows[2][0]["@token"]})
-            })
-          }
-        )
-      }
+              pass = key.toString("base64")
+              var sql = `SET @token = '';CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
+
+              console.log(sql)
+              connection.query(sql, (err, rows) => {
+                if (err) {
+                  connection.release()
+                  return next(err)
+                }
+                connection.release()
+                if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
+                  console.log("Password missmatch")
+                  common.sendResult(res, resultcode.WorngPassword)
+                  return
+                }
+                common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
+              })
+            }
+          )
+        }
+      })
     })
   })
   /** 유저 로그아웃
@@ -336,14 +346,14 @@
    * res : resultcode 결과값
    */
   route.post("/logout", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = "CALL userlogout('" + req.body.token + "')"
 
-    req.conn.query(sql, (err) => {
+    connpool.query(sql, (err) => {
       if (err) {
         return next(err)
       } else {
-        common.sendResult(res, req.conn, resultcode.Success)
+        common.sendResult(res, resultcode.Success)
       }
     })
   })
@@ -352,22 +362,22 @@
    * res : resultcode 결과값
    */
   route.post("/tokencheck", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = "CALL usertokencheck('" + req.body.token + "')"
 
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
         if (rows[0].length <= 0) {
-          common.sendResult(res, req.conn, resultcode.InvalidToken)
+          common.sendResult(res, resultcode.InvalidToken)
         } else {
           console.log(`User alive check : ${rows[0][0]["userid"]}_${rows[0][0]["alive"]}`
           )
           if (rows[0][0]["alive"] == 0) {
-            common.sendResult(res, req.conn, resultcode.ExpiredToken)
+            common.sendResult(res, resultcode.ExpiredToken)
           } else {
-            common.sendResult(res, req.conn, resultcode.Success)
+            common.sendResult(res, resultcode.Success)
           }
         }
       }
@@ -378,10 +388,10 @@
    * res : resultcode 결과값
    */
   route.post("/emailresend", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = "SET @emailkey = '';CALL emailsend('" + req.body.token + "', @emailkey);SELECT @emailkey"
 
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       }
@@ -403,7 +413,7 @@
         } else {
           console.log("Cert mail sent : " + response.message)
 
-          common.sendResult(res, req.conn, resultcode.Success)
+          common.sendResult(res, resultcode.Success)
         }
       })
     })
@@ -412,34 +422,36 @@
    * req : emailkey
    * res : resultcode 결과값
    */
-  route.get("/emailcert/:emailkey", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
-    req.conn.beginTransaction(() => {
-      var sql = "CALL emailcert('" + req.params.emailkey + "')"
-
-      req.conn.query(sql, (err, rows) => {
-        if (err) {
-          req.conn.rollback(() => {
-            console.log("rollback emailcert1")
-            res.send(common.htmlTempleate03)
-            req.conn.close()
-            throw err
-          })
-        } else {
-          console.log(rows)
-          if (rows["affectedRows"] >= 1) {
-            req.conn.commit(() => {
-              res.send(common.htmlTempleate02)
-              req.conn.close()
+  route.get("/emailcert/:emailkey", (connpoolreq, res, next) => {
+    const connpool = require("../modules/mysql.js")()
+    connpool.getConnection((err, connection) => {
+      connection.beginTransaction(() => {
+        var sql = "CALL emailcert('" + req.params.emailkey + "')"
+  
+        connection.query(sql, (err, rows) => {
+          if (err) {
+            connection.rollback(() => {
+              console.log("rollback emailcert1")
+              res.send(common.htmlTempleate03)
+              connection.release()
+              throw err
             })
           } else {
-            req.conn.rollback(() => {
-              console.log("rollback emailcert2")
-              res.send(common.htmlTempleate03)
-              req.conn.close()
-            })
+            console.log(rows)
+            if (rows["affectedRows"] >= 1) {
+              connection.commit(() => {
+                res.send(common.htmlTempleate02)
+                connection.release()
+              })
+            } else {
+              connection.rollback(() => {
+                console.log("rollback emailcert2")
+                res.send(common.htmlTempleate03)
+                connection.release()
+              })
+            }
           }
-        }
+        })
       })
     })
   })
@@ -448,16 +460,15 @@
    * res : 실패시 resultcode.Failed 가 전달됨. status는 500. 성공시에는 이미지가 전달됨.
    */
   route.get("/profile/:name", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = `CALL userprofile('${req.params.name}')`
 
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
         if (rows[0].length > 0) {
           res.sendFile(rows[0][0].filepath)
-          req.conn.close()
         } else {
           return next(new Error('error'))
         }
@@ -468,16 +479,15 @@
    * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달
    */
   route.get("/profileback/:name", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = `CALL userprofileback('${req.params.name}')`
 
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
         if (rows[0].length > 0) {
           res.sendFile(rows[0][0].filepath)
-          req.conn.close()
         } else {
           return next(new Error("profileback"))
         }
@@ -490,16 +500,16 @@
    */
   route.post("/usernamecheck", (req, res, next) => {
     console.log(req.body)
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = `CALL usernamecheck('${req.body.token}','${req.body.name}')`
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
         if (rows[0][0].canchange == 1) {
-          common.sendResult(res, req.conn, resultcode.Success)
+          common.sendResult(res, resultcode.Success)
         } else {
-          common.sendResult(res, req.conn, resultcode.AlreadyExistsName)
+          common.sendResult(res, resultcode.AlreadyExistsName)
         }
       }
     })
@@ -510,16 +520,16 @@
    */
   route.post("/usernamechange", (req, res, next) => {
     console.log(req.body)
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = `CALL usernamechange('${req.body.token}','${req.body.name}')`
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
         if (rows["affectedRows"] == 1) {
-          common.sendResult(res, req.conn, resultcode.Success)
+          common.sendResult(res, resultcode.Success)
         } else {
-          common.sendResult(res, req.conn, resultcode.Failed)
+          common.sendResult(res, resultcode.Failed)
         }
       }
     })
@@ -529,8 +539,8 @@
    * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
   route.post('/uservideolist/:name', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
-    req.conn.query(`CALL uservideolist('${req.params.name}','${req.body.token}')`, (err, rows)=>{
+    const connpool = require('../modules/mysql.js')()
+    connpool.query(`CALL uservideolist('${req.params.name}','${req.body.token}')`, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -542,7 +552,7 @@
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list})
+      common.sendResult(res, resultcode.Success, {"list": list})
     })
   })
   /** 영상 그룹 생성 (그룹안에 포함될 영상목록을 함께 보냄)
@@ -551,27 +561,32 @@
    */
   route.post("/videogroupadd", (req, res, next) => {
     console.log(req.body)
-    req.conn = require("../modules/mysql.js")()
-    req.conn.beginTransaction(()=>{
-      var sql = `SET @userid = UseridFromToken('${req.body.token}');
-        CALL videogroupadd(@userid,'${req.body.groupname}')`
-      req.conn.query(sql, (err, rows) => {
-        if (err) {
-          return next(err)
-        } else {
-          var insertid = rows["insertId"]
-          if (insertid > 0) {
-            sql = `CALL videogroupmove(@userid,${insertid},0,0,0,'${req.body.groupname}')`
-
+    const connpool = require("../modules/mysql.js")()
+    connpool.getConnection((err, connection) => {
+      if (err) {
+        return next(err)
+      }
+      connection.beginTransaction(()=>{
+        var sql = `SET @userid = UseridFromToken('${req.body.token}');
+          CALL videogroupadd(@userid,'${req.body.groupname}')`
+          connection.query(sql, (err, rows) => {
+          if (err) {
+            return next(err)
           } else {
-            common.sendResult(res, req.conn, resultcode.Failed)
+            var insertid = rows["insertId"]
+            if (insertid > 0) {
+              sql = `CALL videogroupmove(@userid,${insertid},0,0,0,'${req.body.groupname}')`
+  
+            } else {
+              common.sendResult(res, resultcode.Failed)
+            }
           }
-        }
-      })
-      
-      req.conn.rollback(()=>{
-        console.log('rollback profilebackadd')
-        next(new Error('rollback profilebackadd'))
+        })
+        
+        connection.rollback(()=>{
+          console.log('rollback profilebackadd')
+          next(new Error('rollback profilebackadd'))
+        })
       })
     })
   })
@@ -581,9 +596,9 @@
    */
   route.post("/videogroupmove", (req, res, next) => {
     console.log(req.body)
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = `SET @userid = UseridFromToken('${req.body.token}');CALL videogroupadd(@userid,'${req.body.groupname}')`
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
@@ -592,7 +607,7 @@
           sql = `CALL videogroupmove(@userid,'${req.body.groupname}')`
 
         } else {
-          common.sendResult(res, req.conn, resultcode.Failed)
+          common.sendResult(res, resultcode.Failed)
         }
       }
     })

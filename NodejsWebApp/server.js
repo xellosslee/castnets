@@ -85,13 +85,12 @@ app.get('/', function (req, res, next) {
 })
 
 app.get('/test', function (req, res, next) {
-    var conn = require('./modules/mysql.js')()
+    var connpool = require('./modules/mysql.js')()
     var videoid = ''
     try {
         var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1"
-        req.conn.query(sql, function (err, rows) {
+        connpool.query(sql, function (err, rows) {
             if (err) {
-                req.conn.close()
                 throw err
             }
             else {

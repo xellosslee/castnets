@@ -14,7 +14,7 @@ module.exports = (app) => {
   route.get('/userlist/:page/:count', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
     var sql = `CALL userboardlist('', ${req.params.page},${req.params.count})`
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -35,7 +35,7 @@ module.exports = (app) => {
   route.get('/videolist/:page/:count', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
     var sql = `CALL videoboardlist('', ${req.params.page},${req.params.count})`
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -56,7 +56,7 @@ module.exports = (app) => {
   route.post('/userlist/:page/:count', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
     var sql = `CALL userboardlist('${req.body.token}',${req.params.page},${req.params.count})`
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -77,7 +77,7 @@ module.exports = (app) => {
   route.post('/videolist/:page/:count', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
     var sql = `CALL videoboardlist('${req.body.token}',${req.params.page},${req.params.count})`
-    req.conn.query(sql, (err, rows)=>{
+    connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -98,11 +98,11 @@ module.exports = (app) => {
   route.post("/login", (req, res, next) => {
     console.log(req.body)
 
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var pass, salt
     var sql = `CALL usersaltget('${req.body.loginid}')`
 
-    req.conn.query(sql, (err, rows) => {
+    connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
@@ -122,7 +122,7 @@ module.exports = (app) => {
             var sql = `SET @token = '';CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
 
             console.log(sql)
-            req.conn.query(sql, (err, rows) => {
+            connpool.query(sql, (err, rows) => {
               if (err) {
                 return next(err)
               }
@@ -143,10 +143,10 @@ module.exports = (app) => {
    * res : resultcode 결과값
    */
   route.post("/logout", (req, res, next) => {
-    req.conn = require("../modules/mysql.js")()
+    const connpool = require("../modules/mysql.js")()
     var sql = "CALL userlogout('" + req.body.token + "')"
 
-    req.conn.query(sql, (err) => {
+    connpool.query(sql, (err) => {
       if (err) {
         return next(err)
       } else {

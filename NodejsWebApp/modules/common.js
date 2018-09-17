@@ -27,9 +27,9 @@
       extend(result, item)
     })
     res.json(result)
-    if(conn !== undefined) {
-      conn.close()
-    }
+    // if(conn !== undefined) {
+    //   conn.close()
+    // }
   }
   /** 이메일 템플릿
    */
