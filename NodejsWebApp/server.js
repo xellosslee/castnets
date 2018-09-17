@@ -18,12 +18,14 @@ var uuidtemp = uuid.v4()
 var fileRouter = require('./routes/file.js')(app)
 var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
+var adminRouter = require('./routes/admin.js')(app)
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
 app.use('/user', userRouter)
 app.use('/video', videoRouter)
+app.use('/admin', adminRouter)
 app.use('/resources',express.static(__dirname + '/resources'))
 app.use(session({
     secret: 'keyboard cat nari',
@@ -42,6 +44,11 @@ function errorHandler(err, req, res, next) {
   //res.render('error', { error: err })
   common.sendResult(res, req.conn, resultcode.Failed)
 }
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  res.status(404)
+  res.send(common.htmlTempleate04)
+})
 process.on('uncaughtException', (err) => {
   console.log('get uncaughtException : ' + err.stack)
 })

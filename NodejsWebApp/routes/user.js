@@ -459,7 +459,7 @@
           res.sendFile(rows[0][0].filepath)
           req.conn.close()
         } else {
-          return next('error')
+          return next(new Error('error'))
         }
       }
     })
@@ -479,7 +479,7 @@
           res.sendFile(rows[0][0].filepath)
           req.conn.close()
         } else {
-          return next('error')
+          return next(new Error("profileback"))
         }
       }
     })
@@ -571,7 +571,7 @@
       
       req.conn.rollback(()=>{
         console.log('rollback profilebackadd')
-        next('rollback profilebackadd')
+        next(new Error('rollback profilebackadd'))
       })
     })
   })
