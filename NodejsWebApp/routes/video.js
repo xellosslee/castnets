@@ -95,9 +95,9 @@
    * res : 해당 영상 내용을 리턴
    */
   route.get('/stream/:videoid', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    var conn = require('../modules/mysql.js')()
     var sql = "CALL videostream(" + req.params.videoid + ")"
-    req.conn.query(sql, (err, rows)=>{
+    conn.query(sql, (err, rows)=>{
       try {
         console.log(`video stream[${req.params.videoid}]`)
         if (err) {
@@ -141,12 +141,12 @@
             })
             fs.createReadStream(path).pipe(res)
           }
-          req.conn.close()
+          conn.close()
         }
       }
       catch(err) { // 스트리밍 과정에서 오류가 나는 경우가 있음
         if (err) {
-          req.conn.close()
+          conn.close()
           return next(err)
         }
       }
