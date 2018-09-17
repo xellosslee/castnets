@@ -10,6 +10,7 @@ var bodyParser = require('body-parser')
 const fs = require('fs')
 const http = require('http')
 const https = require('https')
+const cors = require('cors')
 var resultcode = JSON.parse(fs.readFileSync("resultcode.json", "utf8").trim())
 
 var app = express()
@@ -21,6 +22,7 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
+app.use(cors({origin:'*.castnets.co.kr'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
@@ -126,6 +128,7 @@ app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM
 app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res, next) {
     res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
 })
+
 var server = app.listen(app.get('port'), function () {
     //console.log(process.env)
     console.log(`uuid [${uuidtemp}]`)
