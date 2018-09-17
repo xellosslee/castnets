@@ -19,7 +19,7 @@
   };
   /** resultCode를 Json형태로 전달하고 db Close동작을 한다
    */
-  common.sendResult = (res, conn, code, ...extraArgs)=>{
+  common.sendResult = (res, code, ...extraArgs)=>{
     let result = {}
     result.resultCode = code
     // extend(result, extraArgs);
@@ -27,9 +27,6 @@
       extend(result, item)
     })
     res.json(result)
-    // if(conn !== undefined) {
-    //   conn.close()
-    // }
   }
   /** 이메일 템플릿
    */

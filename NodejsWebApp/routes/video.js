@@ -16,7 +16,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distance 값을 가짐}
    */
   route.get('/list/:lat/:lng/:cnt/:distance', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = "CALL videolist(" + (req.params.lat === undefined ? 37.394926 : req.params.lat) + "," +
       (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.distance + ")"
     connpool.query(sql, (err, rows)=>{
@@ -30,7 +30,7 @@
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list})
+      common.sendResult(res, resultcode.Success, {"list": list})
     })
   })
   /**지도위의 영상위치를 가져온다
@@ -38,7 +38,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
   route.get('/maplist/:slat/:slng/:elat/:elng', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     connpool.query('CALL videomaplist(' + req.params.slat + ',' + req.params.slng + ',' + req.params.elat + ',' + req.params.elng + ')', (err, rows)=>{
       if (err) {
         return next(err)
@@ -50,7 +50,7 @@
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list})
+      common.sendResult(res, resultcode.Success, {"list": list})
     })
   })
   /**특정 영상 주변의 영상을 가져온다
@@ -58,7 +58,7 @@
    * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distancefromme, distance 값을 가짐}
    */
   route.get('/targetlist/:videoid/:lat/:lng/:cnt/:distance', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     connpool.query('CALL videotargetlist(' + req.params.videoid + ',' + req.params.lat + ',' + req.params.lng + ',' + req.params.cnt + ',' + req.params.distance + ')', (err, rows)=>{
       if (err) {
         return next(err)
@@ -71,7 +71,7 @@
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list})
+      common.sendResult(res, resultcode.Success, {"list": list})
     })
   })
   /**비디오 영상플레이 기록
@@ -79,7 +79,7 @@
    * res : 결과 없음. 성공여부에 상관없이 진행
    */
   route.post('/view', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")"
     var result = {}
     result.resultcode = resultcode.Failed
@@ -87,7 +87,7 @@
       if (err) {
         return next(err)
       }
-      common.sendResult(res, req.conn, resultcode.Success)
+      common.sendResult(res, resultcode.Success)
     })
   })
   /**비디오 스트리밍 (http권장)
@@ -95,7 +95,7 @@
    * res : 해당 영상 내용을 리턴
    */
   route.get('/stream/:videoid', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = "CALL videostream(" + req.params.videoid + ")"
     connpool.query(sql, (err, rows)=>{
       try {

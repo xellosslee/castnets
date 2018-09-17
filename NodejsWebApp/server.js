@@ -42,7 +42,7 @@ function logErrors(err, req, res, next) {
 function errorHandler(err, req, res, next) {
   res.status(500)
   //res.render('error', { error: err })
-  common.sendResult(res, req.conn, resultcode.Failed)
+  common.sendResult(res, resultcode.Failed)
 }
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

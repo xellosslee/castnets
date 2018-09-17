@@ -12,7 +12,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.get('/userlist/:page/:count', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = `CALL userboardlist('', ${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -25,7 +25,7 @@ module.exports = (app) => {
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
+      common.sendResult(res, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
     })
   })
   /**비디오 목록 가져오기
@@ -33,7 +33,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.get('/videolist/:page/:count', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = `CALL videoboardlist('', ${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -46,7 +46,7 @@ module.exports = (app) => {
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
+      common.sendResult(res, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
     })
   })
   /**유저 목록 가져오기
@@ -54,7 +54,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.post('/userlist/:page/:count', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = `CALL userboardlist('${req.body.token}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -67,7 +67,7 @@ module.exports = (app) => {
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
+      common.sendResult(res, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
     })
   })
   /**비디오 목록 가져오기
@@ -75,7 +75,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.post('/videolist/:page/:count', (req, res, next)=>{
-    req.conn = require('../modules/mysql.js')()
+    const connpool = require('../modules/mysql.js')()
     var sql = `CALL videoboardlist('${req.body.token}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -88,7 +88,7 @@ module.exports = (app) => {
           list.push(row)
         })
       }
-      common.sendResult(res, req.conn, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
+      common.sendResult(res, resultcode.Success, {"list": list, "totalcount": rows[1][0].totalcount})
     })
   })
   /** 유저로그인
@@ -107,7 +107,7 @@ module.exports = (app) => {
         return next(err)
       } else {
         if (rows[0].length <= 0) {
-          common.sendResult(res, req.conn, resultcode.NotExistsAccount)
+          common.sendResult(res, resultcode.NotExistsAccount)
           return
         }
         console.log(`get salt : ${rows[0][0]["salt"]}`)
@@ -128,10 +128,10 @@ module.exports = (app) => {
               }
               if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
                 console.log("Password missmatch or no have permission")
-                common.sendResult(res, req.conn, resultcode.WorngPassword)
+                common.sendResult(res, resultcode.WorngPassword)
                 return
               }
-              common.sendResult(res, req.conn, resultcode.Success, {"token": rows[2][0]["@token"]})
+              common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
             })
           }
         )
@@ -150,7 +150,7 @@ module.exports = (app) => {
       if (err) {
         return next(err)
       } else {
-        common.sendResult(res, req.conn, resultcode.Success)
+        common.sendResult(res, resultcode.Success)
       }
     })
   })
