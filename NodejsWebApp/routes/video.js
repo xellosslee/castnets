@@ -13,7 +13,7 @@
   }))
   /**자신 주변의 영상을 가져온다
    * req : 자신의 위치, 가져올 영상개수, 이전 목록 중 가장 먼 영상의 거리
-   * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
+   * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distance 값을 가짐}
    */
   route.get('/list/:lat/:lng/:cnt/:distance', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
@@ -55,7 +55,7 @@
   })
   /**특정 영상 주변의 영상을 가져온다
    * req : 보여질 영상의 번호, 자신의 위치, 가져올 영상개수, 이전 목록 중 가장 먼 영상의 거리
-   * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
+   * res : 해당 범위의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath, distancefromme, distance 값을 가짐}
    */
   route.get('/targetlist/:videoid/:lat/:lng/:cnt/:distance', (req, res, next)=>{
     req.conn = require('../modules/mysql.js')()
