@@ -98,48 +98,56 @@
     req.conn = require('../modules/mysql.js')()
     var sql = "CALL videostream(" + req.params.videoid + ")"
     req.conn.query(sql, (err, rows)=>{
-      if (err) {
-        return next(err)
-      }
-      if (rows[0].length <= 0) {
-        console.log('Cannot found video' + req.params.videoid)
-        return next('Cannot found video')
-      } else {
-        var path = rows[0][0]['filepath']
-        var stat = fs.statSync(path)
-        var total = stat.size
-        if (req.headers['range']) {
-          var range = req.headers.range
-          var parts = range.replace(/bytes=/, "").split("-")
-          var partialstart = parts[0]
-          var partialend = parts[1]
-
-          var start = parseInt(partialstart, 10)
-          var end = partialend ? parseInt(partialend, 10) : total - 1
-          var chunksize = (end - start) + 1
-          console.log('reqRange : ' + req.headers.range)
-          console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize)
-
-          var file = fs.createReadStream(path, {
-            start: start,
-            end: end
-          })
-          res.writeHead(206, {
-            'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
-            'Accept-Ranges': 'bytes',
-            'Content-Length': chunksize,
-            'Content-Type': 'video/mp4'
-          })
-          file.pipe(res)
-        } else {
-          console.log('ALL: ' + total)
-          res.writeHead(200, {
-            'Content-Length': total,
-            'Content-Type': 'video/mp4'
-          })
-          fs.createReadStream(path).pipe(res)
+      try {
+        if (err) {
+          return next(err)
         }
-        req.conn.close()
+        if (rows[0].length <= 0) {
+          console.log('Cannot found video' + req.params.videoid)
+          return next('Cannot found video')
+        } else {
+          var path = rows[0][0]['filepath']
+          var stat = fs.statSync(path)
+          var total = stat.size
+          if (req.headers['range']) {
+            var range = req.headers.range
+            var parts = range.replace(/bytes=/, "").split("-")
+            var partialstart = parts[0]
+            var partialend = parts[1]
+  
+            var start = parseInt(partialstart, 10)
+            var end = partialend ? parseInt(partialend, 10) : total - 1
+            var chunksize = (end - start) + 1
+            console.log('reqRange : ' + req.headers.range)
+            console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize)
+  
+            var file = fs.createReadStream(path, {
+              start: start,
+              end: end
+            })
+            res.writeHead(206, {
+              'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+              'Accept-Ranges': 'bytes',
+              'Content-Length': chunksize,
+              'Content-Type': 'video/mp4'
+            })
+            file.pipe(res)
+          } else {
+            console.log('ALL: ' + total)
+            res.writeHead(200, {
+              'Content-Length': total,
+              'Content-Type': 'video/mp4'
+            })
+            fs.createReadStream(path).pipe(res)
+          }
+          req.conn.close()
+        }
+      }
+      catch(err) { // 스트리밍 과정에서 오류가 나는 경우가 있음
+        if (err) {
+          req.conn.close()
+          return next(err)
+        }
       }
     })
   })

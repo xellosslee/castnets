@@ -9,12 +9,14 @@ INSERT INTO `code` VALUES (10201, 10200, '가입유저', '가입유저');
 INSERT INTO `code` VALUES (10202, 10200, '인증유저', '인증유저');
 INSERT INTO `code` VALUES (10203, 10200, '휴면유저', '휴면유저');
 INSERT INTO `code` VALUES (10204, 10200, '관리자', '관리자');
+INSERT INTO `code` VALUES (10205, 10200, '차단유저', '휴면유저');
 
 INSERT INTO `code` VALUES (30000, NULL, '영상정보', '영상정보');
 INSERT INTO `code` VALUES (30100, NULL, '영상종류', '미설정');
-INSERT INTO `code` VALUES (30101, NULL, '영상종류', '동물');
-INSERT INTO `code` VALUES (30102, NULL, '영상종류', '음식');
-INSERT INTO `code` VALUES (30103, NULL, '영상종류', '여행');
+INSERT INTO `code` VALUES (30101, NULL, '영상종류', '음식');
+INSERT INTO `code` VALUES (30102, NULL, '영상종류', '여행');
+INSERT INTO `code` VALUES (30103, NULL, '영상종류', '인물');
+INSERT INTO `code` VALUES (30104, NULL, '영상종류', '동물');
 
 INSERT INTO `code` VALUES (60000, NULL, '파일정보', '파일정보');
 INSERT INTO `code` VALUES (60100, 60000, '등록위치', '미설정');
