@@ -76,7 +76,7 @@ module.exports = (app)=>{
    */
   route.post('/upload', upload.single('file'), (req, res, next)=>{
     console.log(req.file)
-    var connpool = common.mysqlpool
+    var connpool = app.mysqlpool
     var result = {}
     result.resultcode = resultcode.Failed
 

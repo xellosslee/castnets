@@ -51,7 +51,7 @@
    */
   route.post("/join", (req, res, next) => {
     console.log(req.body)
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     try {
       var pass, salt
       crypto.randomBytes(64, (err, buf) => {
@@ -173,7 +173,7 @@
       // 복호화에 실패하면 에러 리턴
       return next(err)
     }
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     // 해당 전화번호로 문자 메시지를 마지막으로 보낸지 1분이상 경과하였는지 체크
     var sql = "CALL smssendcheck('" + req.body.phone + "')"
     connpool.getConnection((err, connection) => {
@@ -268,7 +268,7 @@
   route.post("/smscert", (req, res, next) => {
     console.log(req.body)
 
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var result = {}
     result.resultcode = resultcode.Failed
     var sql = `CALL smscert("${req.body.logid}","${req.body.certnum}")`
@@ -294,7 +294,7 @@
   route.post("/login", (req, res, next) => {
     console.log(req.body)
 
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var pass, salt
     var sql = `CALL usersaltget('${req.body.loginid}')`
 
@@ -346,7 +346,7 @@
    * res : resultcode 결과값
    */
   route.post("/logout", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = "CALL userlogout('" + req.body.token + "')"
 
     connpool.query(sql, (err) => {
@@ -362,7 +362,7 @@
    * res : resultcode 결과값
    */
   route.post("/tokencheck", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = "CALL usertokencheck('" + req.body.token + "')"
 
     connpool.query(sql, (err, rows) => {
@@ -388,7 +388,7 @@
    * res : resultcode 결과값
    */
   route.post("/emailresend", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = "SET @emailkey = '';CALL emailsend('" + req.body.token + "', @emailkey);SELECT @emailkey"
 
     connpool.query(sql, (err, rows) => {
@@ -423,7 +423,7 @@
    * res : resultcode 결과값
    */
   route.get("/emailcert/:emailkey", (connpoolreq, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     connpool.getConnection((err, connection) => {
       connection.beginTransaction(() => {
         var sql = "CALL emailcert('" + req.params.emailkey + "')"
@@ -460,7 +460,7 @@
    * res : 실패시 resultcode.Failed 가 전달됨. status는 500. 성공시에는 이미지가 전달됨.
    */
   route.get("/profile/:name", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = `CALL userprofile('${req.params.name}')`
 
     connpool.query(sql, (err, rows) => {
@@ -479,7 +479,7 @@
    * 주소값에 본인의 이름값(로그인 후 각자 변경가능)전달
    */
   route.get("/profileback/:name", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = `CALL userprofileback('${req.params.name}')`
 
     connpool.query(sql, (err, rows) => {
@@ -500,7 +500,7 @@
    */
   route.post("/usernamecheck", (req, res, next) => {
     console.log(req.body)
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = `CALL usernamecheck('${req.body.token}','${req.body.name}')`
     connpool.query(sql, (err, rows) => {
       if (err) {
@@ -520,7 +520,7 @@
    */
   route.post("/usernamechange", (req, res, next) => {
     console.log(req.body)
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = `CALL usernamechange('${req.body.token}','${req.body.name}')`
     connpool.query(sql, (err, rows) => {
       if (err) {
@@ -539,7 +539,7 @@
    * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
   route.post('/uservideolist/:name', (req, res, next)=>{
-    const connpool = common.mysqlpool
+    const connpool = app.mysqlpool
     connpool.query(`CALL uservideolist('${req.params.name}','${req.body.token}')`, (err, rows)=>{
       if (err) {
         return next(err)
@@ -561,7 +561,7 @@
    */
   route.post("/videogroupadd", (req, res, next) => {
     console.log(req.body)
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     connpool.getConnection((err, connection) => {
       if (err) {
         return next(err)
@@ -596,7 +596,7 @@
    */
   route.post("/videogroupmove", (req, res, next) => {
     console.log(req.body)
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = `SET @userid = UseridFromToken('${req.body.token}');CALL videogroupadd(@userid,'${req.body.groupname}')`
     connpool.query(sql, (err, rows) => {
       if (err) {

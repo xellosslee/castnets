@@ -15,7 +15,7 @@ var resultcode = JSON.parse(fs.readFileSync("resultcode.json", "utf8").trim())
 var app = express()
 var uuidtemp = uuid.v4()
 
-common.mysqlpool = require('./modules/mysql.js')()
+app.mysqlpool = require('./modules/mysql.js')()
 var fileRouter = require('./routes/file.js')(app)
 var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
@@ -86,7 +86,7 @@ app.get('/', function (req, res, next) {
 })
 
 app.get('/test', function (req, res, next) {
-    var connpool = common.mysqlpool
+    var connpool = app.mysqlpool
     var videoid = ''
     try {
         var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1"

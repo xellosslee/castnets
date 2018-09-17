@@ -12,7 +12,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.get('/userlist/:page/:count', (req, res, next)=>{
-    const connpool = common.mysqlpool
+    const connpool = app.mysqlpool
     var sql = `CALL userboardlist('', ${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -33,7 +33,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.get('/videolist/:page/:count', (req, res, next)=>{
-    const connpool = common.mysqlpool
+    const connpool = app.mysqlpool
     var sql = `CALL videoboardlist('', ${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -54,7 +54,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.post('/userlist/:page/:count', (req, res, next)=>{
-    const connpool = common.mysqlpool
+    const connpool = app.mysqlpool
     var sql = `CALL userboardlist('${req.body.token}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -75,7 +75,7 @@ module.exports = (app) => {
    * res : resultcode와 유저 목록
    */
   route.post('/videolist/:page/:count', (req, res, next)=>{
-    const connpool = common.mysqlpool
+    const connpool = app.mysqlpool
     var sql = `CALL videoboardlist('${req.body.token}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
@@ -98,7 +98,7 @@ module.exports = (app) => {
   route.post("/login", (req, res, next) => {
     console.log(req.body)
 
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var pass, salt
     var sql = `CALL usersaltget('${req.body.loginid}')`
 
@@ -143,7 +143,7 @@ module.exports = (app) => {
    * res : resultcode 결과값
    */
   route.post("/logout", (req, res, next) => {
-    const connpool = require("../modules/mysql.js")()
+    const connpool = app.mysqlpool
     var sql = "CALL userlogout('" + req.body.token + "')"
 
     connpool.query(sql, (err) => {
