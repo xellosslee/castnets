@@ -23,7 +23,7 @@
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -43,7 +43,7 @@
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -63,8 +63,7 @@
       if (err) {
         return next(err)
       }
-
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -110,6 +109,7 @@
           var path = rows[0][0]['filepath']
           var stat = fs.statSync(path)
           var total = stat.size
+          
           if (req.headers['range']) {
             var range = req.headers.range
             var parts = range.replace(/bytes=/, "").split("-")

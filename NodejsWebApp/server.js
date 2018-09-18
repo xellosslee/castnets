@@ -22,7 +22,7 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
-app.use(cors({origin:'www.castnets.co.kr'}))
+app.use(cors({origin:'www.castnets.co.kr,was.castnets.co.kr,res.castnets.co.kr'}))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
