@@ -102,40 +102,47 @@ module.exports = (app) => {
     var pass, salt
     var sql = `CALL usersaltget('${req.body.loginid}')`
 
-    connpool.query(sql, (err, rows) => {
-      if (err) {
-        return next(err)
-      } else {
-        if (rows[0].length <= 0) {
-          common.sendResult(res, resultcode.NotExistsAccount)
-          return
-        }
-        console.log(`get salt : ${rows[0][0]["salt"]}`)
-        salt = rows[0][0]["salt"]
+    connpool.getConnection((err, connection) => {
+      connection.query(sql, (err, rows) => {
+        if (err) {
+          connection.release()
+          return next(err)
+        } else {
+          if (rows[0].length <= 0) {
+            common.sendResult(res, resultcode.NotExistsAccount)
+            connection.release()
+            return
+          }
+          console.log(`get salt : ${rows[0][0]["salt"]}`)
+          salt = rows[0][0]["salt"]
 
-        crypto.pbkdf2(req.body.pass,salt,100000,64,"sha512",
-          (err, key) => {
-            if (err) {
-              return next(err)
-            }
-            pass = key.toString("base64")
-            var sql = `SET @token = '';CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
-
-            console.log(sql)
-            connpool.query(sql, (err, rows) => {
+          crypto.pbkdf2(req.body.pass,salt,100000,64,"sha512",
+            (err, key) => {
               if (err) {
+                connection.release()
                 return next(err)
               }
-              if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
-                console.log("Password missmatch or no have permission")
-                common.sendResult(res, resultcode.WorngPassword)
-                return
-              }
-              common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
-            })
-          }
-        )
-      }
+              pass = key.toString("base64")
+              var sql = `SET @token = '';CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
+
+              console.log(sql)
+              connection.query(sql, (err, rows) => {
+                if (err) {
+                  connection.release()
+                  return next(err)
+                }
+                connection.release()
+                if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
+                  console.log("Password missmatch")
+                  common.sendResult(res, resultcode.WorngPassword)
+                  return
+                }
+                common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
+              })
+            }
+          )
+        }
+      })
     })
   })
   /** 유저 로그아웃

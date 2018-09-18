@@ -77,15 +77,13 @@ module.exports = (app)=>{
   route.post('/upload', upload.single('file'), (req, res, next)=>{
     console.log(req.file)
     var connpool = app.mysqlpool
-    var result = {}
-    result.resultcode = resultcode.Failed
 
     try {
       connpool.getConnection((err, connection) => {
         // 토큰으로 userid를 뽑아둔다
         connection.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
           if (err) {
-            res.json(result)
+            common.sendResult(res, resultcode.failed)
             connection.release()
             throw err
           }
@@ -98,7 +96,7 @@ module.exports = (app)=>{
               SELECT @fileid`
               connection.query(sql, (err, rows)=>{
               if (err) {
-                res.json(result)
+                common.sendResult(res, resultcode.failed)
                 connection.release()
                 throw err
               }
@@ -107,21 +105,20 @@ module.exports = (app)=>{
                 if (req.body.filetype === "60201") {
                   connection.query(`CALL videoadd(@userid,@fileid,${req.body.lan},${req.body.lng},'${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
                     if (err) {
-                      res.json(result)
+                      common.sendResult(res, resultcode.failed)
                       connection.release()
                       throw err
                     }
                     console.log(rows)
                     if (rows['affectedRows'] > 0) {
                       connection.commit(()=>{
-                        result.resultcode = resultcode.Success
-                        res.json(result)
+                        common.sendResult(res, resultcode.Success)
                         connection.release()
                       })
                     } else {
                       connection.rollback(()=>{
                         console.log('rollback videoadd')
-                        res.json(result)
+                        common.sendResult(res, resultcode.failed)
                         connection.release()
                       })
                       fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
@@ -134,14 +131,13 @@ module.exports = (app)=>{
                 } else if (req.body.filetype === "60202") {
                   connection.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
                     if (err) {
-                      res.json(result)
+                      common.sendResult(res, resultcode.failed)
                       connection.release()
                       throw err
                     }
                     console.log(rows)
                     if (rows[1]['affectedRows'] > 0) {
                       connection.commit(()=>{
-                        result.resultcode = resultcode.Success
                         if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
                           fs.unlink(rows[2][0]['@removefile'], (err)=>{ // 삭제처리가 성공하든 말든 진행
                             if (err)
@@ -149,13 +145,13 @@ module.exports = (app)=>{
                             console.log('successfully deleted : ' + rows[2][0]['@removefile'])
                           })
                         }
-                        res.json(result)
+                        common.sendResult(res, resultcode.Success)
                         connection.release()
                       })
                     } else {
                       connection.rollback(()=>{
                         console.log('rollback profileadd')
-                        res.json(result)
+                        common.sendResult(res, resultcode.failed)
                         connection.release()
                       })
                       fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
@@ -168,14 +164,13 @@ module.exports = (app)=>{
                 } else if (req.body.filetype === "60203") {
                   connection.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows)=>{
                     if (err) {
-                      res.json(result)
+                      common.sendResult(res, resultcode.failed)
                       connection.release()
                       throw err
                     }
                     console.log(rows)
                     if (rows[1]['affectedRows'] > 0) {
                       connection.commit(()=>{
-                        result.resultcode = resultcode.Success
                         if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
                           fs.unlink(rows[2][0]['@removefile'], (err)=>{ // 삭제처리가 성공하든 말든 진행
                             if (err)
@@ -183,13 +178,13 @@ module.exports = (app)=>{
                             console.log('successfully deleted : ' + rows[2][0]['@removefile'])
                           })
                         }
-                        res.json(result)
+                        common.sendResult(res, resultcode.Success)
                         connection.release()
                       })
                     } else {
                       connection.rollback(()=>{
                         console.log('rollback profilebackadd')
-                        res.json(result)
+                        common.sendResult(res, resultcode.failed)
                         connection.release()
                       })
                       fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err)=>{ // 삭제처리가 성공하든 말든 진행
@@ -200,8 +195,7 @@ module.exports = (app)=>{
                     }
                   })
                 } else {
-                  result.resultcode = resultcode.UnkownType
-                  res.json(result)
+                  common.sendResult(res, resultcode.UnkownType)
                   connection.release()
                 }
               }
@@ -210,7 +204,7 @@ module.exports = (app)=>{
         })
       })
     } catch (err) {
-      res.json(result)
+      common.sendResult(res, resultcode.failed)
       connection.release()
       throw err
     }

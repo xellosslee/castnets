@@ -8,7 +8,7 @@
     port: process.env.DB_PORT,
     charset: 'utf8',
     multipleStatements: true,
-    connectionLimit: 20
+    connectionLimit: 10
   })
   /** 최초 생성시 연결
    */
