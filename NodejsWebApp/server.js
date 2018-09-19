@@ -109,6 +109,27 @@ app.get('/test', function (req, res, next) {
         throw err
     }
 })
+app.get('/serverconnect', function(req, res) {
+  const connpool = app.mysqlpool
+  try {
+    var sql = "CALL serverconnect();"
+    connpool.query(sql, (err, rows) => {
+      if (err) {
+        common.sendResult(res, resultcode.Failed)
+        throw err
+      } else {
+        if (rows.length > 1) {
+          common.sendResult(res, resultcode.Success, {"server": rows[0][0]})
+        } else {
+          common.sendResult(res, resultcode.Failed)
+        }
+      }
+    });
+  } catch (err) {
+    common.sendResult(res, resultcode.Failed)
+    throw err
+  }
+})
 app.get('/etemp01', function (req, res, next) {
     res.send(common.htmlTempleate01)
 })
