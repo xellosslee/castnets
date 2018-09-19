@@ -30,11 +30,11 @@ app.use('/user', userRouter)
 app.use('/video', videoRouter)
 app.use('/admin', adminRouter)
 app.use('/resources',express.static(__dirname + '/resources'))
-app.use(session({
-    secret: 'keyboard cat nari',
-    resave: false,
-    saveUninitialized: true
-}))
+// app.use(session({
+//     secret: 'keyboard cat nari',
+//     resave: false,
+//     saveUninitialized: true
+// }))
 
 app.use(logErrors)
 app.use(errorHandler)
