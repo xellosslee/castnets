@@ -58,16 +58,6 @@ process.on('uncaughtException', (err) => {
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-var options = {
-    key: fs.readFileSync(path.resolve(__dirname, './ssl/private.key')),
-    cert: fs.readFileSync(path.resolve(__dirname, './ssl/certificate.crt')),
-    ca: fs.readFileSync(path.resolve(__dirname, './ssl/ca_bundle.crt'))
-}
-var PORT = 8443
-var https_server = https.createServer(options, app)
-https_server.listen(PORT, function () {
-    console.log(`server at port ${PORT}`)
-})
 // app.get('*', function (req, res, next) {
 //     if (req.protocol !== 'https') {
 //         if (req.host === "localhost") {
@@ -80,8 +70,6 @@ https_server.listen(PORT, function () {
 //     else
 //         next()
 // })
-// Allows you to set port in the project properties.
-app.set('port', 3000)
 
 app.get('/', function (req, res, next) {
     res.render('index')
@@ -140,18 +128,28 @@ app.get('/etemp03', function (req, res, next) {
     res.send(common.htmlTempleate03)
 })
 // ssl인증을 위한 페이지 다운로드 설정
-app.get('/.well-known/acme-challenge/Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ', function (req, res, next) {
-    res.download('./Me-EZ2TPbYxAad3lmNAPlYWrW7guL8R96wHqpZiEmnQ') // demo.castnets.co.kr
-})
-app.get('/.well-known/acme-challenge/fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM', function (req, res, next) {
-    res.download('./fmEtwsuCxjzJKcq2eppVMiIJqalSEiGTCwDPYluJcJM') // www.castnets.co.kr
-})
 app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res, next) {
     res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
 })
 
-var server = app.listen(app.get('port'), function () {
-    //console.log(process.env)
-    console.log(`uuid [${uuidtemp}]`)
-    console.log(`listening : ${app.get('port')}`)
+// Allows you to set port in the project properties.
+app.set('port', process.env.PORT || 3000)
+app.set('sport', process.env.SPORT || 8443)
+
+var options = {
+  key: fs.readFileSync(path.resolve(__dirname, './ssl/private.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, './ssl/certificate.crt')),
+  ca: fs.readFileSync(path.resolve(__dirname, './ssl/ca_bundle.crt'))
+}
+var https_server = https.createServer(options, app)
+https_server.listen(app.get('sport'), function () {
+    console.log(`secure service port ${app.get('sport')}`)
+})
+
+var server = http.createServer((req, res) => {
+  res.writeHead(301, {Location: `https://${req.headers.host.split(':')[0]}${app.get('sport') !== '443' ? (':' + app.get('sport')) : ':'}${req.url}`})
+  res.end()
+})
+server.listen(app.get('port'), () => {
+    console.log(`service port : ${app.get('port')}`)
 })
