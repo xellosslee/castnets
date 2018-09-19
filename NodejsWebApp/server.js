@@ -47,11 +47,6 @@ function errorHandler(err, req, res, next) {
   //res.render('error', { error: err })
   common.sendResult(res, resultcode.Failed)
 }
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  res.status(404)
-  res.send(common.htmlTempleate04)
-})
 process.on('uncaughtException', (err) => {
   console.log('get uncaughtException : ' + err.stack)
 })
@@ -71,11 +66,11 @@ app.set('view engine', 'ejs')
 //         next()
 // })
 
-app.get('/', function (req, res, next) {
+app.get('/', (req, res, next) => {
     res.render('index')
 })
 
-app.get('/test', function (req, res, next) {
+app.get('/test', (req, res, next) => {
     var connpool = app.mysqlpool
     var videoid = ''
     try {
@@ -97,7 +92,7 @@ app.get('/test', function (req, res, next) {
         throw err
     }
 })
-app.get('/serverconnect', function(req, res) {
+app.get('/serverconnect', (req, res) => {
   const connpool = app.mysqlpool
   try {
     var sql = "CALL serverconnect();"
@@ -130,6 +125,12 @@ app.get('/etemp03', function (req, res, next) {
 // ssl인증을 위한 페이지 다운로드 설정
 app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res, next) {
     res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
+})
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  res.status(404)
+  res.send(common.htmlTempleate04)
 })
 
 // Allows you to set port in the project properties.
