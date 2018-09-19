@@ -120,8 +120,10 @@ ifup ifcfg-eth1
 mkdir /data
 yum -y install epel-release
 yum -y install fuse sshfs
-sshfs root@10.25.96.4:/data /data -o allow_other
+sshfs root@10.25.96.101:/data /10.25.96.101 -o allow_other
+sshfs root@10.25.96.102:/data /10.25.96.102 -o allow_other
 
+sshfs root@10.25.96.3:/data /10.25.96.3 -o allow_other
 
 # 필요 프로토콜 정리
 
