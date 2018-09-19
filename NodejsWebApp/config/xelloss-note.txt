@@ -97,11 +97,10 @@ nohup node server.js &
 # forever 모듈을 이용한 서비스 무한 실행
 cd /src/Gateway
 mkdir /src/log/
-forever start -l /src/log/out.log --minUptime 5000 --spinSleepTime 2000 -a /src/Castnets/NodejsWebApp/server.js
-tail -f -n10 /src/log/out.log
+cd /src/Castnets/NodejsWebApp
+forever start -l /src/log/out.log --minUptime 5000 --spinSleepTime 2000 -a server.js
+tail -f -n100 /src/log/out.log
 forever list
-forever stop /src/Castnets/NodejsWebApp/server.js
-forever restart /src/Castnets/NodejsWebApp/server.js
 
 #서버별 private IP지정
 vi /etc/sysconfig/network-scripts/ifcfg-eth1
