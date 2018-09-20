@@ -95,7 +95,7 @@
    */
   route.get('/stream/:videoid', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = "CALL videostream(" + req.params.videoid + ")"
+    var sql = `CALL videostream(${req.params.videoid})`
     connpool.query(sql, (err, rows)=>{
       try {
         console.log(`video stream[${req.params.videoid}]`)
@@ -103,8 +103,7 @@
           return next(err)
         }
         if (rows[0].length <= 0) {
-          console.log('Cannot found video' + req.params.videoid)
-          return next('Cannot found video')
+          return next(`Cannot found video ${req.params.videoid}`)
         } else {
           var path = rows[0][0]['filepath']
           var stat = fs.statSync(path)
@@ -119,15 +118,15 @@
             var start = parseInt(partialstart, 10)
             var end = partialend ? parseInt(partialend, 10) : total - 1
             var chunksize = (end - start) + 1
-            console.log('reqRange : ' + req.headers.range)
-            console.log('resRange : ' + start + ' - ' + end + ' = ' + chunksize)
+            console.log(`reqRange : ${req.headers.range}`)
+            console.log(`resRange : ${start} - ${end} = ${chunksize}`)
   
             var file = fs.createReadStream(path, {
               start: start,
               end: end
             })
             res.writeHead(206, {
-              'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+              'Content-Range': `bytes ${start}-${end}/${total}`,
               'Accept-Ranges': 'bytes',
               'Content-Length': chunksize,
               'Content-Type': 'video/mp4'
