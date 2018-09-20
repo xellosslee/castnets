@@ -53,19 +53,6 @@ process.on('uncaughtException', (err) => {
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-// app.get('*', function (req, res, next) {
-//     if (req.protocol !== 'https') {
-//         if (req.host === "localhost") {
-//             res.redirect('https://' + req.hostname + ':8443' + req.originalUrl)
-//         }
-//         else {
-//             res.redirect('https://demo.castnets.co.kr')
-//         }
-//     }
-//     else
-//         next()
-// })
-
 app.get('/', (req, res, next) => {
     res.render('index')
 })
@@ -147,12 +134,7 @@ https_server.listen(app.get('sport'), function () {
     console.log(`secure service port ${app.get('sport')}`)
 })
 
-var server = http.createServer(
-//   (req, res) => {
-//   res.writeHead(301, {Location: `https://${req.headers.host.split(':')[0]}${app.get('sport') !== '443' ? (':' + app.get('sport')) : ':'}${req.url}`})
-//   res.end()
-// }
-)
+var server = http.createServer({}, app)
 server.listen(app.get('port'), () => {
   console.log(`service port : ${app.get('port')}`)
 })
