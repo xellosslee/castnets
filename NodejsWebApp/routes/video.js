@@ -111,8 +111,10 @@
           if (pathtest !== undefined) {
             try {
               var testurl = new URL(pathtest)
-              fs.statSync(testurl)
-              fs.statSync(pathtest)
+              var stat1 = fs.statSync(testurl)
+              console.log(stat1)
+              var stat2 = fs.statSync(pathtest)
+              console.log(stat2)
             }
             catch (err) {
               console.log('testlog - ' + err)
