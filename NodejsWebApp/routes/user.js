@@ -155,8 +155,6 @@
   console.log(result2)
    */
   route.post("/sendcertsms", (req, res, next) => {
-    var result = {}
-    result.resultcode = resultcode.Failed
     console.log(req.body)
     try {
       const decipher = crypto.createDecipher("aes-256-cbc", "keyboard cat")
@@ -185,13 +183,11 @@
         } else {
           if (rows[0][0]["cnt"] > 0) {
             // 1분이내에 전송한 기록이 있는경우 실패 리턴
-            result.resultcode = resultcode.TooFastSmsSent
-            res.json(result)
+            common.sendResult(res, resultcode.TooFastSmsSent)
             connection.release()
           } else if (rows[0][0]["cnt"] === -1) {
             // 동일한 폰번호로 가입되어 있다면 실패
-            result.resultcode = resultcode.AlreadyExistsPhone
-            res.json(result)
+            common.sendResult(res, resultcode.AlreadyExistsPhone)
             connection.release()
           } else {
             // 1분이내에 전송한 기록이 없어야만 전송함
@@ -239,10 +235,9 @@
                         } else {
                           connection.release()
                           if (json.result_code == 1) {
-                            result.resultcode = resultcode.Success
-                            result.logid = logid
+                            common.sendResult(res, resultcode.Success, {logid: logid})
                           } else {
-                            result.resultcode = resultcode.SmsSendFailed
+                            common.sendResult(res, resultcode.SmsSendFailed)
                           }
                           res.json(result)
                         }
@@ -251,7 +246,7 @@
                   })
                 } else {
                   // 기록 남기기 실패 - 시스템에러
-                  res.json(result)
+                  common.sendResult(res, resultcode.Failed)
                   connection.release()
                 }
               }
@@ -269,8 +264,6 @@
     console.log(req.body)
 
     const connpool = app.mysqlpool
-    var result = {}
-    result.resultcode = resultcode.Failed
     var sql = `CALL smscert("${req.body.logid}","${req.body.certnum}")`
     connpool.query(sql, (err, rows) => {
       if (err) {
