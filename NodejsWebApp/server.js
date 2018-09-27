@@ -30,6 +30,7 @@ app.use('/user', userRouter)
 app.use('/video', videoRouter)
 app.use('/admin', adminRouter)
 app.use('/resources',express.static(__dirname + '/resources'))
+app.use('/data',express.static('/data'))
 // app.use(session({
 //     secret: 'keyboard cat nari',
 //     resave: false,
