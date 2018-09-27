@@ -42,7 +42,7 @@
           <p>아래 [이메일 인증] 버튼을 누르시면 가입절차가 완료됩니다.</p>
         </span>
       </div>
-      <a href="/user/emailcert/|emailkey|">
+      <a href="${process.env.NODE_ENV === 'production' ? 'https://was.castnets.co.kr' : 'https://demo.castnets.co.kr'}/user/emailcert/|emailkey|">
         <button style="width: 180pt; height: 48pt; background-color: #EE4359; color: white; font-size: 14pt; border: none; border-radius:5px;">이메일 인증</button>
       </a>
     </div>

@@ -271,16 +271,10 @@ module.exports = (app)=>{
       ],
       (err, result) => {
         if(err) {
-          connection.rollback(() => {
-            common.sendResult(res, resultcode.failed)
-            connection.release()
-          })
+          console.log(`error upload : ${err}`)
         }
         else {
-          connection.commit(() => {
-            common.sendResult(res, resultcode.Success)
-            connection.release()
-          })
+          console.log('Upload complete')
         }
       })
     })
