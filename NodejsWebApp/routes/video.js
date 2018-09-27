@@ -106,6 +106,18 @@
           var path = rows[0][0]['filepath']
           var stat = fs.statSync(path)
           var total = stat.size
+
+          var pathtest = rows[0][0]['filepathv']
+          if (pathtest !== undefined) {
+            try {
+              var testurl = new URL(pathtest)
+              fs.statSync(testurl)
+              fs.statSync(pathtest)
+            }
+            catch (err) {
+              console.log('testlog - ' + err)
+            }
+          }
           
           if (req.headers['range']) {
             var range = req.headers.range
