@@ -90,12 +90,8 @@
                       throw err
                     })
                   }
-                  connection.release()
-
                   // 이메일로 가입한 경우 인증메일 발송
-                  if (
-                    (req.body.logid === undefined ? "" : req.body.logid) == ""
-                  ) {
+                  if ((req.body.logid === undefined ? "" : req.body.logid) == "") {
                     // 이메일 인증키 가져오기
                     // 인증메일 발송
                     var mailOptions = {
@@ -110,6 +106,7 @@
                         connection.rollback(() => {
                           console.log("rollback join3")
                           common.sendResult(res, resultcode.failed)
+                          connection.release()
                           throw err
                         })
                       } else {
@@ -117,6 +114,7 @@
 
                         connection.commit(() => {
                           common.sendResult(res, resultcode.Success, { token: token })
+                          connection.release()
                         })
                       }
                       smtpTransport.close()
@@ -125,6 +123,7 @@
                     // 휴대폰으로 가입한 경우 바로 성공
                     connection.commit(() => {
                       common.sendResult(res, resultcode.Success, { token: token })
+                      connection.release()
                     })
                   }
                 })
