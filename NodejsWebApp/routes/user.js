@@ -217,7 +217,7 @@
                       sender: "01046350508",
                       receiver: req.body.phone,
                       msg: msg,
-                      testmode_yn: "Y"
+                      testmode_yn: process.env.NODE_ENV === 'production' ? "N" : "Y" // production 이외에는 테스트 발송
                     }
                   }
                   // 요청 시작 받은값은 body
