@@ -83,14 +83,14 @@ module.exports = (app)=>{
   })
   /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다. 파일명은 최대 200자까지만 가능.
    * ### array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함 * 해당 post는 별도로 구현해야 함
-   * req : post데이터에 file명칭의 파일과 thumnail 이름으로 썸네일 이미지, 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
+   * req : post데이터에 file명칭의 파일과 thumbnail 이름으로 썸네일 이미지, 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
    * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
    */
   route.post('/upload', upload.fields([
         {name:'file', maxCount:1},
-        {name:'thumnail', maxCount:1}
+        {name:'thumbnail', maxCount:1}
       ]), (req, res, next)=>{
-    console.log(`'upload at : ${req.files.file[0].originalname}, thumnail : ${req.files.thumnail === undefined ? '' : req.files.thumnail.originalname}`)
+    console.log(`'upload at : ${req.files.file[0].originalname}, thumbnail : ${req.files.thumbnail === undefined ? '' : req.files.thumbnail[0].originalname}`)
     var connpool = app.mysqlpool
     connpool.getConnection((err, connection) =>{
       if (err) {
@@ -115,7 +115,7 @@ module.exports = (app)=>{
           })
         },
         (cb) => {
-          var sql = `SET @fileid = 0;SET @thumnailid = NULL;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.file[0].destination).replace(/\\/g, '/')}',
+          var sql = `SET @fileid = 0;SET @thumbnailid = NULL;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.file[0].destination).replace(/\\/g, '/')}',
             '${req.files.file[0].filename}','${req.files.file[0].originalname}',${req.body.registlocation},${req.body.filetype},@fileid);`
           connection.query(sql, (err, rows)=>{
             if (err) {
@@ -129,9 +129,9 @@ module.exports = (app)=>{
           })
         },
         (cb) => {
-          if (req.files.thumnail !== undefined && req.files.thumnail !== null) {
-            var sql = `CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.thumnail.destination).replace(/\\/g, '/')}',
-              '${req.files.thumnail.filename}','${req.files.thumnail.originalname}',${req.body.registlocation},60204,@thumnailid);`
+          if (req.files.thumbnail !== undefined && req.files.thumbnail !== null) {
+            var sql = `CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.thumbnail[0].destination).replace(/\\/g, '/')}',
+              '${req.files.thumbnail[0].filename}','${req.files.thumbnail[0].originalname}',${req.body.registlocation},60204,@thumbnailid);`
             connection.query(sql, (err, rows)=>{
               if (err) {
                 connection.rollback(()=>{
@@ -154,7 +154,7 @@ module.exports = (app)=>{
             .then((ress) => {
               addr = ress
               console.log(addr)
-              connection.query(`CALL videoadd(@userid,@fileid,@thumnailid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
+              connection.query(`CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
                 if (err) {
                   connection.rollback(() => {
                     common.sendResult(res, resultcode.failed)
