@@ -413,7 +413,7 @@
    * req : emailkey
    * res : resultcode 결과값
    */
-  route.get("/emailcert/:emailkey", (connpoolreq, res, next) => {
+  route.get("/emailcert/:emailkey", (req, res, next) => {
     const connpool = app.mysqlpool
     connpool.getConnection((err, connection) => {
       connection.beginTransaction(() => {
