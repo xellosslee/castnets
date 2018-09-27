@@ -100,6 +100,7 @@ mkdir /src/log/
 cd /src/Castnets/NodejsWebApp
 forever start -l /src/log/out.log --minUptime 5000 --spinSleepTime 2000 -a server.js
 tail -f -n100 /src/log/out.log
+rm -rf /src/log/out.log
 forever list
 
 #서버별 private IP지정

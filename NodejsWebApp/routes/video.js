@@ -4,7 +4,6 @@
   const common = require('../modules/common.js')()
   const fs = require('fs')
   var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim())
-  const url = require("url")
   var route = express.Router()
 
   route.use(session({
@@ -111,8 +110,7 @@
           var pathtest = rows[0][0]['filepathv']
           if (pathtest !== undefined) {
             try {
-              //var testurl = new URL()
-              var testurl = url.parse(pathtest)
+              var testurl = new URL(pathtest)
               var stat1 = fs.statSync(testurl)
               console.log(stat1)
               var stat2 = fs.statSync(pathtest)
