@@ -77,21 +77,21 @@
                   })
                 }
 
-                var token = rows[2][0]["@token"]
-                sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
+                // 이메일로 가입한 경우 인증메일 발송
+                if ((req.body.logid === undefined || req.body.logid === null ? "" : req.body.logid) == "") {
+                  var token = rows[2][0]["@token"]
+                  sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
 
-                //console.log(sql)
-                connection.query(sql, (err, rows) => {
-                  if (err) {
-                    connection.rollback(() => {
-                      console.log("rollback join2")
-                      common.sendResult(res, resultcode.failed)
-                      connection.release()
-                      throw err
-                    })
-                  }
-                  // 이메일로 가입한 경우 인증메일 발송
-                  if ((req.body.logid === undefined ? "" : req.body.logid) == "") {
+                  //console.log(sql)
+                  connection.query(sql, (err, rows) => {
+                    if (err) {
+                      connection.rollback(() => {
+                        console.log("rollback join2")
+                        common.sendResult(res, resultcode.failed)
+                        connection.release()
+                        throw err
+                      })
+                    }
                     // 이메일 인증키 가져오기
                     // 인증메일 발송
                     var mailOptions = {
@@ -119,14 +119,14 @@
                       }
                       smtpTransport.close()
                     })
-                  } else {
-                    // 휴대폰으로 가입한 경우 바로 성공
-                    connection.commit(() => {
-                      common.sendResult(res, resultcode.Success, { token: token })
-                      connection.release()
-                    })
-                  }
-                })
+                  })
+                } else {
+                  // 휴대폰으로 가입한 경우 바로 성공
+                  connection.commit(() => {
+                    common.sendResult(res, resultcode.Success, { token: token })
+                    connection.release()
+                  })
+                }
               })
             }) // connection.beginTransaction
           }) // connpool.getConnection((err, connection) => {
