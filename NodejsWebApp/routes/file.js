@@ -8,6 +8,7 @@ module.exports = (app)=>{
   const fs = require('fs')
   const path = require('path')
   const resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim())
+  const async = require('async');
   var route = express.Router()
   route.use(session({
     secret: 'keyboard cat nari',
@@ -82,30 +83,56 @@ module.exports = (app)=>{
   })
   /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다. 파일명은 최대 200자까지만 가능.
    * ### array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함 * 해당 post는 별도로 구현해야 함
-   * req : post데이터에 file명칭의 파일과 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
+   * req : post데이터에 file명칭의 파일과 thumnail 이름으로 썸네일 이미지, 유저token, registlocation(안드,애플,웹), filetype: [60201 video, 60202 profile, 60203 profileback], lan(profile 일땐 생략), lng(profile 일땐 생략), comment(profile 일땐 생략), capturedate(profile 일땐 생략)을 담아서 전송
    * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
    */
-  route.post('/upload', upload.single('file'), (req, res, next)=>{
-    console.log(req.file)
+  route.post('/upload', upload.fields([
+        {name:'file', maxCount:1},
+        {name:'thumnail', maxCount:1}
+      ]), (req, res, next)=>{
+    console.log(`'upload at : ${req.files.file[0].originalname}, thumnail : ${req.files.thumnail === undefined ? '' : req.files.thumnail.originalname}`)
     var connpool = app.mysqlpool
-
-    try {
-      connpool.getConnection((err, connection) => {
-        // 토큰으로 userid를 뽑아둔다
-        connection.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
-          if (err) {
-            common.sendResult(res, resultcode.failed)
-            connection.release()
-            throw err
-          }
-          console.log(rows)
-  
+    connpool.getConnection((err, connection) =>{
+      if (err) {
+        common.sendResult(res, resultcode.failed)
+        connection.release()
+        throw err
+      }
+      async.waterfall([
+        (cb) => {// 토큰으로 userid를 뽑아둔다 (mysql 변수에 담기기 때문에 별도로 전달할 필요 없음)
+          connection.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
+            if (err) {
+              common.sendResult(res, resultcode.failed)
+              connection.release()
+              throw err
+            }
+            cb()
+          })
+        },
+        (cb) => {
           connection.beginTransaction(()=>{
-            var sql = `SET @fileid = 0;
-              CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.file.destination).replace(/\\/g, '/')}',
-              '${req.file.filename}','${req.file.originalname}',${req.body.registlocation},${req.body.filetype},@fileid);
-              SELECT @fileid`
-              connection.query(sql, (err, rows)=>{
+            cb()
+          })
+        },
+        (cb) => {
+          var sql = `SET @fileid = 0;SET @thumnailid = NULL;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.file[0].destination).replace(/\\/g, '/')}',
+            '${req.files.file[0].filename}','${req.files.file[0].originalname}',${req.body.registlocation},${req.body.filetype},@fileid);`
+          connection.query(sql, (err, rows)=>{
+            if (err) {
+              connection.rollback(()=>{
+                common.sendResult(res, resultcode.failed)
+                connection.release()
+              })
+              throw err
+            }
+            cb()
+          })
+        },
+        (cb) => {
+          if (req.files.thumnail !== undefined && req.files.thumnail !== null) {
+            var sql = `CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.files.thumnail.destination).replace(/\\/g, '/')}',
+              '${req.files.thumnail.filename}','${req.files.thumnail.originalname}',${req.body.registlocation},60204,@thumnailid);`
+            connection.query(sql, (err, rows)=>{
               if (err) {
                 connection.rollback(()=>{
                   common.sendResult(res, resultcode.failed)
@@ -113,133 +140,302 @@ module.exports = (app)=>{
                 })
                 throw err
               }
-              console.log(rows)
-              if (rows[2][0]['@fileid'] > 0) {
-                if (req.body.filetype === "60201") {
-                  var addr = '';
-                  geocoder.reverse({"lat":req.body.lan, "lon": req.body.lng})
-                  .then((ress) => {
-                    addr = ress
-                    console.log(addr)
-                    connection.query(`CALL videoadd(@userid,@fileid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
-                      if (err) {
-                        connection.rollback(() => {
-                          common.sendResult(res, resultcode.failed)
-                          connection.release()
-                        })
-                        throw err
-                      }
-                      console.log(rows)
-                      if (rows['affectedRows'] > 0) {
-                        connection.commit(() => {
-                          common.sendResult(res, resultcode.Success)
-                          connection.release()
-                        })
-                      } else {
-                        connection.rollback(() => {
-                          console.log('rollback videoadd')
-                          common.sendResult(res, resultcode.failed)
-                          connection.release()
-                        })
-                        fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
-                          if (err)
-                            throw err
-                          console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
-                        })
-                      }
-                    })
+              cb()
+            })
+          }
+          else {
+            cb()
+          }
+        },
+        (cb) => {
+          if (req.body.filetype === "60201") {
+            var addr = '';
+            geocoder.reverse({"lat":req.body.lan, "lon": req.body.lng})
+            .then((ress) => {
+              addr = ress
+              console.log(addr)
+              connection.query(`CALL videoadd(@userid,@fileid,@thumnailid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
+                if (err) {
+                  connection.rollback(() => {
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
                   })
-                  .catch((err) => {
-                    connection.rollback(() => {
-                      common.sendResult(res, resultcode.failed)
-                      connection.release()
-                    })
-                    throw err
-                  })
-                } else if (req.body.filetype === "60202") {
-                  connection.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
-                    if (err) {
-                      connection.rollback(() => {
-                        common.sendResult(res, resultcode.failed)
-                        connection.release()
-                      })
-                      throw err
-                    }
-                    console.log(rows)
-                    if (rows[1]['affectedRows'] > 0) {
-                      connection.commit(() => {
-                        if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
-                          fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
-                            if (err)
-                              throw err
-                            console.log('successfully deleted : ' + rows[2][0]['@removefile'])
-                          })
-                        }
-                        common.sendResult(res, resultcode.Success)
-                        connection.release()
-                      })
-                    } else {
-                      connection.rollback(() => {
-                        console.log('rollback profileadd')
-                        common.sendResult(res, resultcode.failed)
-                        connection.release()
-                      })
-                      fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
-                        if (err)
-                          throw err
-                        console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
-                      })
-                    }
-                  })
-                } else if (req.body.filetype === "60203") {
-                  connection.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
-                    if (err) {
-                      connection.rollback(() => {
-                        common.sendResult(res, resultcode.failed)
-                        connection.release()
-                      })
-                      throw err
-                    }
-                    console.log(rows)
-                    if (rows[1]['affectedRows'] > 0) {
-                      connection.commit(() => {
-                        if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
-                          fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
-                            if (err)
-                              throw err
-                            console.log('successfully deleted : ' + rows[2][0]['@removefile'])
-                          })
-                        }
-                        common.sendResult(res, resultcode.Success)
-                        connection.release()
-                      })
-                    } else {
-                      connection.rollback(() => {
-                        console.log('rollback profilebackadd')
-                        common.sendResult(res, resultcode.failed)
-                        connection.release()
-                      })
-                      fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
-                        if (err)
-                          throw err
-                        console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
-                      })
-                    }
+                  throw err
+                }
+                console.log(rows)
+                if (rows['affectedRows'] > 0) {
+                  connection.commit(() => {
+                    common.sendResult(res, resultcode.Success)
+                    connection.release()
+                    cb()
                   })
                 } else {
-                  common.sendResult(res, resultcode.UnkownType)
-                  connection.release()
+                  connection.rollback(() => {
+                    console.log('rollback videoadd')
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
+                  })
+                  fs.unlink(path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                    if (err)
+                      throw err
+                    console.log('successfully deleted : ' + path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename))
+                  })
                 }
+              })
+            })
+            .catch((err) => {
+              connection.rollback(() => {
+                common.sendResult(res, resultcode.failed)
+                connection.release()
+              })
+              throw err
+            })
+          } else if (req.body.filetype === "60202") {
+            connection.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
+              if (err) {
+                connection.rollback(() => {
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                throw err
+              }
+              console.log(rows)
+              if (rows[1]['affectedRows'] > 0) {
+                connection.commit(() => {
+                  if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
+                    fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
+                      if (err)
+                        throw err
+                      console.log('successfully deleted : ' + rows[2][0]['@removefile'])
+                    })
+                  }
+                  common.sendResult(res, resultcode.Success)
+                  connection.release()
+                  cb()
+                })
+              } else {
+                connection.rollback(() => {
+                  console.log('rollback profileadd')
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                fs.unlink(path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                  if (err)
+                    throw err
+                  console.log('successfully deleted : ' + path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename))
+                })
               }
             })
+          } else if (req.body.filetype === "60203") {
+            connection.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
+              if (err) {
+                connection.rollback(() => {
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                throw err
+              }
+              console.log(rows)
+              if (rows[1]['affectedRows'] > 0) {
+                connection.commit(() => {
+                  if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
+                    fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
+                      if (err)
+                        throw err
+                      console.log('successfully deleted : ' + rows[2][0]['@removefile'])
+                    })
+                  }
+                  common.sendResult(res, resultcode.Success)
+                  connection.release()
+                  cb()
+                })
+              } else {
+                connection.rollback(() => {
+                  console.log('rollback profilebackadd')
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                fs.unlink(path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                  if (err)
+                    throw err
+                  console.log('successfully deleted : ' + path.join(path.normalize(req.files.file[0].destination).replace(/\\/g, '/'), req.files.file[0].filename))
+                })
+              }
+            })
+          } else {
+            common.sendResult(res, resultcode.UnkownType)
+            connection.release()
+            cb()
+          }
+        },
+      ],
+      (err, result) => {
+        if(err) {
+          connection.rollback(() => {
+            common.sendResult(res, resultcode.failed)
+            connection.release()
           })
-        })
+        }
+        else {
+          connection.commit(() => {
+            common.sendResult(res, resultcode.Success)
+            connection.release()
+          })
+        }
       })
-    } catch (err) {
-      common.sendResult(res, resultcode.failed)
-      connection.release()
-      throw err
-    }
+    })
+    
+    // try {
+    //   connpool.getConnection((err, connection) => {
+    //     // 토큰으로 userid를 뽑아둔다
+    //     connection.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
+    //       if (err) {
+    //         common.sendResult(res, resultcode.failed)
+    //         connection.release()
+    //         throw err
+    //       }
+    //       console.log(rows)
+  
+    //       connection.beginTransaction(()=>{
+    //         var sql = `SET @fileid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(req.file.destination).replace(/\\/g, '/')}',
+    //           '${req.file.filename}','${req.file.originalname}',${req.body.registlocation},${req.body.filetype},@fileid);SELECT @fileid`
+    //         connection.query(sql, (err, rows)=>{
+    //           if (err) {
+    //             connection.rollback(()=>{
+    //               common.sendResult(res, resultcode.failed)
+    //               connection.release()
+    //             })
+    //             throw err
+    //           }
+    //           console.log(rows)
+    //           if (rows[2][0]['@fileid'] > 0) {
+    //             if (req.body.filetype === "60201") {
+    //               var addr = '';
+    //               geocoder.reverse({"lat":req.body.lan, "lon": req.body.lng})
+    //               .then((ress) => {
+    //                 addr = ress
+    //                 console.log(addr)
+    //                 connection.query(`CALL videoadd(@userid,@fileid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
+    //                   if (err) {
+    //                     connection.rollback(() => {
+    //                       common.sendResult(res, resultcode.failed)
+    //                       connection.release()
+    //                     })
+    //                     throw err
+    //                   }
+    //                   console.log(rows)
+    //                   if (rows['affectedRows'] > 0) {
+    //                     connection.commit(() => {
+    //                       common.sendResult(res, resultcode.Success)
+    //                       connection.release()
+    //                     })
+    //                   } else {
+    //                     connection.rollback(() => {
+    //                       console.log('rollback videoadd')
+    //                       common.sendResult(res, resultcode.failed)
+    //                       connection.release()
+    //                     })
+    //                     fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
+    //                       if (err)
+    //                         throw err
+    //                       console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
+    //                     })
+    //                   }
+    //                 })
+    //               })
+    //               .catch((err) => {
+    //                 connection.rollback(() => {
+    //                   common.sendResult(res, resultcode.failed)
+    //                   connection.release()
+    //                 })
+    //                 throw err
+    //               })
+    //             } else if (req.body.filetype === "60202") {
+    //               connection.query("SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
+    //                 if (err) {
+    //                   connection.rollback(() => {
+    //                     common.sendResult(res, resultcode.failed)
+    //                     connection.release()
+    //                   })
+    //                   throw err
+    //                 }
+    //                 console.log(rows)
+    //                 if (rows[1]['affectedRows'] > 0) {
+    //                   connection.commit(() => {
+    //                     if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
+    //                       fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
+    //                         if (err)
+    //                           throw err
+    //                         console.log('successfully deleted : ' + rows[2][0]['@removefile'])
+    //                       })
+    //                     }
+    //                     common.sendResult(res, resultcode.Success)
+    //                     connection.release()
+    //                   })
+    //                 } else {
+    //                   connection.rollback(() => {
+    //                     console.log('rollback profileadd')
+    //                     common.sendResult(res, resultcode.failed)
+    //                     connection.release()
+    //                   })
+    //                   fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
+    //                     if (err)
+    //                       throw err
+    //                     console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
+    //                   })
+    //                 }
+    //               })
+    //             } else if (req.body.filetype === "60203") {
+    //               connection.query("SET @removefile = '';CALL profilebackadd(@userid,@fileid,@removefile);SELECT @removefile", (err, rows) => {
+    //                 if (err) {
+    //                   connection.rollback(() => {
+    //                     common.sendResult(res, resultcode.failed)
+    //                     connection.release()
+    //                   })
+    //                   throw err
+    //                 }
+    //                 console.log(rows)
+    //                 if (rows[1]['affectedRows'] > 0) {
+    //                   connection.commit(() => {
+    //                     if (rows[2][0]['@removefile'] !== null && rows[2][0]['@removefile'] !== '') {
+    //                       fs.unlink(rows[2][0]['@removefile'], (err) => { // 삭제처리가 성공하든 말든 진행
+    //                         if (err)
+    //                           throw err
+    //                         console.log('successfully deleted : ' + rows[2][0]['@removefile'])
+    //                       })
+    //                     }
+    //                     common.sendResult(res, resultcode.Success)
+    //                     connection.release()
+    //                   })
+    //                 } else {
+    //                   connection.rollback(() => {
+    //                     console.log('rollback profilebackadd')
+    //                     common.sendResult(res, resultcode.failed)
+    //                     connection.release()
+    //                   })
+    //                   fs.unlink(path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename), (err) => { // 삭제처리가 성공하든 말든 진행
+    //                     if (err)
+    //                       throw err
+    //                     console.log('successfully deleted : ' + path.join(path.normalize(req.file.destination).replace(/\\/g, '/'), req.file.filename))
+    //                   })
+    //                 }
+    //               })
+    //             } else {
+    //               common.sendResult(res, resultcode.UnkownType)
+    //               connection.release()
+    //             }
+    //           }
+    //         })
+    //       })
+    //     })
+    //   })
+    // } catch (err) {
+    //   connection.rollback(()=>{
+    //     common.sendResult(res, resultcode.failed)
+    //     connection.release()
+    //   })
+    //   throw err
+    // }
   })
 
   // catch 404 and forward to error handler

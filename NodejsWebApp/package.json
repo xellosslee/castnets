@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "JSON": "^1.0.0",
+    "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "crypto-browserify": "^3.12.0",
