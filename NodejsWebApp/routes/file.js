@@ -20,7 +20,7 @@ module.exports = (app)=>{
     provider: 'google',
     // Optional depending on the providers
     httpAdapter: 'https', // Default
-    apiKey: 'AIzaSyDReVdkX_7JrTPyscR1NQQ5wklPPaLgYhw', // for Mapquest, OpenCage, Google Premier
+    apiKey: 'AIzaSyDZM_zs2pQDj-45KLiVY9Jf4H4m5AzTFa0',
     language:'ko',
     region:'KR',
     formatter: null         // 'gpx', 'string', ...
