@@ -63,7 +63,7 @@
             connection.beginTransaction(() => {
               var sql = `SET @token = 0;
                 CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
-                '${(req.body.email === undefined ? "" : req.body.email)}"',
+                '${(req.body.email === undefined ? '' : req.body.email)}',
                 '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
                 
               //console.log(sql)

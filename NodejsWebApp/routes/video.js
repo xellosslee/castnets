@@ -80,8 +80,6 @@
   route.post('/view', (req, res, next)=>{
     const connpool = app.mysqlpool
     var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")"
-    var result = {}
-    result.resultcode = resultcode.Failed
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
