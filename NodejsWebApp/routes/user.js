@@ -77,9 +77,9 @@
                   })
                 }
 
+                var token = rows[2][0]["@token"]
                 // 이메일로 가입한 경우 인증메일 발송
                 if ((req.body.logid === undefined || req.body.logid === null ? "" : req.body.logid) == "") {
-                  var token = rows[2][0]["@token"]
                   sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
 
                   //console.log(sql)
@@ -113,7 +113,7 @@
                         console.log("Cert mail sent : " + response.message)
 
                         connection.commit(() => {
-                          common.sendResult(res, resultcode.Success, { token: token })
+                          common.sendResult(res, resultcode.Success, {"token": token})
                           connection.release()
                         })
                       }
@@ -123,7 +123,7 @@
                 } else {
                   // 휴대폰으로 가입한 경우 바로 성공
                   connection.commit(() => {
-                    common.sendResult(res, resultcode.Success, { token: token })
+                    common.sendResult(res, resultcode.Success, {"token": token})
                     connection.release()
                   })
                 }
@@ -234,11 +234,10 @@
                         } else {
                           connection.release()
                           if (json.result_code == 1) {
-                            common.sendResult(res, resultcode.Success, {logid: logid})
+                            common.sendResult(res, resultcode.Success, {"logid": logid})
                           } else {
                             common.sendResult(res, resultcode.SmsSendFailed)
                           }
-                          res.json(result)
                         }
                       })
                     }
