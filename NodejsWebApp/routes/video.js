@@ -107,14 +107,11 @@
           var stat = fs.statSync(path)
           var total = stat.size
 
-          var serverpath = rows[0][0]['serverpath']
-          if (serverpath !== undefined) {
+          var filepath = rows[0][0]['filepathv']
+          if (filepath !== undefined) {
             try {
-              var testurl = new URL(filepath, serverpath)
-              var stat1 = fs.statSync(testurl)
+              var stat1 = fs.statSync(filepath)
               console.log(stat1)
-              var stat2 = fs.statSync(pathtest)
-              console.log(stat2)
             }
             catch (err) {
               console.log('testlog - ' + err)
