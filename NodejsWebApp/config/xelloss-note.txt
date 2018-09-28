@@ -138,3 +138,9 @@ sshfs root@10.25.96.3:/data /10.25.96.3 -o allow_other
 
 # 파일관련
 업로드(영상,프로필,배경), 삭제(나의 영상 삭제)
+
+
+# 내부망 방화벽 오픈
+firewall-cmd --permanent --new-zone=private
+firewall-cmd --permanent --zone=private --change-interface=eth1
+firewall-cmd --permanent -zone=private --add-port=19100-19300/tcp
