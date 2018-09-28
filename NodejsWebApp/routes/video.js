@@ -173,7 +173,7 @@
         if (rows[0].length > 0) {
           res.sendFile(rows[0][0].filepath)
         } else {
-          return next(new Error('error'))
+          res.send('')
         }
       }
     })
