@@ -42,7 +42,7 @@ services:
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
-      - /data:/data
+      - /10.25.96.3:/10.25.96.3
       - ./node_modules:/src/node_modules
 
   was-2:
@@ -58,5 +58,5 @@ services:
     volumes:
       - ./:/src
       - /src/ssl:/src/ssl
-      - /data:/data
+      - /10.25.96.3:/10.25.96.3
       - ./node_modules:/src/node_modules
