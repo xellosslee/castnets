@@ -158,6 +158,26 @@
       }
     })
   })
+  /**비디오 썸네일
+   * req : videoid를 주소에 담아서 전달
+   * res : 해당 영상의 썸네일을 리턴
+   */
+  route.get('/thumbnail/:videoid', (req, res, next)=>{
+    const connpool = app.mysqlpool
+    var sql = `CALL videothumbnail('${req.params.videoid}')`
+
+    connpool.query(sql, (err, rows) => {
+      if (err) {
+        return next(err)
+      } else {
+        if (rows[0].length > 0) {
+          res.sendFile(rows[0][0].filepath)
+        } else {
+          return next(new Error('error'))
+        }
+      }
+    })
+  })
 
   return route
 }
