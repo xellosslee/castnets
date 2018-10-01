@@ -22,7 +22,14 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
-app.use(cors({origin:'http://www.castnets.co.kr,http://was.castnets.co.kr,http://res.castnets.co.kr'}))
+//app.use(cors({origin:'http://www.castnets.co.kr,http://was.castnets.co.kr,http://res.castnets.co.kr'}))
+app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "www.castnets.co.kr");
+  res.header("Access-Control-Allow-Origin", "was.castnets.co.kr");
+  res.header("Access-Control-Allow-Origin", "res.castnets.co.kr");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
