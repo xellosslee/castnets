@@ -22,7 +22,7 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
-var whitelist = ['www.castnets.co.kr', 'was.castnets.co.kr', 'res.castnets.co.kr']
+var whitelist = ['http://demo.castnets.co.kr', 'http://www.castnets.co.kr', 'http://was.castnets.co.kr', 'http://res.castnets.co.kr']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
