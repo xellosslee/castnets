@@ -40,8 +40,8 @@ app.use('/data',express.static('/data'))
 app.use(logErrors)
 app.use(errorHandler)
 function logErrors(err, req, res, next) {
-    console.error(err.stack)
-    next(err)
+  console.error(err.stack)
+  next(err)
 }
 function errorHandler(err, req, res, next) {
   res.status(500)
@@ -55,30 +55,30 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
 app.get('/', (req, res, next) => {
-    res.render('index')
+  res.render('index')
 })
 
 app.get('/test', (req, res, next) => {
-    var connpool = app.mysqlpool
-    var videoid = ''
-    try {
-        var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1"
-        connpool.query(sql, function (err, rows) {
-            if (err) {
-                throw err
-            }
-            else {
-                if (rows.length > 0) {
-                    videoid = rows[0].videoid
-                }
-                res.render('demo', { "uuid": uuidtemp, "videoid": videoid })
-            }
-        })
-    }
-    catch (err) {
-        console.log(err)
+  var connpool = app.mysqlpool
+  var videoid = ''
+  try {
+    var sql = "SELECT videoid FROM video ORDER BY videoid DESC LIMIT 1"
+    connpool.query(sql, function (err, rows) {
+      if (err) {
         throw err
-    }
+      }
+      else {
+        if (rows.length > 0) {
+          videoid = rows[0].videoid
+        }
+        res.render('demo', { "uuid": uuidtemp, "videoid": videoid })
+      }
+    })
+  }
+  catch (err) {
+    console.log(err)
+    throw err
+  }
 })
 app.get('/serverconnect', (req, res) => {
   const connpool = app.mysqlpool
@@ -102,17 +102,17 @@ app.get('/serverconnect', (req, res) => {
   }
 })
 app.get('/etemp01', function (req, res, next) {
-    res.send(common.htmlTempleate01)
+  res.send(common.htmlTempleate01)
 })
 app.get('/etemp02', function (req, res, next) {
-    res.send(common.htmlTempleate02)
+  res.send(common.htmlTempleate02)
 })
 app.get('/etemp03', function (req, res, next) {
-    res.send(common.htmlTempleate03)
+  res.send(common.htmlTempleate03)
 })
 // ssl인증을 위한 페이지 다운로드 설정
 app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res, next) {
-    res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
+  res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
 })
 
 // catch 404 and forward to error handler
@@ -132,7 +132,7 @@ var options = {
 }
 var https_server = https.createServer(options, app)
 https_server.listen(app.get('sport'), function () {
-    console.log(`secure service port ${app.get('sport')}`)
+  console.log(`secure service port ${app.get('sport')}`)
 })
 
 // var server = http.createServer(
