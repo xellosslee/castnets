@@ -22,14 +22,17 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
-//app.use(cors({origin:'http://www.castnets.co.kr,http://was.castnets.co.kr,http://res.castnets.co.kr'}))
-app.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "www.castnets.co.kr");
-  res.header("Access-Control-Allow-Origin", "was.castnets.co.kr");
-  res.header("Access-Control-Allow-Origin", "res.castnets.co.kr");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
+var whitelist = ['www.castnets.co.kr', 'was.castnets.co.kr', 'res.castnets.co.kr']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
