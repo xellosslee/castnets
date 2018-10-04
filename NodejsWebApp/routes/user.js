@@ -338,7 +338,7 @@
    */
   route.post("/logout", (req, res, next) => {
     const connpool = app.mysqlpool
-    var sql = "CALL userlogout('" + req.body.token + "')"
+    var sql = `CALL userlogout('${req.headers.authorization}')`
 
     connpool.query(sql, (err) => {
       if (err) {
@@ -354,7 +354,7 @@
    */
   route.post("/tokencheck", (req, res, next) => {
     const connpool = app.mysqlpool
-    var sql = "CALL usertokencheck('" + req.body.token + "')"
+    var sql = `CALL usertokencheck('${req.headers.authorization}')`
 
     connpool.query(sql, (err, rows) => {
       if (err) {
@@ -380,7 +380,7 @@
    */
   route.post("/emailresend", (req, res, next) => {
     const connpool = app.mysqlpool
-    var sql = "SET @emailkey = '';CALL emailsend('" + req.body.token + "', @emailkey);SELECT @emailkey"
+    var sql = `SET @emailkey = '';CALL emailsend('${req.headers.authorization}', @emailkey);SELECT @emailkey`
 
     connpool.query(sql, (err, rows) => {
       if (err) {
@@ -492,7 +492,7 @@
   route.post("/usernamecheck", (req, res, next) => {
     console.log(req.body)
     const connpool = app.mysqlpool
-    var sql = `CALL usernamecheck('${req.body.token}','${req.body.name}')`
+    var sql = `CALL usernamecheck('${req.headers.authorization}','${req.body.name}')`
     connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
@@ -512,7 +512,7 @@
   route.post("/usernamechange", (req, res, next) => {
     console.log(req.body)
     const connpool = app.mysqlpool
-    var sql = `CALL usernamechange('${req.body.token}','${req.body.name}')`
+    var sql = `CALL usernamechange('${req.headers.authorization}','${req.body.name}')`
     connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
@@ -550,7 +550,7 @@
    */
   route.post('/uservideolist/:name', (req, res, next)=>{
     const connpool = app.mysqlpool
-    connpool.query(`CALL uservideolist('${req.params.name}','${req.body.token}')`, (err, rows)=>{
+    connpool.query(`CALL uservideolist('${req.params.name}','${req.headers.authorization}')`, (err, rows)=>{
       if (err) {
         return next(err)
       }
@@ -575,7 +575,7 @@
         return next(err)
       }
       connection.beginTransaction(()=>{
-        var sql = `SET @userid = UseridFromToken('${req.body.token}');
+        var sql = `SET @userid = UseridFromToken('${req.headers.authorization}');
           CALL videogroupadd(@userid,'${req.body.groupname}')`
           connection.query(sql, (err, rows) => {
           if (err) {
@@ -605,7 +605,7 @@
   route.post("/videogroupmove", (req, res, next) => {
     console.log(req.body)
     const connpool = app.mysqlpool
-    var sql = `SET @userid = UseridFromToken('${req.body.token}');CALL videogroupadd(@userid,'${req.body.groupname}')`
+    var sql = `SET @userid = UseridFromToken('${req.headers.authorization}');CALL videogroupadd(@userid,'${req.body.groupname}')`
     connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)

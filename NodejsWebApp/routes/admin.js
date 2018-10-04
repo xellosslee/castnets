@@ -55,7 +55,7 @@ module.exports = (app) => {
    */
   route.post('/userlist/:page/:count', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = `CALL userboardlist('${req.body.token}',${req.params.page},${req.params.count})`
+    var sql = `CALL userboardlist('${req.headers.authorization}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
@@ -76,7 +76,7 @@ module.exports = (app) => {
    */
   route.post('/videolist/:page/:count', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = `CALL videoboardlist('${req.body.token}',${req.params.page},${req.params.count})`
+    var sql = `CALL videoboardlist('${req.headers.authorization}',${req.params.page},${req.params.count})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
@@ -151,7 +151,7 @@ module.exports = (app) => {
    */
   route.post("/logout", (req, res, next) => {
     const connpool = app.mysqlpool
-    var sql = "CALL userlogout('" + req.body.token + "')"
+    var sql = `CALL userlogout('${req.headers.authorization}')`
 
     connpool.query(sql, (err) => {
       if (err) {

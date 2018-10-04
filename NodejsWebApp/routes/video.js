@@ -17,8 +17,7 @@
    */
   route.get('/list/:lat/:lng/:cnt/:distance', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = "CALL videolist(" + (req.params.lat === undefined ? 37.394926 : req.params.lat) + "," +
-      (req.params.lng === undefined ? 127.111144 : req.params.lng) + "," + req.params.cnt + "," + req.params.distance + ")"
+    var sql = `CALL videolist2('${req.headers.authorization}',${req.params.lat},${req.params.lng},${req.params.cnt},${req.params.distance})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
@@ -84,7 +83,7 @@
    */
   route.post('/view', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = "CALL videoview(" + req.body.videoid + ",'" + req.body.token === undefined ? null : req.body.token + "'," + req.body.logtype + ")"
+    var sql = `CALL videoview(${req.body.videoid},'${req.headers.authorization}',${req.body.logtype})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)

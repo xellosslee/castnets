@@ -90,7 +90,7 @@ module.exports = (app)=>{
         {name:'file', maxCount:1},
         {name:'thumbnail', maxCount:1}
       ]), (req, res, next)=>{
-    console.log(`'upload at : ${req.files.file[0].originalname}, thumbnail : ${req.files.thumbnail === undefined ? '' : req.files.thumbnail[0].originalname}`)
+    console.log(`upload at : ${req.files.file[0].originalname}, thumbnail : ${req.files.thumbnail === undefined ? '' : req.files.thumbnail[0].originalname}`)
     var connpool = app.mysqlpool
     connpool.getConnection((err, connection) =>{
       if (err) {
@@ -100,7 +100,7 @@ module.exports = (app)=>{
       }
       async.waterfall([
         (cb) => {// 토큰으로 userid를 뽑아둔다 (mysql 변수에 담기기 때문에 별도로 전달할 필요 없음)
-          connection.query(`SET @userid = UseridFromToken('${req.body.token}')`, (err, rows)=>{
+          connection.query(`SET @userid = UseridFromToken('${req.headers.authorization}')`, (err, rows)=>{
             if (err) {
               common.sendResult(res, resultcode.failed)
               connection.release()
