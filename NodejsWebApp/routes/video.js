@@ -17,7 +17,7 @@
    */
   route.get('/list/:lat/:lng/:cnt/:distance', (req, res, next)=>{
     const connpool = app.mysqlpool
-    var sql = `CALL videolist2('${req.headers.authorization}',${req.params.lat},${req.params.lng},${req.params.cnt},${req.params.distance})`
+    var sql = `CALL videolist('${req.headers.authorization}',${req.params.lat},${req.params.lng},${req.params.cnt},${req.params.distance})`
     connpool.query(sql, (err, rows)=>{
       if (err) {
         return next(err)
