@@ -18,7 +18,7 @@ module.exports = (app) => {
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -39,7 +39,7 @@ module.exports = (app) => {
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -60,7 +60,7 @@ module.exports = (app) => {
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
@@ -81,7 +81,7 @@ module.exports = (app) => {
       if (err) {
         return next(err)
       }
-      console.log(rows)
+      //console.log(rows)
       var list = []
       if (rows[0].length > 0) {
         rows[0].forEach((row)=>{
