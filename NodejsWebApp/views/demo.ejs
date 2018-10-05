@@ -50,13 +50,15 @@
       영상업로드
       <form action="/file/upload" method="post" enctype="multipart/form-data">
         <input type="text" name="token" value="A3AC92331ACC6C10AA09B157212B41C0" />
+        <input type="hidden" name="width" value="480" />
+        <input type="hidden" name="height" value="800" />
         <input type="hidden" name="registlocation" value="60103" />
         <input type="hidden" name="filetype" value="60201" />
-        <input type="hidden" name="lan" value="37.3944955" />
-        <input type="hidden" name="lng" value="127.1093845" />
+        <input type="hidden" name="lat" value="37.3944955" />
+        <input type="hidden" name="lon" value="127.1093845" />
         <input type="hidden" name="comment" value="" />
         <input type="hidden" name="capturedate" value="2018-08-09 11:05:06" />
-        <input type="file" name="file" />
+        <input type="file" name="video" />
         <input type="submit" />
       </form>
       프로필업로드
