@@ -154,7 +154,7 @@ module.exports = (app)=>{
             .then((ress) => {
               addr = ress
               console.log(addr)
-              connection.query(`CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}','${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
+              connection.query(`CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lan},${req.body.lng},'${addr[0].formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`, (err, rows)=>{
                 if (err) {
                   connection.rollback(() => {
                     common.sendResult(res, resultcode.failed)
