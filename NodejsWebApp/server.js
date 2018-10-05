@@ -48,6 +48,7 @@ app.use('/user', userRouter)
 app.use('/video', videoRouter)
 app.use('/admin', adminRouter)
 app.use('/resources',express.static(__dirname + '/resources'))
+app.use('/.well-known',express.static(__dirname + '/.well-known'))
 app.use('/data',express.static('/data'))
 // app.use(session({
 //     secret: 'keyboard cat nari',
@@ -127,10 +128,6 @@ app.get('/etemp02', function (req, res, next) {
 })
 app.get('/etemp03', function (req, res, next) {
   res.send(common.htmlTempleate03)
-})
-// ssl인증을 위한 페이지 다운로드 설정
-app.get('/.well-known/acme-challenge/7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ', function (req, res, next) {
-  res.download('./7ea3YTwkuKn1ZG9QsngmjIA3DnOmAwX1u140mKptFvQ') // castnets.co.kr
 })
 
 // catch 404 and forward to error handler
