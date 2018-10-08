@@ -99,6 +99,7 @@ cd /src/Gateway
 mkdir /src/log/
 cd /src/Castnets/NodejsWebApp
 forever start -l /src/log/out.log --minUptime 5000 --spinSleepTime 2000 -a server.js
+forever start -l /src/log/outgateway.log --minUptime 5000 --spinSleepTime 2000 -a server.js
 tail -f -n100 /src/log/out.log
 rm -rf /src/log/out.log
 forever list
@@ -144,3 +145,11 @@ sshfs root@10.25.96.3:/data /10.25.96.3 -o allow_other
 firewall-cmd --permanent --new-zone=private
 firewall-cmd --permanent --zone=private --change-interface=eth1
 firewall-cmd --permanent -zone=private --add-port=19100-19300/tcp
+
+
+# AWS에서 마운트
+
+mkfs -t ext4 /dev/sdf
+ls /dev/sdf -al
+mount /dev/sdf /data
+df -h

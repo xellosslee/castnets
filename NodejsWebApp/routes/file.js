@@ -35,47 +35,13 @@ module.exports = (app) => {
   var storage = multer.diskStorage({
     destination: (req, file, cb) => {
       // 폴더가 없다면 생성 (일별로 폴더 신규 생성)
-      if (file.fieldname === 'video') {
-        if (process.env.NODE_ENV === 'production') {
-          this.strpath = path.join('/data/uploads/video/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'demo') {
-          this.strpath = path.join('/data/uploads/video/' + new Date().toISOString().substr(0, 10));
-        } else {
-          this.strpath = path.join(__dirname, './../uploads/video/' + new Date().toISOString().substr(0, 10))
-        }
-        common.mkdirpath(this.strpath)
-        cb(null, this.strpath)
-      } else if (file.fieldname === 'thumbnail') {
-        if (process.env.NODE_ENV === 'production') {
-          this.strpath = path.join('/data/uploads/thumbnail/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'demo') {
-          this.strpath = path.join('/data/uploads/thumbnail/' + new Date().toISOString().substr(0, 10));
-        } else {
-          this.strpath = path.join(__dirname, './../uploads/thumbnail/' + new Date().toISOString().substr(0, 10))
-        }
-        common.mkdirpath(this.strpath)
-        cb(null, this.strpath)
-      } else if (file.fieldname === 'profile') {
-        if (process.env.NODE_ENV === 'production') {
-          this.strpath = path.join('/data/uploads/profile/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'demo') {
-          this.strpath = path.join('/data/uploads/profile/' + new Date().toISOString().substr(0, 10));
-        } else {
-          this.strpath = path.join(__dirname, './../uploads/profile/' + new Date().toISOString().substr(0, 10))
-        }
-        common.mkdirpath(this.strpath)
-        cb(null, this.strpath)
-      } else if (file.fieldname === 'profileback') {
-        if (process.env.NODE_ENV === 'production') {
-          this.strpath = path.join('/data/uploads/profileback/' + new Date().toISOString().substr(0, 10));
-        } else if (process.env.NODE_ENV === 'demo') {
-          this.strpath = path.join('/data/uploads/profileback/' + new Date().toISOString().substr(0, 10));
-        } else {
-          this.strpath = path.join(__dirname, './../uploads/profileback/' + new Date().toISOString().substr(0, 10))
-        }
-        common.mkdirpath(this.strpath)
-        cb(null, this.strpath)
+      if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'demo') {
+        this.strpath = path.join(`/data/uploads/${file.fieldname}/${new Date().toISOString().substr(0, 10)}`);
+      } else {
+        this.strpath = path.join(__dirname, `./../uploads/${file.fieldname}/${new Date().toISOString().substr(0, 10)}`)
       }
+      common.mkdirpath(this.strpath)
+      cb(null, this.strpath)
     },
     filename: (req, file, cb) => {
       // 중복파일명이 있는지 체크
@@ -107,9 +73,7 @@ module.exports = (app) => {
    */
   route.post('/upload', upload.fields([
         {name:'video', maxCount:1},
-        {name:'thumbnail', maxCount:1},
-        {name:'profile', maxCount:1},
-        {name:'profileback', maxCount:1}
+        {name:'thumbnail', maxCount:1}
       ]), (req, res, next) => {
     var files = []
     if (req.files.video !== undefined) {
@@ -119,14 +83,6 @@ module.exports = (app) => {
     if (req.files.thumbnail !== undefined) {
       console.log(`${req.files.thumbnail[0].name} : ${req.files.thumbnail[0].originalname}`)
       files.push(req.files.thumbnail)
-    }
-    if (req.files.profile !== undefined) {
-      console.log(`${req.files.profile[0].name} : ${req.files.profile[0].originalname}`)
-      files.push(req.files.profile)
-    }
-    if (req.files.profileback !== undefined) {
-      console.log(`${req.files.profileback[0].name} : ${req.files.profileback[0].originalname}`)
-      files.push(req.files.profileback)
     }
     var connpool = app.mysqlpool
     connpool.getConnection((err, connection) => {
@@ -161,7 +117,125 @@ module.exports = (app) => {
               sql = `SET @thumbnailid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60202,@thumbnailid);`
             }
-            else if (items[0].fieldname === 'profile') {
+            connection.query(sql, (err)=>{
+              if (err) {
+                connection.rollback(() => {
+                  console.log('rollback fileadd')
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                throw err
+              }
+            })
+          })
+          cb()
+        },
+        (cb) => {
+          var addr = '';
+          geocoder.reverse({"lat":req.body.lat, "lon": req.body.lon})
+          .then((ress) => {
+            addr = ress
+            //console.log(addr)
+            cb(null, addr[0].formattedAddress)
+          })
+          .catch((err) => {
+            connection.rollback(() => {
+              console.log('rollback geocoder')
+              common.sendResult(res, resultcode.failed)
+              connection.release()
+            })
+            throw err
+          })
+        },
+        (formattedAddress, cb) => {
+          files.forEach((items) => {
+            if (items[0].fieldname === 'video') {
+              sql = `CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`
+            }
+            else {
+              sql = `SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile`
+            }
+            connection.query(sql, (err, rows)=>{
+              if (err) {
+                connection.rollback(() => {
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                throw err
+              }
+              console.log(rows)
+              if (rows['affectedRows'] > 0) {
+                connection.commit(() => {
+                  common.sendResult(res, resultcode.Success)
+                  connection.release()
+                  cb()
+                })
+              } else {
+                connection.rollback(() => {
+                  console.log('rollback upload')
+                  common.sendResult(res, resultcode.failed)
+                  connection.release()
+                })
+                fs.unlink(path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                  if (err)
+                    throw err
+                  console.log('successfully deleted : ' + path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.video[0].filename))
+                })
+              }
+            })
+          })
+        },
+      ],
+      (err, result) => {
+        if(err) {
+          console.log(`error upload : ${err}`)
+        }
+        else {
+          console.log('Upload complete')
+        }
+      })
+    })
+  })
+
+  route.post('/uploadprofile', upload.fields([
+        {name:'profile', maxCount:1},
+        {name:'profileback', maxCount:1}
+      ]), (req, res, next) => {
+    var files = []
+    if (req.files.profile !== undefined) {
+      console.log(`${req.files.profile[0].name} : ${req.files.profile[0].originalname}`)
+      files.push(req.files.profile)
+    }
+    if (req.files.profileback !== undefined) {
+      console.log(`${req.files.profileback[0].name} : ${req.files.profileback[0].originalname}`)
+      files.push(req.files.profileback)
+    }
+    var connpool = app.mysqlpool
+    connpool.getConnection((err, connection) => {
+      if (err) {
+        common.sendResult(res, resultcode.failed)
+        connection.release()
+        throw err
+      }
+      async.waterfall([
+        (cb) => {// 토큰으로 userid를 뽑아둔다 (mysql 변수에 담기기 때문에 별도로 전달할 필요 없음)
+          connection.query(`SET @userid = UseridFromToken('${req.headers.authorization}')`, (err) => {
+            if (err) {
+              common.sendResult(res, resultcode.failed)
+              connection.release()
+              throw err
+            }
+            cb()
+          })
+        },
+        (cb) => {
+          connection.beginTransaction(() => {
+            cb()
+          })
+        },
+        (cb) => {
+          files.forEach((items) => {
+            if (items[0].fieldname === 'profile') {
               sql = `SET @profileid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60203,@profileid);`
             }
@@ -183,32 +257,8 @@ module.exports = (app) => {
           cb()
         },
         (cb) => {
-          if (req.body.filetype === "60201") {
-            var addr = '';
-            geocoder.reverse({"lat":req.body.lat, "lon": req.body.lon})
-            .then((ress) => {
-              addr = ress
-              //console.log(addr)
-              cb(null, addr[0].formattedAddress)
-            })
-            .catch((err) => {
-              connection.rollback(() => {
-                console.log('rollback geocoder')
-                common.sendResult(res, resultcode.failed)
-                connection.release()
-              })
-              throw err
-            })
-          }
-        },
-        (formattedAddress, cb) => {
           files.forEach((items) => {
-            if (items[0].fieldname === 'video') {
-              sql = `CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`
-            }
-            else {
-              sql = `SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile`
-            }
+            sql = `SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile`
             connection.query(sql, (err, rows)=>{
               if (err) {
                 connection.rollback(() => {
