@@ -61,11 +61,10 @@
 
           connpool.getConnection((err, connection) => {
             connection.beginTransaction(() => {
-              var sql = `SET @token = 0;
-                CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
+              var sql = `CALL userjoin_token('${(req.body.logid === undefined ? 0 : req.body.logid)}',
                 ${(req.body.email === undefined ? 'NULL' : '\'' + req.body.email + '\'')},
-                '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
-                
+                '${pass}','${salt}',${req.body.loginpath},'${process.env.PRIVATE_IP}')`
+              
               //console.log(sql)
               connection.query(sql, (err, rows) => {
                 if (err) {
@@ -76,56 +75,65 @@
                     throw err
                   })
                 }
-
-                var token = rows[2][0]["@token"]
-                // 이메일로 가입한 경우 인증메일 발송
-                if ((req.body.logid === undefined || req.body.logid === null ? "" : req.body.logid) == "") {
-                  sql = `SET @emailkey = '';CALL emailsend('${token}', @emailkey);SELECT @emailkey`
-
-                  //console.log(sql)
-                  connection.query(sql, (err, rows) => {
-                    if (err) {
-                      connection.rollback(() => {
-                        console.log("rollback join2")
-                        common.sendResult(res, resultcode.failed)
-                        connection.release()
-                        throw err
-                      })
-                    }
-                    // 이메일 인증키 가져오기
-                    // 인증메일 발송
-                    var mailOptions = {
-                      from: "캐스트네츠 <admin@castnets.co.kr>",
-                      to: req.body.email,
-                      subject: "가입인증 메일",
-                      html: common.htmlTempleate01.replace("|emailkey|", rows[2][0]["@emailkey"])
-                    }
-                    smtpTransport.sendMail(mailOptions, (err, response) => {
+                if (rows[0].length === 0 || rows[0].length === undefined) {
+                  connection.rollback(() => {
+                    console.log("rollback join2")
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
+                    throw err
+                  })
+                }
+                else {
+                  userinfo = rows[0][0]
+                  // 이메일로 가입한 경우 인증메일 발송
+                  if (userinfo.email !== undefined && userinfo.email !== null) {
+                    sql = `SET @emailkey = '';CALL emailsend('${userinfo.token}', @emailkey);SELECT @emailkey`
+  
+                    //console.log(sql)
+                    connection.query(sql, (err, rows) => {
                       if (err) {
-                        console.log(err)
                         connection.rollback(() => {
                           console.log("rollback join3")
                           common.sendResult(res, resultcode.failed)
                           connection.release()
                           throw err
                         })
-                      } else {
-                        console.log("Cert mail sent : " + response.message)
-
-                        connection.commit(() => {
-                          common.sendResult(res, resultcode.Success, {"token": token})
-                          connection.release()
-                        })
                       }
-                      smtpTransport.close()
+                      // 이메일 인증키 가져오기
+                      // 인증메일 발송
+                      var mailOptions = {
+                        from: "캐스트네츠 <admin@castnets.co.kr>",
+                        to: req.body.email,
+                        subject: "가입인증 메일",
+                        html: common.htmlTempleate01.replace("|emailkey|", rows[2][0]["@emailkey"])
+                      }
+                      smtpTransport.sendMail(mailOptions, (err, response) => {
+                        if (err) {
+                          console.log(err)
+                          connection.rollback(() => {
+                            console.log("rollback join4")
+                            common.sendResult(res, resultcode.failed)
+                            connection.release()
+                            throw err
+                          })
+                        } else {
+                          console.log("Cert mail sent : " + response.message)
+  
+                          connection.commit(() => {
+                            common.sendResult(res, resultcode.Success, {"userinfo": userinfo})
+                            connection.release()
+                          })
+                        }
+                        smtpTransport.close()
+                      })
                     })
-                  })
-                } else {
-                  // 휴대폰으로 가입한 경우 바로 성공
-                  connection.commit(() => {
-                    common.sendResult(res, resultcode.Success, {"token": token})
-                    connection.release()
-                  })
+                  } else {
+                    // 휴대폰으로 가입한 경우 바로 성공
+                    connection.commit(() => {
+                      common.sendResult(res, resultcode.Success, {"userinfo": userinfo})
+                      connection.release()
+                    })
+                  }
                 }
               })
             }) // connection.beginTransaction
@@ -134,7 +142,7 @@
       })
     } catch (e) {
       connection.rollback(() => {
-        console.log("rollback join4")
+        console.log("rollback join5")
       })
       common.sendResult(res, resultcode.failed)
       throw err
@@ -319,12 +327,12 @@
                   return next(err)
                 }
                 connection.release()
-                if (rows[0].length === 0 || rows[0][0].resultcode === 1002) {
+                if (rows[0].length === 0 || rows[0].length === undefined) {
                   console.log("Password missmatch")
                   common.sendResult(res, resultcode.WorngPassword)
                   return
                 }
-                common.sendResult(res, resultcode.Success, {"userinfo": rows[0]})
+                common.sendResult(res, resultcode.Success, {"userinfo": rows[0][0]})
               })
             }
           )
@@ -364,7 +372,7 @@
           common.sendResult(res, resultcode.InvalidToken)
         } else {
           console.log(`User running app : ${rows[0][0]["name"]}`)
-          common.sendResult(res, resultcode.Success, {"userinfo": rows[0]})
+          common.sendResult(res, resultcode.Success, {"userinfo": rows[0][0]})
         }
       }
     })

@@ -9,7 +9,7 @@ INSERT INTO `code` VALUES (10201, 10200, '가입유저', '가입유저');
 INSERT INTO `code` VALUES (10202, 10200, '인증유저', '인증유저');
 INSERT INTO `code` VALUES (10203, 10200, '휴면유저', '휴면유저');
 INSERT INTO `code` VALUES (10204, 10200, '관리자', '관리자');
-INSERT INTO `code` VALUES (10205, 10200, '차단유저', '휴면유저');
+INSERT INTO `code` VALUES (10205, 10200, '차단유저', '차단유저');
 
 INSERT INTO `code` VALUES (30000, NULL, '영상정보', '영상정보');
 INSERT INTO `code` VALUES (30100, 30000, '영상종류', '미설정');
