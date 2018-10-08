@@ -150,10 +150,10 @@ module.exports = (app) => {
         (formattedAddress, cb) => {
           files.forEach((items) => {
             if (items[0].fieldname === 'video') {
-              sql = `CALL videoadd(@userid,@fileid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`
+              sql = `CALL videoadd(@userid,@videoid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`
             }
             else {
-              sql = `SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile`
+              sql = `SET @removefile = '';CALL profileadd(@userid,@videoid,@removefile);SELECT @removefile`
             }
             connection.query(sql, (err, rows)=>{
               if (err) {
@@ -258,7 +258,12 @@ module.exports = (app) => {
         },
         (cb) => {
           files.forEach((items) => {
-            sql = `SET @removefile = '';CALL profileadd(@userid,@fileid,@removefile);SELECT @removefile`
+            if (items[0].fieldname === 'profile') {
+              sql = `SET @removefile = '';CALL profileadd(@userid,@profileid,@removefile);SELECT @removefile`
+            }
+            else if (items[0].fieldname === 'profileback') {
+              sql = `SET @removefile = '';CALL profileadd(@userid,@profilebackid,@removefile);SELECT @removefile`
+            }
             connection.query(sql, (err, rows)=>{
               if (err) {
                 connection.rollback(() => {
