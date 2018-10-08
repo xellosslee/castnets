@@ -22,16 +22,7 @@ var userRouter = require('./routes/user.js')(app)
 var videoRouter = require('./routes/video.js')(app)
 var adminRouter = require('./routes/admin.js')(app)
 
-var whitelist = ['http://demo.castnets.co.kr', 'http://www.castnets.co.kr', 'http://was.castnets.co.kr', 'http://res.castnets.co.kr']
-// var corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
+var whitelist = ['http://demo.castnets.co.kr', 'http://www.castnets.co.kr']
 //app.use(cors({origin: ['http://demo.castnets.co.kr', 'http://www.castnets.co.kr', 'http://was.castnets.co.kr', 'http://res.castnets.co.kr', 'localhost']}))
 app.all('*', function(req, res, next) {
   let origin = req.headers.origin;
@@ -41,6 +32,9 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+if(process.env.NODE_ENV === 'demo' || process.env.NODE_ENV === 'local') {
+  app.use(cors());
+}
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/file', fileRouter)
