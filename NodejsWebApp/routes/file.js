@@ -176,10 +176,10 @@ module.exports = (app) => {
                   common.sendResult(res, resultcode.failed)
                   connection.release()
                 })
-                fs.unlink(path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                fs.unlink(path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
                   if (err)
                     throw err
-                  console.log('successfully deleted : ' + path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.video[0].filename))
+                  console.log('successfully deleted : ' + path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename))
                 })
               }
             })
@@ -280,10 +280,10 @@ module.exports = (app) => {
                   common.sendResult(res, resultcode.failed)
                   connection.release()
                 })
-                fs.unlink(path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.file[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                fs.unlink(path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
                   if (err)
                     throw err
-                  console.log('successfully deleted : ' + path.join(path.normalize(req.files.video[0].destination).replace(/\\/g, '/'), req.files.video[0].filename))
+                  console.log('successfully deleted : ' + path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename))
                 })
               }
             })
