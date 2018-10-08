@@ -110,11 +110,11 @@ module.exports = (app) => {
         (cb) => {
           files.forEach((items) => {
             if (items[0].fieldname === 'video') {
-              sql = `SET @videoid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
+              sql = `SET @videoid = 0;CALL fileadd(@userid, '${process.env.FORDLERPATH}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60201,@videoid);`
             }
             else if (items[0].fieldname === 'thumbnail') {
-              sql = `SET @thumbnailid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
+              sql = `SET @thumbnailid = 0;CALL fileadd(@userid, '${process.env.FORDLERPATH}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60202,@thumbnailid);`
             }
             connection.query(sql, (err)=>{
@@ -236,11 +236,11 @@ module.exports = (app) => {
         (cb) => {
           files.forEach((items) => {
             if (items[0].fieldname === 'profile') {
-              sql = `SET @profileid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
+              sql = `SET @profileid = 0;CALL fileadd(@userid, '${process.env.FORDLERPATH}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60203,@profileid);`
             }
             else if (items[0].fieldname === 'profileback') {
-              sql = `SET @profilebackid = 0;CALL fileadd(@userid, '${process.env.PRIVATE_IP}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
+              sql = `SET @profilebackid = 0;CALL fileadd(@userid, '${process.env.FORDLERPATH}','${path.normalize(items[0].destination).replace(/\\/g, '/')}',
                 '${items[0].filename}','${items[0].originalname}',${req.body.registlocation},60204,@profilebackid);`
             }
             connection.query(sql, (err)=>{

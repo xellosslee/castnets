@@ -310,7 +310,7 @@
                 return next(err)
               }
               pass = key.toString("base64")
-              var sql = `SET @token = '';CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
+              var sql = `CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}');`
 
               console.log(sql)
               connection.query(sql, (err, rows) => {
@@ -319,12 +319,12 @@
                   return next(err)
                 }
                 connection.release()
-                if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
+                if (rows[0].length === 0 || rows[0][0].resultcode === 1002) {
                   console.log("Password missmatch")
                   common.sendResult(res, resultcode.WorngPassword)
                   return
                 }
-                common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
+                common.sendResult(res, resultcode.Success, {"userinfo": rows[0]})
               })
             }
           )
@@ -349,27 +349,22 @@
     })
   })
   /** 유저 토큰 정상 체크
-   * req : token
+   * req : token(헤더의 authorization로 전달), loginpath 값 전달
    * res : resultcode 결과값
    */
   route.post("/tokencheck", (req, res, next) => {
     const connpool = app.mysqlpool
-    var sql = `CALL usertokencheck('${req.headers.authorization}')`
+    var sql = `CALL usertokencheck('${req.headers.authorization}',${req.body.loginpath},'${process.env.PRIVATE_IP}')`
 
     connpool.query(sql, (err, rows) => {
       if (err) {
         return next(err)
       } else {
-        if (rows[0].length <= 0) {
+        if (rows.length === undefined || rows[0].length <= 0) {
           common.sendResult(res, resultcode.InvalidToken)
         } else {
-          console.log(`User alive check : ${rows[0][0]["userid"]}_${rows[0][0]["alive"]}`
-          )
-          if (rows[0][0]["alive"] == 0) {
-            common.sendResult(res, resultcode.ExpiredToken)
-          } else {
-            common.sendResult(res, resultcode.Success)
-          }
+          console.log(`User running app : ${rows[0][0]["name"]}`)
+          common.sendResult(res, resultcode.Success, {"userinfo": rows[0]})
         }
       }
     })
