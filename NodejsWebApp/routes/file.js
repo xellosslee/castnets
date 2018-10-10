@@ -68,7 +68,7 @@ module.exports = (app) => {
   })
   /* 업로드 동작은 프로필 사진, 영상 등록 모두 공통적으로 사용한다. 파일명은 최대 200자까지만 가능.
    * ### array로 받는 경우엔 무조건 buffer로 저장되며 buffer를 다시 파일로 저장해야함 * 해당 post는 별도로 구현해야 함
-   * req : post데이터에 file명칭의 파일과 thumbnail 이름으로 썸네일 이미지, 유저token, registlocation(안드,애플,웹), lat, lon, comment, capturedate을 담아서 전송
+   * req : post데이터에 file명칭의 파일과 thumbnail 이름으로 썸네일 이미지, 유저token, registlocation(안드,애플,웹), lat, lon, duration, comment, capturedate을 담아서 전송
    * res : 업로드후 결과코드 및 업로드 된 객체 정보 (url 주소)
    */
   route.post('/upload', upload.fields([
@@ -150,12 +150,12 @@ module.exports = (app) => {
         (formattedAddress, cb) => {
           files.forEach((items) => {
             if (items[0].fieldname === 'video') {
-              sql = `CALL videoadd(@userid,@videoid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},'${req.body.comment}','${req.body.capturedate}')`
+              sql = `CALL videoadd(@userid,@videoid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},${req.body.duration},'${req.body.comment}','${req.body.capturedate}')`
             }
             else {
               sql = `SET @removefile = '';CALL profileadd(@userid,@videoid,@removefile);SELECT @removefile`
             }
-            connection.query(sql, (err, rows)=>{
+            connection.query(sql, (err, rows) => {
               if (err) {
                 connection.rollback(() => {
                   common.sendResult(res, resultcode.failed)
