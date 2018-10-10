@@ -26,8 +26,9 @@ INSERT INTO `code` VALUES (60103, 60100, '등록위치', '웹');
 
 INSERT INTO `code` VALUES (60200, 60000, '파일종류', '미설정');
 INSERT INTO `code` VALUES (60201, 60200, '파일종류', '영상');
-INSERT INTO `code` VALUES (60202, 60200, '파일종류', '프로필');
-INSERT INTO `code` VALUES (60203, 60200, '파일종류', '프로필배경');
+INSERT INTO `code` VALUES (60202, 60200, '파일종류', '썸네일');
+INSERT INTO `code` VALUES (60203, 60200, '파일종류', '프로필');
+INSERT INTO `code` VALUES (60204, 60200, '파일종류', '프로필배경');
 
 INSERT INTO `code` VALUES (70000, NULL, '영상기록', '영상기록');
 INSERT INTO `code` VALUES (70100, 70000, '영상기록종류', '미설정');
