@@ -267,7 +267,7 @@ module.exports = (app) => {
               sql = `SET @removefile = '';CALL profileadd(@userid,@profileid,@removefile);SELECT @removefile`
             }
             else if (items[0].fieldname === 'profileback') {
-              sql = `SET @removefile = '';CALL profileadd(@userid,@profilebackid,@removefile);SELECT @removefile`
+              sql = `SET @removefile = '';CALL profilebackadd(@userid,@profilebackid,@removefile);SELECT @removefile`
             }
             connection.query(sql, (err, rows)=>{
               if (err) {
