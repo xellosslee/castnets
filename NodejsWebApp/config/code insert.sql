@@ -91,3 +91,15 @@ DELETE FROM video;
 ALTER TABLE video AUTO_INCREMENT=1;
 DELETE FROM smslog;
 ALTER TABLE smslog AUTO_INCREMENT=1;
+
+-- 비디오 삭제
+SELECT * FROM video;
+SELECT * FROM filemap WHERE filetype IN(60201,60202);
+DELETE FROM filemap WHERE filetype IN(60201,60202);
+DELETE FROM video;
+
+-- 프로필 삭제
+DELETE FROM filemap WHERE fileid IN(SELECT profileid FROM userinfo);
+DELETE FROM filemap WHERE fileid IN(SELECT profilebackid FROM userinfo);
+SELECT * FROM filemap;
+UPDATE userinfo SET profileid = NULL, profilebackid = NULL;
