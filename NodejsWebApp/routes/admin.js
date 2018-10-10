@@ -123,7 +123,7 @@ module.exports = (app) => {
                 return next(err)
               }
               pass = key.toString("base64")
-              var sql = `SET @token = '';CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token);SELECT @token`
+              var sql = `CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token)`
 
               console.log(sql)
               connection.query(sql, (err, rows) => {
@@ -132,12 +132,12 @@ module.exports = (app) => {
                   return next(err)
                 }
                 connection.release()
-                if (rows[2][0]["@token"] == null || rows[2][0]["@token"] === 0) {
+                if (rows[0].length === 0 || rows[0].length === undefined) {
                   console.log("Password missmatch")
                   common.sendResult(res, resultcode.WorngPassword)
                   return
                 }
-                common.sendResult(res, resultcode.Success, {"token": rows[2][0]["@token"]})
+                common.sendResult(res, resultcode.Success, {"userinfo": rows[0][0]})
               })
             }
           )

@@ -318,7 +318,7 @@
                 return next(err)
               }
               pass = key.toString("base64")
-              var sql = `CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}');`
+              var sql = `CALL userlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}')`
 
               console.log(sql)
               connection.query(sql, (err, rows) => {
