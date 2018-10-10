@@ -151,39 +151,37 @@ module.exports = (app) => {
           files.forEach((items) => {
             if (items[0].fieldname === 'video') {
               sql = `CALL videoadd(@userid,@videoid,@thumbnailid,${req.body.lat},${req.body.lon},'${formattedAddress}',${req.body.width},${req.body.height},${req.body.duration},'${req.body.comment}','${req.body.capturedate}')`
+              
+              connection.query(sql, (err, rows) => {
+                if (err) {
+                  connection.rollback(() => {
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
+                  })
+                  throw err
+                }
+                console.log(rows)
+                if ((rows['affectedRows'] === undefined ? rows[1]['affectedRows'] : rows['affectedRows']) > 0) {
+                  connection.commit(() => {
+                    common.sendResult(res, resultcode.Success)
+                    connection.release()
+                  })
+                } else {
+                  connection.rollback(() => {
+                    console.log('rollback upload')
+                    common.sendResult(res, resultcode.failed)
+                    connection.release()
+                  })
+                  fs.unlink(path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
+                    if (err)
+                      throw err
+                    console.log('successfully deleted : ' + path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename))
+                  })
+                }
+              })
             }
-            else {
-              sql = `SET @removefile = '';CALL profileadd(@userid,@videoid,@removefile);SELECT @removefile`
-            }
-            connection.query(sql, (err, rows) => {
-              if (err) {
-                connection.rollback(() => {
-                  common.sendResult(res, resultcode.failed)
-                  connection.release()
-                })
-                throw err
-              }
-              console.log(rows)
-              if ((rows['affectedRows'] === undefined ? rows[1]['affectedRows'] : rows['affectedRows']) > 0) {
-                connection.commit(() => {
-                  common.sendResult(res, resultcode.Success)
-                  connection.release()
-                  cb()
-                })
-              } else {
-                connection.rollback(() => {
-                  console.log('rollback upload')
-                  common.sendResult(res, resultcode.failed)
-                  connection.release()
-                })
-                fs.unlink(path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename), (err) => { // 삭제처리가 성공하든 말든 진행
-                  if (err)
-                    throw err
-                  console.log('successfully deleted : ' + path.join(path.normalize(items[0].destination).replace(/\\/g, '/'), items[0].filename))
-                })
-              }
-            })
           })
+          cb()
         },
       ],
       (err, result) => {
@@ -282,7 +280,6 @@ module.exports = (app) => {
                 connection.commit(() => {
                   common.sendResult(res, resultcode.Success)
                   connection.release()
-                  cb()
                 })
               } else {
                 connection.rollback(() => {
@@ -298,6 +295,7 @@ module.exports = (app) => {
               }
             })
           })
+          cb()
         },
       ],
       (err, result) => {
