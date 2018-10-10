@@ -164,7 +164,7 @@ module.exports = (app) => {
                 throw err
               }
               console.log(rows)
-              if (rows['affectedRows'] > 0) {
+              if ((rows['affectedRows'] === undefined ? rows[1]['affectedRows'] : rows['affectedRows']) > 0) {
                 connection.commit(() => {
                   common.sendResult(res, resultcode.Success)
                   connection.release()
@@ -278,7 +278,7 @@ module.exports = (app) => {
                 throw err
               }
               console.log(rows)
-              if (rows['affectedRows'] > 0) {
+              if ((rows['affectedRows'] === undefined ? rows[1]['affectedRows'] : rows['affectedRows']) > 0) {
                 connection.commit(() => {
                   common.sendResult(res, resultcode.Success)
                   connection.release()
