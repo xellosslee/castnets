@@ -12,6 +12,7 @@ const http = require('http')
 const https = require('https')
 const cors = require('cors')
 var resultcode = JSON.parse(fs.readFileSync("resultcode.json", "utf8").trim())
+require('log-timestamp');
 
 var app = express()
 var uuidtemp = uuid.v4()
