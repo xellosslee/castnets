@@ -6,6 +6,7 @@ module.exports = (app) => {
   const common = require('../modules/common.js')()
   const fs = require('fs')
   var resultcode = JSON.parse(fs.readFileSync('resultcode.json', 'utf8').trim())
+  const crypto = require("crypto-browserify")
   var route = express.Router()
   /**유저 목록 가져오기
    * req : 페이지(0부터 시작), 개수 
