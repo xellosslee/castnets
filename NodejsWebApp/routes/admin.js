@@ -124,7 +124,7 @@ module.exports = (app) => {
                 return next(err)
               }
               pass = key.toString("base64")
-              var sql = `CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}',@token)`
+              var sql = `CALL adminuserlogin_token('${req.body.loginid}','${pass}',${req.body.loginpath},'${process.env.PRIVATE_IP}')`
 
               console.log(sql)
               connection.query(sql, (err, rows) => {
