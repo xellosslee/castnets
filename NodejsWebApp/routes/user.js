@@ -547,25 +547,6 @@
       common.sendResult(res, resultcode.Success, {"list": list})
     })
   })
-  /**특정 유저의 영상을 가져온다
-   * req : 유저 닉네임, 자신의 토큰(자신의 프로필인지 비교하기 위함)
-   * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
-   */
-  route.post('/uservideolist/:name', (req, res, next)=>{
-    const connpool = app.mysqlpool
-    connpool.query(`CALL uservideolist('${req.params.name}','${req.headers.authorization}')`, (err, rows)=>{
-      if (err) {
-        return next(err)
-      }
-      var list = []
-      if (rows[0].length > 0) {
-        rows[0].forEach((row)=>{
-          list.push(row)
-        })
-      }
-      common.sendResult(res, resultcode.Success, {"list": list})
-    })
-  })
   /** 영상 그룹 생성 (그룹안에 포함될 영상목록을 함께 보냄)
    * req : token, groupname(공백이라도 보내야 함), list[{nextvideogroupid, nextvideoid, nextdisplayorder}]
    * res : resultcode 결과값
