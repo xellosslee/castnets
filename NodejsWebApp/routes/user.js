@@ -532,7 +532,7 @@
    * req : 유저 닉네임
    * res : 해당 유저의 영상 목록 & resultcode {영상 객체는 lat, lon, capturedate, createdate, filepath 값을 가짐}
    */
-  route.get('/uservideolist/:name/cnt/page', (req, res, next)=>{
+  route.get('/uservideolist/:name/:cnt/:page', (req, res, next)=>{
     const connpool = app.mysqlpool
     connpool.query(`CALL uservideolist('${req.headers.authorization}','${req.params.name}',${req.params.cnt},${req.params.page})`, (err, rows)=>{
       if (err) {
