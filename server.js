@@ -33,7 +33,7 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-if(process.env.NODE_ENV === 'demo' || process.env.NODE_ENV === 'local') {
+if(process.env.NODE_ENV !== 'production') {
   app.use(cors());
 }
 app.use(bodyParser.urlencoded({ extended: true }))
