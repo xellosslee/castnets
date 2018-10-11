@@ -103,3 +103,6 @@ DELETE FROM filemap WHERE fileid IN(SELECT profileid FROM userinfo);
 DELETE FROM filemap WHERE fileid IN(SELECT profilebackid FROM userinfo);
 SELECT * FROM filemap;
 UPDATE userinfo SET profileid = NULL, profilebackid = NULL;
+
+GRANT ALL ON Castnets.* TO 'castnetsmysqler'@'%' IDENTIFIED BY 'c@stnet&mysql1@#';
+FLUSH PRIVILEGES;
